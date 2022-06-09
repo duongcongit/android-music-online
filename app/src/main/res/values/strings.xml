@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Android Music</string>
+    <string name="title_home">Trang chủ</string>
+    <string name="title_discover">Khám phá</string>
+    <string name="title_browse">Duyệt</string>
+    <string name="title_profile">Tài khoản</string>
+</resources>
