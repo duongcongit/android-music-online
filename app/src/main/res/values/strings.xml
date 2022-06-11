@@ -4,4 +4,12 @@
     <string name="title_discover">Khám phá</string>
     <string name="title_browse">Duyệt</string>
     <string name="title_profile">Tài khoản</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="uigvlhk">uigvlhk</string>
+    <string name="start_time">0:00</string>
+    <string name="dusk_till_dawn_zayn_ft_sia">Dusk Till Dawn - ZAYN ft. Sia</string>
+    <string name="edm">EDM</string>
+    <string name="final_time">0:00</string>
 </resources>

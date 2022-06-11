@@ -1,51 +1,53 @@
 package com.duongcong.androidmusic;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
+    BottomNavigationView navigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
+
+
     private NavigationBarView.OnItemSelectedListener mOnNavigationItemSelectedListener
             = new NavigationBarView.OnItemSelectedListener() {
-
-
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
             switch (item.getItemId()) {
-                case R.id.navigation_shop:
+                case R.id.page_home:
                     System.out.println("1");
 
                     return true;
-                case R.id.navigation_gifts:
+                case R.id.page_discovery:
                     System.out.println("2");
 
                     return true;
-                case R.id.navigation_cart:
-                    System.out.println("3");
+                case R.id.page_browse:
+                    Intent switchActivityIntentBrowse = new Intent(getApplicationContext(), BrowseActivity.class);
+                    startActivity(switchActivityIntentBrowse);
 
                     return true;
-                case R.id.navigation_profile:
-                    setContentView(R.layout.activity_login);
+                case R.id.page_account:
+                    Intent switchActivityIntent = new Intent(getApplicationContext(), PlayMusicActivity.class);
+                    startActivity(switchActivityIntent);
 
                     return true;
             }
@@ -53,4 +55,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     };
+
+
 }
