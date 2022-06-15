@@ -4,10 +4,24 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../../../layout/custom_preview.xml" value="0.1239488731920619" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1785" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/drawable/button_bg.xml" value="0.101" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/drawable/edit_text_bg.xml" value="0.1825" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1785" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/drawable/login_bg.xml" value="0.188" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/layout/activity_account.xml" value="0.17074275362318841" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/layout/activity_browse.xml" value="0.17074275362318841" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/layout/activity_discovery.xml" value="0.17074275362318841" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/layout/activity_login.xml" value="0.22" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/layout/activity_play_music.xml" value="0.17074275362318841" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/layout/activity_sign_up.xml" value="0.25" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/layout/login_tab_fragment.xml" value="0.25" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/layout/navigation.xml" value="0.17074275362318841" />
+        <entry key="..\:/BTL/AndroidMusicOnline/app/src/main/res/layout/sign_up_tab_fragment.xml" value="0.1921875" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2625" />
         <entry key="app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.2625" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.212" />
-        <entry key="app/src/main/res/drawable/shapebgsearch.xml" value="0.2605" />
         <entry key="app/src/main/res/font/asset.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/layout/activity_account.xml" value="0.3411458333333333" />
         <entry key="app/src/main/res/layout/activity_browse.xml" value="0.34782608695652173" />
@@ -16,11 +30,8 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main2.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/activity_play_music.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_browse.xml" value="0.17325227963525835" />
-        <entry key="app/src/main/res/layout/fragment_discovery.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.34782608695652173" />
         <entry key="app/src/main/res/layout/fragment_notifications.xml" value="0.34782608695652173" />
-        <entry key="app/src/main/res/layout/fragment_play_music.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/navigation.xml" value="0.17325227963525835" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.18177083333333333" />
       </map>
@@ -31,12 +42,5 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
-  </component>
-  <component name="VisualizationToolProject">
-    <option name="state">
-      <ProjectState>
-        <option name="scale" value="0.33" />
-      </ProjectState>
-    </option>
   </component>
 </project>

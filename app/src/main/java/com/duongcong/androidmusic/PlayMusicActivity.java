@@ -4,27 +4,23 @@ import android.animation.ObjectAnimator;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class PlayMusicFragment extends Fragment {
 
-    // Animation animation;
+public class PlayMusicActivity extends AppCompatActivity {
+
+
+    Animation animation;
     ImageView imgView;
 
     private ImageButton btn_forward,btn_pause,btn_play,btn_repeat;
@@ -55,33 +51,14 @@ public class PlayMusicFragment extends Fragment {
         return min + ":" +sec;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootLayout =  inflater.inflate(R.layout.fragment_play_music, container, false);
-
-        BottomNavigationView navBar = getActivity().findViewById(R.id.navigation);
-        navBar.setVisibility(View.GONE);
-        //
-        return rootLayout;
-
-
-    }
-
-
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_play_music);
 
         // animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
 
-        ImageButton btn_back = (ImageButton)view.findViewById(R.id.btn_back);
-
-
-
-
-        imgView = (ImageView) view.findViewById(R.id.img_music);
+        imgView = (ImageView) findViewById(R.id.img_music);
 
         // Animation rotate image
         anim = ObjectAnimator.ofFloat(imgView, "rotation", 0, 360);
@@ -91,56 +68,40 @@ public class PlayMusicFragment extends Fragment {
 
 
         // Control button
-        btn_forward = (ImageButton) view.findViewById(R.id.btn_forward);
-        btn_pause = (ImageButton) view.findViewById(R.id.btn_pause);
-        btn_play = (ImageButton) view.findViewById(R.id.btn_play);
-        btn_repeat = (ImageButton) view.findViewById(R.id.btn_repeat);
+        btn_forward = (ImageButton) findViewById(R.id.btn_forward);
+        btn_pause = (ImageButton) findViewById(R.id.btn_pause);
+        btn_play = (ImageButton) findViewById(R.id.btn_play);
+        btn_repeat = (ImageButton) findViewById(R.id.btn_repeat);
 
         //
-        txt_time_current = (TextView)view.findViewById(R.id.txt_time_current);
-        txt_max_time = (TextView)view.findViewById(R.id.txt_max_time);
+        txt_time_current = (TextView)findViewById(R.id.txt_time_current);
+        txt_max_time = (TextView)findViewById(R.id.txt_max_time);
 
 
         // String PATH_TO_FILE = Environment.getExternalStorageDirectory().getPath() +  "/a.mp3";
         String PATH_TO_FILE = "https://www.mboxdrive.com/K391%20Alan%20Walker%20%20Ahrix%20%20End%20of%20Time%20Lyrics_320kbps.mp3";
 
+
         mediaPlayer = new MediaPlayer();
-
-
         try {
             mediaPlayer.setDataSource(PATH_TO_FILE);
             mediaPlayer.prepare();
         } catch (IOException e) {
             e.printStackTrace();
-
         }
-
-
-        MediaPlayer.TrackInfo[] infM = mediaPlayer.getTrackInfo();
-
 
 
         finalTime = mediaPlayer.getDuration();
 
-        System.out.println(finalTime);
-
         // Set parameter seekbar when start
-        seekbar = (SeekBar)view.findViewById(R.id.seekBar);
+        seekbar = (SeekBar)findViewById(R.id.seekBar);
         seekbar.setClickable(true);
         seekbar.setMax((int) TimeUnit.MILLISECONDS.toSeconds((long) finalTime));
         oneTimeOnly = 1;
 
-
         // Display final time of music
         txt_max_time.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) finalTime), TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
 
-
-        btn_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).displayFragment(new HomeFragment());
-            }
-        });
 
 
         // When click button play music
@@ -191,6 +152,39 @@ public class PlayMusicFragment extends Fragment {
         });
 
 
+        /* b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int temp = (int)startTime;
+
+                if((temp+forwardTime)<=finalTime){
+                    startTime = startTime + forwardTime;
+                    mediaPlayer.seekTo((int) startTime);
+                    Toast.makeText(getApplicationContext(),"You have Jumped forward 5
+                            seconds",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(getApplicationContext(),"Cannot jump forward 5
+                            seconds",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        b4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int temp = (int)startTime;
+
+                if((temp-backwardTime)>0){
+                    startTime = startTime - backwardTime;
+                    mediaPlayer.seekTo((int) startTime);
+                    Toast.makeText(getApplicationContext(),"You have Jumped backward 5
+                            seconds",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(getApplicationContext(),"Cannot jump backward 5
+                            seconds",Toast.LENGTH_SHORT).show();
+                }
+            }
+        }); */
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progressChangedValue = 0;
@@ -209,9 +203,9 @@ public class PlayMusicFragment extends Fragment {
         });
 
 
+
+
     }
-
-
 
     private Runnable UpdateSongTime = new Runnable() {
         public void run() {
@@ -230,4 +224,9 @@ public class PlayMusicFragment extends Fragment {
     };
 
 
-}
+
+
+
+
+
+    }

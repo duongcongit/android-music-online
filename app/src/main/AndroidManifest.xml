@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.duongcong.androidmusic">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,16 +19,16 @@
         android:theme="@style/Theme.AndroidMusic"
         tools:targetApi="31">
         <activity
-            android:name=".PlayMusicFragment"
+            android:name=".PlayMusicActivity"
             android:exported="false" />
         <activity
-            android:name=".AccountFragment"
+            android:name=".AccountActivity"
             android:exported="false" />
         <activity
-            android:name=".BrowseFragment"
+            android:name=".BrowseActivity"
             android:exported="false" />
         <activity
-            android:name=".DiscoveryFragment"
+            android:name=".DiscoveryActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"

@@ -24,6 +24,4 @@
     android:visible="true"
     android:icon="@mipmap/ic_bottom_navigation_account"
     android:title="@string/title_profile"/>
-
-
 </menu>
