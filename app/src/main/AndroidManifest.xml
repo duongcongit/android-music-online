@@ -19,16 +19,16 @@
         android:theme="@style/Theme.AndroidMusic"
         tools:targetApi="31">
         <activity
-            android:name=".PlayMusicActivity"
+            android:name=".PlayMusicFragment"
             android:exported="false" />
         <activity
-            android:name=".AccountActivity"
+            android:name=".AccountFragment"
             android:exported="false" />
         <activity
-            android:name=".BrowseActivity"
+            android:name=".BrowseFragment"
             android:exported="false" />
         <activity
-            android:name=".DiscoveryActivity"
+            android:name=".DiscoveryFragment"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
