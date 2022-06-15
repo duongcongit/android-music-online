@@ -10,10 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 public class HomeFragment extends Fragment {
+
+    private TabLayout mTabLayout;
+    private ViewPager2 mViewPager2;
 
 
     @Nullable
@@ -24,6 +30,8 @@ public class HomeFragment extends Fragment {
         BottomNavigationView navBar = getActivity().findViewById(R.id.navigation);
         navBar.setVisibility(View.VISIBLE);
 
+
+
         //
         return rootLayout;
 
@@ -33,6 +41,28 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+
+
+        mTabLayout = view.findViewById(R.id.tab_layout);
+        mViewPager2 = view.findViewById(R.id.view_pager2);
+
+        ViewPagerAdapterHome viewPagerAdapterHome = new ViewPagerAdapterHome(getActivity().getSupportFragmentManager(), getLifecycle());
+
+        mViewPager2.setAdapter(viewPagerAdapterHome);
+
+        //new TabLayoutMediator(mTabLayout, mViewPager2, "OK").attach();
+
+        new TabLayoutMediator(mTabLayout, mViewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                if(position == 0)
+                    tab.setText("Playlist");
+                else
+                    tab.setText("Gần đây");
+            }
+        }).attach();
+
+
 
         CardView cardView_song, cardView_on_device, cardView_upload, cardView_download, cardView_album;
 
