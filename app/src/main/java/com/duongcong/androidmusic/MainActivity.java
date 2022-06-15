@@ -21,15 +21,13 @@ public class MainActivity extends AppCompatActivity {
 
     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-    private HomeFragment homeFragment = new HomeFragment();
-    private DiscoveryFragment discoveryFragment = new DiscoveryFragment();
-    private BrowseFragment browseFragment = new BrowseFragment();
-    private AccountFragment accountFragment = new AccountFragment();
-    private PlayMusicFragment playMusicActivity = new PlayMusicFragment();
-
+    protected HomeFragment homeFragment = new HomeFragment();
+    protected DiscoveryFragment discoveryFragment = new DiscoveryFragment();
+    protected BrowseFragment browseFragment = new BrowseFragment();
+    protected AccountFragment accountFragment = new AccountFragment();
+    protected PlayMusicFragment playMusicActivity = new PlayMusicFragment();
 
     List<Fragment> fragmentList = new ArrayList<>();
-
 
 
 
@@ -41,17 +39,13 @@ public class MainActivity extends AppCompatActivity {
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnItemSelectedListener(mOnNavigationItemSelectedListener);
 
-
-        displayFragment(homeFragment);
-
-
         fragmentList.add(homeFragment);
         fragmentList.add(discoveryFragment);
         fragmentList.add(browseFragment);
         fragmentList.add(accountFragment);
         fragmentList.add(playMusicActivity);
 
-
+        displayFragment(homeFragment);
 
     }
 
@@ -82,7 +76,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void displayPlayMusicFragment() {
+        int index = getFragmentIndex(playMusicActivity);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
+        if (playMusicActivity.isAdded()) {
+            transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).show(playMusicActivity);
+        } else {
+            transaction.add(R.id.fragment_container, playMusicActivity);
+        }
+
+        transaction.commit();
+    }
+
+    public void hidePlayMusicFragment() {
+        int index = getFragmentIndex(playMusicActivity);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        if (playMusicActivity.isResumed()) {
+            transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).hide(playMusicActivity);
+            transaction.commit();
+        }
+
+    }
 
 
     private NavigationBarView.OnItemSelectedListener mOnNavigationItemSelectedListener
@@ -94,29 +110,26 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.page_home:
                     displayFragment(homeFragment);
                     navigation.setVisibility(View.VISIBLE);
-
                     break;
                 case R.id.page_discovery:
-                    displayFragment(playMusicActivity);
+                    displayPlayMusicFragment();
                     navigation.setVisibility(View.GONE);
-
                     break;
                 case R.id.page_browse:
                     displayFragment(browseFragment);
                     navigation.setVisibility(View.VISIBLE);
-
                     break;
                 case R.id.page_account:
                     displayFragment(accountFragment);
                     navigation.setVisibility(View.VISIBLE);
-
                     break;
             }
-
 
             return true;
         }
     };
+
+
 
 
 }

@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class PlayMusicFragment extends Fragment {
@@ -102,18 +101,23 @@ public class PlayMusicFragment extends Fragment {
 
 
         // String PATH_TO_FILE = Environment.getExternalStorageDirectory().getPath() +  "/a.mp3";
-        String PATH_TO_FILE = "https://www.mboxdrive.com/K391%20Alan%20Walker%20%20Ahrix%20%20End%20of%20Time%20Lyrics_320kbps.mp3";
+        // String PATH_TO_FILE = "https://www.mboxdrive.com/K391%20Alan%20Walker%20%20Ahrix%20%20End%20of%20Time%20Lyrics_320kbps.mp3";
 
-        mediaPlayer = new MediaPlayer();
+        mediaPlayer = MediaPlayer.create(getActivity().getApplicationContext(), R.raw.a);
+
+        //mediaPlayer = new MediaPlayer();
 
 
-        try {
-            mediaPlayer.setDataSource(PATH_TO_FILE);
+
+
+
+        /* try {
+            //mediaPlayer.setDataSource(PATH_TO_FILE);
             mediaPlayer.prepare();
         } catch (IOException e) {
             e.printStackTrace();
 
-        }
+        } */
 
 
         MediaPlayer.TrackInfo[] infM = mediaPlayer.getTrackInfo();
@@ -138,7 +142,8 @@ public class PlayMusicFragment extends Fragment {
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).displayFragment(new HomeFragment());
+                ((MainActivity)getActivity()).hidePlayMusicFragment();
+                ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
             }
         });
 
