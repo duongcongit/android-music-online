@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class PlayMusicFragment extends Fragment {
@@ -27,7 +29,10 @@ public class PlayMusicFragment extends Fragment {
     ImageView imgView;
 
     private ImageButton btn_forward,btn_pause,btn_play,btn_repeat;
+    private TextView txt_songName, txt_songArtist;
     private MediaPlayer mediaPlayer;
+
+    private String songPath, songName, songID, songArtist, songAlbum;
 
     private double startTime = 0;
     private double finalTime = 0;
@@ -43,6 +48,46 @@ public class PlayMusicFragment extends Fragment {
     private ObjectAnimator anim;
 
 
+
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootLayout =  inflater.inflate(R.layout.fragment_play_music, container, false);
+
+        BottomNavigationView navBar = getActivity().findViewById(R.id.navigation);
+        navBar.setVisibility(View.GONE);
+
+        //
+        return rootLayout;
+
+
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        Bundle bundle = this.getArguments();
+        String playType = "";
+        if(bundle != null){
+            playType = bundle.getString("playType");
+        }
+        super.onHiddenChanged(hidden);
+        if (hidden) {
+            //
+        } else {
+            if(playType == "new play"){
+                if(mediaPlayer.isPlaying()){
+                    mediaPlayer.reset();
+                }
+                getSong();
+                setViewSongDetail(getView());
+            }
+            else {
+
+            }
+        }
+    }
+
     // Function format time of song
     public String time_format(long minute, long second){
         String min = String.format("%d", minute);
@@ -54,17 +99,76 @@ public class PlayMusicFragment extends Fragment {
         return min + ":" +sec;
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootLayout =  inflater.inflate(R.layout.fragment_play_music, container, false);
 
-        BottomNavigationView navBar = getActivity().findViewById(R.id.navigation);
-        navBar.setVisibility(View.GONE);
-        //
-        return rootLayout;
+    public void getSong(){
+
+        Bundle bundle = this.getArguments();
+        if(bundle != null){
+            songPath = bundle.getString("songPath");
+            songName = bundle.getString("songName");
+            // songID = bundle.getString("songID");
+            songArtist = bundle.getString("songArtist");
+            songAlbum = bundle.getString("songAlbum");
+        }
+
+        String PATH_TO_FILE = songPath;
+        // String PATH_TO_FILE = "https://www.mboxdrive.com/K391%20Alan%20Walker%20%20Ahrix%20%20End%20of%20Time%20Lyrics_320kbps.mp3";
+
+        mediaPlayer = new MediaPlayer();
+
+        try {
+            mediaPlayer.setDataSource(PATH_TO_FILE);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            myHandler.postDelayed(UpdateSongTime,100);
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
+    }
+
+    public void setViewSongDetail(View view){
+
+        txt_songName = view.findViewById(R.id.txtView_songName);
+        txt_songArtist = view.findViewById(R.id.txtView_songArtist);
+        txt_time_current = (TextView)view.findViewById(R.id.txt_time_current);
+        txt_max_time = (TextView)view.findViewById(R.id.txt_max_time);
+
+        imgView = (ImageView) view.findViewById(R.id.img_music);
+
+        btn_play = (ImageButton) view.findViewById(R.id.btn_play);
+        btn_pause = (ImageButton) view.findViewById(R.id.btn_pause);
+
+        // Animation rotate image
+        anim = ObjectAnimator.ofFloat(imgView, "rotation", 0, 360);
+        anim.setDuration(20000);
+        anim.setRepeatCount(Animation.INFINITE);
+        anim.setRepeatMode(ObjectAnimator.RESTART);
+        anim.start();
+
+        // Set view name and artist of song
+        if(songArtist == "<unknown>"){
+            Toast.makeText(getActivity().getApplicationContext(), songArtist, Toast.LENGTH_SHORT).show();
+        }
 
 
+
+        txt_songName.setText(songName);
+        txt_songArtist.setText(songArtist);
+
+        // Display final time of music
+        finalTime = mediaPlayer.getDuration();
+        txt_max_time.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) finalTime), TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
+
+        // Set parameter seekbar when start
+        seekbar = (SeekBar)view.findViewById(R.id.seekBar);
+        seekbar.setClickable(true);
+        seekbar.setMax((int) TimeUnit.MILLISECONDS.toSeconds((long) finalTime));
+        oneTimeOnly = 1;
+
+        btn_play.setVisibility(View.INVISIBLE);
+        btn_pause.setVisibility(View.VISIBLE);
     }
 
 
@@ -73,72 +177,14 @@ public class PlayMusicFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
-
-        ImageButton btn_back = (ImageButton)view.findViewById(R.id.btn_back);
-
-
-
-
-        imgView = (ImageView) view.findViewById(R.id.img_music);
-
-        // Animation rotate image
-        anim = ObjectAnimator.ofFloat(imgView, "rotation", 0, 360);
-        anim.setDuration(20000);
-        anim.setRepeatCount(Animation.INFINITE);
-        anim.setRepeatMode(ObjectAnimator.RESTART);
-
+        getSong();
+        setViewSongDetail(view);
 
         // Control button
         btn_forward = (ImageButton) view.findViewById(R.id.btn_forward);
-        btn_pause = (ImageButton) view.findViewById(R.id.btn_pause);
-        btn_play = (ImageButton) view.findViewById(R.id.btn_play);
         btn_repeat = (ImageButton) view.findViewById(R.id.btn_repeat);
 
-        //
-        txt_time_current = (TextView)view.findViewById(R.id.txt_time_current);
-        txt_max_time = (TextView)view.findViewById(R.id.txt_max_time);
-
-
-        // String PATH_TO_FILE = Environment.getExternalStorageDirectory().getPath() +  "/a.mp3";
-        // String PATH_TO_FILE = "https://www.mboxdrive.com/K391%20Alan%20Walker%20%20Ahrix%20%20End%20of%20Time%20Lyrics_320kbps.mp3";
-
-        mediaPlayer = MediaPlayer.create(getActivity().getApplicationContext(), R.raw.a);
-
-        //mediaPlayer = new MediaPlayer();
-
-
-
-
-
-        /* try {
-            //mediaPlayer.setDataSource(PATH_TO_FILE);
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        } */
-
-
-        MediaPlayer.TrackInfo[] infM = mediaPlayer.getTrackInfo();
-
-
-
-        finalTime = mediaPlayer.getDuration();
-
-        System.out.println(finalTime);
-
-        // Set parameter seekbar when start
-        seekbar = (SeekBar)view.findViewById(R.id.seekBar);
-        seekbar.setClickable(true);
-        seekbar.setMax((int) TimeUnit.MILLISECONDS.toSeconds((long) finalTime));
-        oneTimeOnly = 1;
-
-
-        // Display final time of music
-        txt_max_time.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) finalTime), TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
-
-
+        ImageButton btn_back = (ImageButton)view.findViewById(R.id.btn_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,9 +205,6 @@ public class PlayMusicFragment extends Fragment {
                 else {
                     anim.start();
                 }
-                startTime = mediaPlayer.getCurrentPosition();
-                txt_time_current.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) startTime), TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
-                seekbar.setProgress((int) TimeUnit.MILLISECONDS.toSeconds((long) startTime));
                 myHandler.postDelayed(UpdateSongTime,100);
                 btn_pause.setVisibility(View.VISIBLE);
                 btn_play.setVisibility(View.INVISIBLE);
@@ -220,7 +263,6 @@ public class PlayMusicFragment extends Fragment {
 
     private Runnable UpdateSongTime = new Runnable() {
         public void run() {
-
             startTime = mediaPlayer.getCurrentPosition();
             txt_time_current.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) startTime), TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
             seekbar.setProgress((int) TimeUnit.MILLISECONDS.toSeconds((long) startTime));

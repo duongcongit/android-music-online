@@ -19,13 +19,12 @@ public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView navigation;
 
-    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
     protected HomeFragment homeFragment = new HomeFragment();
     protected DiscoveryFragment discoveryFragment = new DiscoveryFragment();
     protected BrowseFragment browseFragment = new BrowseFragment();
     protected AccountFragment accountFragment = new AccountFragment();
     protected PlayMusicFragment playMusicActivity = new PlayMusicFragment();
+    protected SongOnDeviceFragment songOnDeviceFragment = new SongOnDeviceFragment();
 
     List<Fragment> fragmentList = new ArrayList<>();
 
@@ -36,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = findViewById(R.id.navigation);
         navigation.setOnItemSelectedListener(mOnNavigationItemSelectedListener);
 
         fragmentList.add(homeFragment);
@@ -44,11 +43,13 @@ public class MainActivity extends AppCompatActivity {
         fragmentList.add(browseFragment);
         fragmentList.add(accountFragment);
         fragmentList.add(playMusicActivity);
+        fragmentList.add(songOnDeviceFragment);
 
         displayFragment(homeFragment);
 
     }
 
+    //
     public int getFragmentIndex(Fragment fragment) {
         int index = -1;
         for (int i = 0; i < fragmentList.size(); i++) {
@@ -59,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         return index;
     }
 
+
+    //
     public void displayFragment(Fragment fragment) {
         int index = getFragmentIndex(fragment);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -76,34 +79,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    //
     public void displayPlayMusicFragment() {
-        int index = getFragmentIndex(playMusicActivity);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        if (playMusicActivity.isAdded()) {
-            transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).show(playMusicActivity);
-        } else {
+        if (!playMusicActivity.isAdded()) {
             transaction.add(R.id.fragment_container, playMusicActivity);
         }
-
+        transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).show(playMusicActivity);
         transaction.commit();
     }
 
+    //
     public void hidePlayMusicFragment() {
-        int index = getFragmentIndex(playMusicActivity);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
         if (playMusicActivity.isResumed()) {
             transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).hide(playMusicActivity);
             transaction.commit();
         }
-
     }
 
 
     private NavigationBarView.OnItemSelectedListener mOnNavigationItemSelectedListener
             = new NavigationBarView.OnItemSelectedListener() {
-
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
@@ -112,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
                     navigation.setVisibility(View.VISIBLE);
                     break;
                 case R.id.page_discovery:
+                    Bundle bundle = new Bundle();
+                    bundle.putString("playType", "resume play");
+                    playMusicActivity.setArguments(bundle);
                     displayPlayMusicFragment();
                     navigation.setVisibility(View.GONE);
                     break;

@@ -30,8 +30,6 @@ public class HomeFragment extends Fragment {
         BottomNavigationView navBar = getActivity().findViewById(R.id.navigation);
         navBar.setVisibility(View.VISIBLE);
 
-
-
         //
         return rootLayout;
 
@@ -62,8 +60,6 @@ public class HomeFragment extends Fragment {
             }
         }).attach();
 
-
-
         CardView cardView_song, cardView_on_device, cardView_upload, cardView_download, cardView_album;
 
         //
@@ -81,8 +77,7 @@ public class HomeFragment extends Fragment {
         cardView_on_device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "on device", Toast.LENGTH_SHORT).show();
-
+                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).songOnDeviceFragment);
 
             }
         });
