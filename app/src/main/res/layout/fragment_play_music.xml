@@ -9,13 +9,17 @@
 
     <TextView
         android:id="@+id/txtView_songName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="@string/dusk_till_dawn_zayn_ft_sia"
+        android:layout_marginEnd="25dp"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:text="Song name"
         android:textColor="@color/white"
         android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.03"
         app:layout_constraintStart_toEndOf="@+id/btn_back"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,8 +27,8 @@
         android:id="@+id/txtView_songArtist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:text="Artist"
         android:textColor="#BFBFBF"
         android:textSize="16sp"
@@ -72,10 +76,10 @@
 
     <ImageButton
         android:id="@+id/btn_back"
-        android:layout_width="27dp"
-        android:layout_height="29dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="25dp"
         android:background="@drawable/ic_arrow_down_white"
         android:contentDescription="@string/app_name"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,9 +88,9 @@
 
     <ImageButton
         android:id="@+id/btn_play"
-        android:layout_width="70dp"
-        android:layout_height="72dp"
-        android:background="@drawable/ic_play_button_circled"
+        android:layout_width="58dp"
+        android:layout_height="58dp"
+        android:background="@drawable/ic_play"
         android:contentDescription="@string/app_name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,7 +103,7 @@
         android:id="@+id/btn_pause"
         android:layout_width="58dp"
         android:layout_height="58dp"
-        android:background="@drawable/ic_pause_button"
+        android:background="@drawable/ic_pause"
         android:contentDescription="@string/app_name"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"

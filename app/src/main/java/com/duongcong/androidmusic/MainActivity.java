@@ -1,11 +1,16 @@
 package com.duongcong.androidmusic;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -19,14 +24,19 @@ public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView navigation;
 
-    protected HomeFragment homeFragment = new HomeFragment();
-    protected DiscoveryFragment discoveryFragment = new DiscoveryFragment();
-    protected BrowseFragment browseFragment = new BrowseFragment();
-    protected AccountFragment accountFragment = new AccountFragment();
-    protected PlayMusicFragment playMusicActivity = new PlayMusicFragment();
-    protected SongOnDeviceFragment songOnDeviceFragment = new SongOnDeviceFragment();
+    protected HomeFragment homeFragment                     = new HomeFragment();
+    protected DiscoveryFragment discoveryFragment           = new DiscoveryFragment();
+    protected BrowseFragment browseFragment                 = new BrowseFragment();
+    protected AccountFragment accountFragment               = new AccountFragment();
+    protected PlayMusicFragment playMusicActivity           = new PlayMusicFragment();
+    protected SongOnDeviceFragment songOnDeviceFragment     = new SongOnDeviceFragment();
 
     List<Fragment> fragmentList = new ArrayList<>();
+
+    protected ConstraintLayout songPlayingBar;
+    protected ObjectAnimator animImgSongPlaying;
+    protected ImageView imgSongPlayingBar;
+    protected ImageButton btnPlayBar, btnPauseBar;
 
 
 
@@ -38,6 +48,11 @@ public class MainActivity extends AppCompatActivity {
         navigation = findViewById(R.id.navigation);
         navigation.setOnItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        songPlayingBar      = findViewById(R.id.song_playing_bar);
+        imgSongPlayingBar   = findViewById(R.id.imageView_song_playing);
+        btnPlayBar          = findViewById(R.id.btn_play_bar);
+        btnPauseBar         = findViewById(R.id.btn_pause_bar);
+
         fragmentList.add(homeFragment);
         fragmentList.add(discoveryFragment);
         fragmentList.add(browseFragment);
@@ -46,6 +61,41 @@ public class MainActivity extends AppCompatActivity {
         fragmentList.add(songOnDeviceFragment);
 
         displayFragment(homeFragment);
+
+        songPlayingBar.setVisibility(View.GONE);
+        // Animation rotate image
+        animImgSongPlaying = ObjectAnimator.ofFloat(imgSongPlayingBar, "rotation", 0, 360);
+        animImgSongPlaying.setDuration(15000);
+        animImgSongPlaying.setRepeatCount(Animation.INFINITE);
+        animImgSongPlaying.setRepeatMode(ObjectAnimator.RESTART);
+
+        songPlayingBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("playType", "resume play");
+                playMusicActivity.setArguments(bundle);
+                displayPlayMusicFragment();
+            }
+        });
+
+        btnPlayBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playMusicActivity.mediaPlayer.start();
+                playMusicActivity.setResumePlayState();
+            }
+        });
+
+        btnPauseBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playMusicActivity.mediaPlayer.pause();
+                playMusicActivity.setPausePlayState();
+            }
+        });
+
+
 
     }
 
@@ -97,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
             transaction.commit();
         }
     }
+
+
 
 
     private NavigationBarView.OnItemSelectedListener mOnNavigationItemSelectedListener

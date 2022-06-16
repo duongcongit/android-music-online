@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,16 +106,30 @@ public class SongOnDeviceFragment extends Fragment {
                     songArtist = "Unknown artist";
                 }
 
+                String songName = song.getaName();
+
                 Bundle bundle = new Bundle();
                 bundle.putString("playType", "new play");
                 bundle.putString("songPath", song.getaPath());
-                bundle.putString("songName",song.getaName());
+                bundle.putString("songName",songName);
                 bundle.putString("songArtist",songArtist);
                 bundle.putString("songAlbum",song.getaAlbum());
+
 
                 ((MainActivity)getActivity()).playMusicActivity.setArguments(bundle);
 
                 ((MainActivity)getActivity()).displayPlayMusicFragment();
+
+                ((MainActivity)getActivity()).animImgSongPlaying.start();
+                TextView txtSongPlayingName, txtSongPlayingArtist;
+                txtSongPlayingName = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_name);
+                txtSongPlayingArtist = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_artist);
+                txtSongPlayingName.setText(songName);
+                txtSongPlayingArtist.setText(songArtist);
+                // Animation text
+                txtSongPlayingName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                txtSongPlayingName.setSelected(true);
+                txtSongPlayingName.setSingleLine(true);
 
             }
         });
@@ -172,7 +187,13 @@ class SongAdapter extends BaseAdapter {
             songArtist = "Unknown artist";
         }
 
-        ((TextView) viewSong.findViewById(R.id.textView_songName)).setText(song.getaName());
+        String songName = song.getaName();
+
+        if(songName.length() > 40){
+            songName = songName.substring(0, 35) + "...";
+        }
+
+        ((TextView) viewSong.findViewById(R.id.textView_songName)).setText(songName);
         ((TextView) viewSong.findViewById(R.id.textView_songArtist)).setText(songArtist);
 
         return viewSong;
