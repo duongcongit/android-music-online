@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<item
+    android:id="@+id/page_home"
+    android:enabled="true"
+    android:visible="true"
+    android:icon="@mipmap/ic_bottom_navigation_music"
+    android:title="@string/title_home"/>
+<item
+    android:id="@+id/page_discovery"
+    android:enabled="true"
+    android:visible="true"
+    android:icon="@mipmap/ic_bottom_navigation_discovery"
+    android:title="@string/title_discover"/>
+<item
+    android:id="@+id/page_browse"
+    android:enabled="true"
+    android:visible="true"
+    android:icon="@mipmap/ic_bottom_navigation_browse"
+    android:title="@string/title_browse"/>
+<item
+    android:id="@+id/page_account"
+    android:enabled="true"
+    android:visible="true"
+    android:icon="@mipmap/ic_bottom_navigation_account"
+    android:title="@string/title_profile"/>
+
+
+</menu>

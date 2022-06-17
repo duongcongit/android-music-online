@@ -13,7 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 
 public class LoginActivity extends AppCompatActivity {
-    Button btnLogin;
+    Button btnLogin,btnSignUp;
     EditText edtUserName,edtUserPassW;
     TabLayout tabLayout;
     ViewPager viewPager;
@@ -28,6 +28,8 @@ public class LoginActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText("Đăng nhập"));
         tabLayout.addTab(tabLayout.newTab().setText("Đăng kí"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        btnSignUp =(Button) findViewById(R.id.btnSignUp);
+
 
 
         //set adapter
