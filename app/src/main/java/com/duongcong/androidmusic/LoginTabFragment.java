@@ -8,11 +8,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginTabFragment extends Fragment {
     Button btnLogin;
     EditText edtUserName,edtUserPassW;
+    String username,password;
     DBHelper DB;
 
     @Override
@@ -22,30 +31,57 @@ public class LoginTabFragment extends Fragment {
         btnLogin =(Button) root.findViewById(R.id.btnLogin);
         edtUserName =(EditText) root.findViewById(R.id.login_username);
         edtUserPassW =(EditText) root.findViewById(R.id.login_password);
-        DB = new DBHelper(getContext());
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String username = edtUserName.getText().toString();
-                String password = edtUserPassW.getText().toString();
-                if(username.equals("")||password.equals("")){
-                    Toast.makeText(getActivity() , "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Boolean checkUserNamePassWord = DB.checkUserNamePassWord(username,password);
-                    if(checkUserNamePassWord==true){
-                        Toast.makeText(getActivity() , "Bạn đã đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        Toast.makeText(getActivity() , "Nhập sai thông tin", Toast.LENGTH_SHORT).show();
-                    }
-
-                }
-
+                Validation();
             }
         });
 
         return root;
+    }
+
+    private void Validation() {
+        username = edtUserName.getText().toString();
+        password = edtUserPassW.getText().toString();
+        if(username.isEmpty()){
+            edtUserName.setError("Vui lòng điền thông tin");
+            edtUserName.requestFocus();
+        }
+        else if(password.isEmpty()){
+            edtUserPassW.setError("Vui lòng điền thông tin");
+            edtUserPassW.requestFocus();
+        }
+        else{
+            checkFromDB();
+        }
+
+    }
+
+    private void checkFromDB() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
+        reference.child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    String db_password = snapshot.child("password").getValue().toString();
+                    if(password.equals(db_password)){
+                        Toast.makeText(getActivity().getApplicationContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(getActivity().getApplicationContext(), "Nhập sai mật khẩu", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else{
+                    Toast.makeText(getActivity().getApplicationContext(), "Tài khoản không tồn tại", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity().getApplicationContext(), "Tài khoản không tồn tại", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
