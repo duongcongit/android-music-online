@@ -1,15 +1,13 @@
 package com.duongcong.androidmusic;
 
-import android.content.Context;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 public class LoginAdapter extends FragmentPagerAdapter {
-    private Context context;
+    private AccountFragment context;
     int totalTabs;
-    public LoginAdapter(FragmentManager fm,Context context,int totalTabs){
+    public LoginAdapter(FragmentManager fm, AccountFragment context, int totalTabs){
         super(fm);
         this.context =context;
         this.totalTabs = totalTabs;

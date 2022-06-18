@@ -22,7 +22,7 @@ public class LoginTabFragment extends Fragment {
     Button btnLogin;
     EditText edtUserName,edtUserPassW;
     String username,password;
-    DBHelper DB;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){

@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     protected DiscoveryFragment discoveryFragment           = new DiscoveryFragment();
     protected BrowseFragment browseFragment                 = new BrowseFragment();
     protected AccountFragment accountFragment               = new AccountFragment();
-    protected LoginActivity loginFragment               = new LoginActivity();
     protected PlayMusicFragment playMusicActivity           = new PlayMusicFragment();
     protected SongOnDeviceFragment songOnDeviceFragment     = new SongOnDeviceFragment();
 
@@ -174,8 +173,7 @@ public class MainActivity extends AppCompatActivity {
                     navigation.setVisibility(View.VISIBLE);
                     break;
                 case R.id.page_account:
-                    Intent switchActivityIntent = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(switchActivityIntent);
+                    displayFragment(accountFragment);
                     navigation.setVisibility(View.VISIBLE);
                     break;
             }

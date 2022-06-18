@@ -26,7 +26,6 @@ public class SignUpTabFragment extends Fragment {
     Button btnSignUp;
     EditText phoneNum,password,rePassWord,name;
     String phone,uName,pass,rePass;
-    DBHelper DB;
 
     private ProgressDialog progressDialog;
 

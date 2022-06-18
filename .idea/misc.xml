@@ -5,9 +5,16 @@
       <map>
         <entry key="../../../../../../layout/custom_preview.xml" value="0.1239488731920619" />
         <entry key="..\:/fm/app/src/main/res/drawable/button_bg.xml" value="0.1405" />
+        <entry key="..\:/fm/app/src/main/res/drawable/edit_text_bg.xml" value="0.1405" />
+        <entry key="..\:/fm/app/src/main/res/drawable/ic_baseline_local_phone_24.xml" value="0.1405" />
         <entry key="..\:/fm/app/src/main/res/layout/activity_account.xml" value="0.1921875" />
+        <entry key="..\:/fm/app/src/main/res/layout/activity_browse.xml" value="0.1921875" />
+        <entry key="..\:/fm/app/src/main/res/layout/activity_discovery.xml" value="0.1921875" />
         <entry key="..\:/fm/app/src/main/res/layout/activity_login.xml" value="0.10643115942028986" />
+        <entry key="..\:/fm/app/src/main/res/layout/activity_play_music.xml" value="0.10643115942028986" />
         <entry key="..\:/fm/app/src/main/res/layout/fragment_account.xml" value="0.1921875" />
+        <entry key="..\:/fm/app/src/main/res/layout/fragment_browse.xml" value="0.1921875" />
+        <entry key="..\:/fm/app/src/main/res/layout/fragment_song_on_device.xml" value="0.1921875" />
         <entry key="..\:/fm/app/src/main/res/layout/login_tab_fragment.xml" value="0.1921875" />
         <entry key="..\:/fm/app/src/main/res/layout/navigation.xml" value="0.1921875" />
         <entry key="..\:/fm/app/src/main/res/layout/sign_up_tab_fragment.xml" value="0.1921875" />
