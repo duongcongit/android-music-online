@@ -1,5 +1,6 @@
 package com.duongcong.androidmusic;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,10 +26,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class LoginTabFragment extends Fragment {
     private Button btnLogin;
     private EditText edtUserName,edtUserPassW;
     private String username,password;
+    private FirebaseAuth firebaseAuth;
 
 
     @Override
@@ -31,6 +44,7 @@ public class LoginTabFragment extends Fragment {
         btnLogin =(Button) root.findViewById(R.id.btnLogin);
         edtUserName =(EditText) root.findViewById(R.id.login_username);
         edtUserPassW =(EditText) root.findViewById(R.id.login_password);
+        firebaseAuth = FirebaseAuth.getInstance();
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,28 +74,32 @@ public class LoginTabFragment extends Fragment {
     }
 
     private void checkFromDB() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        reference.child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+        //Firebase Auth
+        firebaseAuth.signInWithEmailAndPassword(username,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    String db_password = snapshot.child("password").getValue().toString();
-                    if(password.equals(db_password)){
-                        Toast.makeText(getActivity().getApplicationContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        Toast.makeText(getActivity().getApplicationContext(), "Nhập sai mật khẩu", Toast.LENGTH_SHORT).show();
-                    }
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    Toast.makeText(getActivity().getApplicationContext(), "Xin chào"+username, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity().getApplicationContext(),MainActivity.class);
+                    intent.putExtra("email",username);
+                    intent.putExtra("password",password);
+                    startActivity(intent);
                 }
                 else{
-                    Toast.makeText(getActivity().getApplicationContext(), "Tài khoản không tồn tại", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplicationContext(), "Đăng nhập thất bại,vui lòng kiểm tra thông tin", Toast.LENGTH_SHORT).show();
                 }
             }
-
+        }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getActivity().getApplicationContext(), "Tài khoản không tồn tại", Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getActivity().getApplicationContext(), ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }).addOnCanceledListener(new OnCanceledListener() {
+            @Override
+            public void onCanceled() {
+
             }
         });
+
     }
 }

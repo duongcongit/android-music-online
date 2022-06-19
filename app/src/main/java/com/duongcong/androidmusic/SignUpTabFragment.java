@@ -11,9 +11,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.core.utilities.Validation;
@@ -24,21 +33,24 @@ import java.util.regex.Pattern;
 
 public class SignUpTabFragment extends Fragment {
     private Button btnSignUp;
-    private EditText phoneNum,password,rePassWord,name;
-    private String phone,uName,pass,rePass;
+    private EditText email,password,rePassWord,name;
+    private String uEmail,pass,rePass,uName;
 
     private ProgressDialog progressDialog;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.sign_up_tab_fragment,container,false);
 
         btnSignUp =(Button) root.findViewById(R.id.btnSignUp);
-        phoneNum =(EditText) root.findViewById(R.id.phone_number);
+        email =(EditText) root.findViewById(R.id.email);
         name =(EditText) root.findViewById(R.id.name);
         password =(EditText) root.findViewById(R.id.password);
         rePassWord =(EditText) root.findViewById(R.id.conf_password);
 
+        firebaseAuth = FirebaseAuth.getInstance();
 
         //progressdialog
         progressDialog = new ProgressDialog(getContext());
@@ -56,17 +68,17 @@ public class SignUpTabFragment extends Fragment {
     }
 
     private void Validation(){
-        phone = phoneNum.getText().toString();
+        uEmail = email.getText().toString();
         uName = name.getText().toString();
         pass = password.getText().toString();
         rePass = rePassWord.getText().toString();
-        if(phone.isEmpty()){
-            phoneNum.setError("Vui lòng điền thông tin");
-            phoneNum.requestFocus();
+        if(uEmail.isEmpty()){
+            email.setError("Vui lòng điền thông tin");
+            email.requestFocus();
         }
-        else if(!numberCheck(phone)){
-            phoneNum.setError("Vui lòng điền số điện thoại");
-            phoneNum.requestFocus();
+        else if(!emailCheck(uEmail)){
+            email.setError("Vui lòng điền đúng định dạng email");
+            email.requestFocus();
         }
         else if(uName.isEmpty()){
             name.setError("Vui lòng điền thông tin");
@@ -77,7 +89,7 @@ public class SignUpTabFragment extends Fragment {
             password.requestFocus();
         }
         else if(!passwordValidation(pass)){
-            password.setError("Điền tối đa 6 chữ số");
+            password.setError("Điền tối đa 6 kí tự");
             password.requestFocus();
         }
         else if(rePass.isEmpty()){
@@ -105,36 +117,47 @@ public class SignUpTabFragment extends Fragment {
     }
 
     private void createAccount() {
-        progressDialog.setMessage("Đang tạo tài khoản");
-        progressDialog.show();
         sendDataToDB();
     }
 
     //send to firebase
     private void sendDataToDB() {
-        String regTime = ""+System.currentTimeMillis();
-        HashMap<String,Object> data = new HashMap<>();
-        data.put("Register time",regTime);
-        data.put("phoneNumber",phone);
-        data.put("username",uName);
-        data.put("password",pass);
+        //FirebaseAuth
+        firebaseAuth.createUserWithEmailAndPassword(uEmail,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    firebaseUser = firebaseAuth.getCurrentUser();
+                    UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName(uName).build();
+                    firebaseUser.updateProfile(userProfileChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()){
+                                Toast.makeText(getActivity().getApplicationContext(), "Đăng kí thành công", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+//                    Fragment fragment = new LoginTabFragment();
+//                    FragmentManager fm = getFragmentManager();
+//                    FragmentTransaction transaction = fm.beginTransaction();
+//                    transaction.replace(R.id.sign_up_tab_fragment, fragment);
+//                    transaction.commit();
+                }
+                else{
+                    Toast.makeText(getActivity().getApplicationContext(), "Đăng kí thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getActivity().getApplicationContext(), ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }).addOnCanceledListener(new OnCanceledListener() {
+            @Override
+            public void onCanceled() {
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        reference.child(phone).setValue(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        //db update
-                        progressDialog.dismiss();
-                        Toast.makeText(getActivity().getApplicationContext(), "Đăng kí thành công", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getActivity().getApplicationContext(), ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+            }
+        });
 
     }
 
@@ -145,10 +168,9 @@ public class SignUpTabFragment extends Fragment {
         return m.matches();
     }
 
-    //Validate sdt
-    private boolean numberCheck(String phone) {
-        Pattern p = Pattern.compile("[0-9]{10}");
-        Matcher m = p.matcher(phone);
+    private boolean emailCheck(String uEmail) {
+        Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+");
+        Matcher m = emailPattern.matcher(uEmail);
         return m.matches();
     }
 }

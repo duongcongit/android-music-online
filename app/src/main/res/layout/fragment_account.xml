@@ -90,7 +90,7 @@
                         android:layout_marginBottom="312dp"
                         android:drawableLeft="@drawable/ic_baseline_account_circle_24"
                         android:drawablePadding="10dp"
-                        android:text="Người dùng:"
+                        android:text="Tài khoản:"
                         android:textColor="@color/white"
                         android:textSize="20dp"
                         android:padding="8dp"
@@ -119,12 +119,12 @@
 
 
                     <TextView
-                        android:id="@+id/user_phone_info"
+                        android:id="@+id/user_Name_info"
                         android:layout_width="0dp"
                         android:layout_height="48dp"
-                        android:drawableLeft="@drawable/ic_baseline_local_phone_24"
+                        android:drawableLeft="@drawable/ic_baseline_account_circle_24"
                         android:drawablePadding="10dp"
-                        android:text="Số điện thoại::"
+                        android:text="Người dùng:"
                         android:textColor="@color/white"
                         android:textSize="20dp"
                         android:padding="8dp"
@@ -138,7 +138,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/user_name" />
 
                     <TextView
-                        android:id="@+id/user_phone"
+                        android:id="@+id/user_Name"
                         android:layout_width="0dp"
                         android:layout_height="48dp"
                         android:gravity="center"
@@ -149,7 +149,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/user_phone_info"
+                        app:layout_constraintTop_toBottomOf="@+id/user_Name_info"
                         app:layout_constraintWidth_percent="0.8"
                         app:layout_constraintVertical_bias="0.0" />
 
@@ -159,7 +159,7 @@
                         android:layout_height="48dp"
                         android:drawableLeft="@drawable/ic_baseline_date_range_24"
                         android:drawablePadding="10dp"
-                        android:text="Ngày tham gia::"
+                        android:text="Ngày tham gia:"
                         android:textColor="@color/white"
                         android:textSize="20dp"
                         android:padding="8dp"
@@ -170,7 +170,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintVertical_bias="0.0"
                         app:layout_constraintWidth_percent="0.8"
-                        app:layout_constraintTop_toBottomOf="@+id/user_phone" />
+                        app:layout_constraintTop_toBottomOf="@+id/user_Name" />
 
                     <TextView
                         android:id="@+id/user_date_regis"
@@ -190,6 +190,19 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
+            <Button
+                android:id="@+id/btn_login_test"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/CardView"
+                app:layout_constraintWidth_percent="0.8"
+                app:layout_constraintVertical_bias="0.0">
+
+            </Button>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

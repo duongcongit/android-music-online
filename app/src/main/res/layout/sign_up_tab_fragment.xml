@@ -24,15 +24,15 @@
 
 
     <EditText
-        android:id="@+id/phone_number"
+        android:id="@+id/email"
         android:layout_width="344dp"
         android:layout_height="48dp"
         android:ems="10"
-        android:hint="Số điện thoại"
-        android:inputType="textPersonName"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
         android:paddingLeft="15dp"
         android:background="@drawable/edit_text_bg"
-        android:drawableLeft="@drawable/ic_baseline_local_phone_24"
+        android:drawableLeft="@drawable/ic_baseline_email_24"
         android:drawablePadding="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,19 +46,20 @@
         android:layout_width="344dp"
         android:layout_height="48dp"
         android:background="@drawable/edit_text_bg"
+        android:drawableLeft="@drawable/ic_baseline_account_circle_24"
+        android:drawablePadding="15dp"
         android:ems="10"
         android:hint="Họ tên"
         android:inputType="textPersonName"
         android:paddingLeft="15dp"
         android:layout_marginTop="20dp"
-        android:drawableLeft="@drawable/ic_baseline_account_circle_24"
-        android:drawablePadding="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phone_number"
+        app:layout_constraintTop_toBottomOf="@+id/email"
         app:layout_constraintVertical_bias="0.0" />
+
 
     <EditText
         android:id="@+id/password"

@@ -17,11 +17,15 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private FirebaseAuth firebaseAuth;
 
     BottomNavigationView navigation;
 
@@ -173,8 +177,17 @@ public class MainActivity extends AppCompatActivity {
                     navigation.setVisibility(View.VISIBLE);
                     break;
                 case R.id.page_account:
-                    displayFragment(accountFragment);
-                    navigation.setVisibility(View.VISIBLE);
+                    //Check user firebase
+                    firebaseAuth = FirebaseAuth.getInstance();
+                    FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                    if(firebaseUser!=null){
+                        displayFragment(accountFragment);
+                        navigation.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                    }
                     break;
             }
 
