@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic;
+package com.duongcong.androidmusic.account;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,13 +9,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class BrowseFragment extends Fragment {
+import com.duongcong.androidmusic.R;
+
+public class AccountFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_browse, container, false);
+
+        return inflater.inflate(R.layout.fragment_account, container, false);
 
     }
-
 }

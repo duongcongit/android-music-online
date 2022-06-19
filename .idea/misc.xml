@@ -7,7 +7,11 @@
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2625" />
         <entry key="app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.2625" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.212" />
+        <entry key="app/src/main/res/drawable/menu_option_hide_area_background.xml" value="0.243" />
+        <entry key="app/src/main/res/drawable/menu_option_hide_area_background_hide.xml" value="0.243" />
+        <entry key="app/src/main/res/drawable/playlist_rounded.xml" value="0.262" />
         <entry key="app/src/main/res/drawable/shapebgsearch.xml" value="0.2605" />
+        <entry key="app/src/main/res/drawable/song_menu_option_rounded.xml" value="0.262" />
         <entry key="app/src/main/res/font/asset.xml" value="0.21197916666666666" />
         <entry key="app/src/main/res/layout/activity_account.xml" value="0.3411458333333333" />
         <entry key="app/src/main/res/layout/activity_browse.xml" value="0.34782608695652173" />
@@ -23,10 +27,14 @@
         <entry key="app/src/main/res/layout/fragment_home_recent.xml" value="0.3351449275362319" />
         <entry key="app/src/main/res/layout/fragment_notifications.xml" value="0.34782608695652173" />
         <entry key="app/src/main/res/layout/fragment_play_music.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/fragment_song_menu_option.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_song_on_device.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/fragment_song_on_playlist.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/navigation.xml" value="0.17325227963525835" />
+        <entry key="app/src/main/res/layout/playlist_view.xml" value="0.3446557971014493" />
         <entry key="app/src/main/res/layout/song_view.xml" value="0.5" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.18177083333333333" />
+        <entry key="app/src/main/res/menu/bottom_navigation.xml" value="0.35625" />
       </map>
     </option>
   </component>

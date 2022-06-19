@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic;
+package com.duongcong.androidmusic.home.songondevice;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,10 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+
+import com.duongcong.androidmusic.AudioModel;
+import com.duongcong.androidmusic.MainActivity;
+import com.duongcong.androidmusic.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +94,7 @@ public class SongOnDeviceFragment extends Fragment {
             arrSong.add(audioList.get(i));
         }
 
-        songListViewAdapter = new SongAdapter(arrSong);
+        songListViewAdapter = new SongAdapter(arrSong, (MainActivity)getContext());
         lvSong = view.findViewById(R.id.listViewSongOnDevice);
 
         lvSong.setAdapter(songListViewAdapter);
@@ -116,7 +121,7 @@ public class SongOnDeviceFragment extends Fragment {
                 bundle.putString("songAlbum",song.getaAlbum());
 
 
-                ((MainActivity)getActivity()).playMusicActivity.setArguments(bundle);
+                ((MainActivity)getActivity()).playMusicFragment.setArguments(bundle);
 
                 ((MainActivity)getActivity()).displayPlayMusicFragment();
 
@@ -144,9 +149,12 @@ public class SongOnDeviceFragment extends Fragment {
 class SongAdapter extends BaseAdapter {
 
     final ArrayList<AudioModel> arrSong;
+    private Context mContext;
 
-    SongAdapter (ArrayList<AudioModel> arrSong) {
+
+    SongAdapter (ArrayList<AudioModel> arrSong, Context context) {
         this.arrSong = arrSong;
+        this.mContext = context;
     }
 
     @Override
@@ -169,32 +177,49 @@ class SongAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        //convertView là View của phần tử ListView, nếu convertView != null nghĩa là
-        //View này được sử dụng lại, chỉ việc cập nhật nội dung mới
-        //Nếu null cần tạo mới
-
         View viewSong;
         if (convertView == null) {
             viewSong = View.inflate(parent.getContext(), R.layout.song_view, null);
         } else viewSong = convertView;
 
-        //Bind sữ liệu phần tử vào View
+        //
         AudioModel song = (AudioModel) getItem(position);
 
-        String songArtist = song.getaArtist();
+        String songName     = song.getaName();
+        String songArtist   = song.getaArtist();
+        String songAlbum    = song.getaAlbum();
+        String songPath     = song.getaPath();
 
         if(songArtist.equals("<unknown>")){
             songArtist = "Unknown artist";
         }
 
-        String songName = song.getaName();
 
         if(songName.length() > 40){
             songName = songName.substring(0, 35) + "...";
         }
 
-        ((TextView) viewSong.findViewById(R.id.textView_songName)).setText(songName);
+        ((TextView) viewSong.findViewById(R.id.textView_playlistName)).setText(songName);
         ((TextView) viewSong.findViewById(R.id.textView_songArtist)).setText(songArtist);
+
+        ((ImageButton) viewSong.findViewById(R.id.btn_song_more_option)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mContext instanceof MainActivity) {
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("type", "local");
+                    bundle.putString("songPath", song.getaPath());
+                    bundle.putString("songName",song.getaName());
+                    bundle.putString("songArtist",song.getaArtist());
+                    bundle.putString("songAlbum",song.getaAlbum());
+
+                    ((MainActivity)mContext).songMenuOptionFragment.setArguments(bundle);
+
+                    ((MainActivity)mContext).displaySongMenuOptionFragment();
+                }
+            }
+        });
 
         return viewSong;
     }

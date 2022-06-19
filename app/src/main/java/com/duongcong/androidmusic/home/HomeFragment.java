@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic;
+package com.duongcong.androidmusic.home;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +12,8 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.duongcong.androidmusic.MainActivity;
+import com.duongcong.androidmusic.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -72,6 +74,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        //
         //
         cardView_on_device = view.findViewById(R.id.on_device_card);
         cardView_on_device.setOnClickListener(new View.OnClickListener() {

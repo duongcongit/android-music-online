@@ -20,19 +20,19 @@
         android:theme="@style/Theme.AndroidMusic"
         tools:targetApi="31">
         <activity
-            android:name=".PlayMusicFragment"
+            android:name=".play.PlayMusicFragment"
             android:exported="false" />
         <activity
-            android:name=".AccountFragment"
+            android:name=".account.AccountFragment"
             android:exported="false" />
         <activity
-            android:name=".BrowseFragment"
+            android:name=".browse.BrowseFragment"
             android:exported="false" />
         <activity
-            android:name=".DiscoveryFragment"
+            android:name=".discovery.DiscoveryFragment"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".account.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

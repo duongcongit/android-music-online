@@ -1,8 +1,10 @@
-package com.duongcong.androidmusic;
+package com.duongcong.androidmusic.account;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.duongcong.androidmusic.R;
 
 public class LoginActivity extends AppCompatActivity {
 

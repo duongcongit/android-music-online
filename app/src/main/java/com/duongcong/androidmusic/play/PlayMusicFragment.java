@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic;
+package com.duongcong.androidmusic.play;
 
 import android.animation.ObjectAnimator;
 import android.media.MediaPlayer;
@@ -19,6 +19,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.duongcong.androidmusic.MainActivity;
+import com.duongcong.androidmusic.R;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +40,7 @@ public class PlayMusicFragment extends Fragment {
     private double finalTime = 0;
 
     // Media player
-    protected MediaPlayer mediaPlayer;
+    public MediaPlayer mediaPlayer;
 
     protected String repeatMode = "NO";
 
