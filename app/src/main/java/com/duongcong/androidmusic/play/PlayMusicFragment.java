@@ -90,6 +90,8 @@ public class PlayMusicFragment extends Fragment {
         super.onHiddenChanged(hidden);
         if (hidden) {
             //
+           ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
+           ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
         } else {
             // Hide bottom navigation bar and playing song bar
             ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
@@ -305,15 +307,6 @@ public class PlayMusicFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).hidePlayMusicFragment();
-
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
-                        ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
-                    }
-                }, 200);
 
             }
         });

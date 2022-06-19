@@ -7,6 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +18,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.duongcong.androidmusic.home.playlist.PlaylistLocalDBHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SongMenuOptionFragment extends Fragment {
 
@@ -29,9 +36,15 @@ public class SongMenuOptionFragment extends Fragment {
     private ConstraintLayout songMenuOptionDownload;
     private ConstraintLayout songMenuOptionDeleteFile;
 
+    ConstraintLayout menuContainer;
+
     private Animation item_click;
 
-    Bundle bundle;
+    private Bundle bundle;
+
+    ArrayList<String> arrPlaylist;
+    PlaylistToAddAdapter playlistListViewAdapter;
+    ListView lvPlaylist;
 
     @Nullable
     @Override
@@ -50,7 +63,6 @@ public class SongMenuOptionFragment extends Fragment {
             }
         }, 250);
 
-
         bundle = this.getArguments();
 
         //
@@ -63,20 +75,11 @@ public class SongMenuOptionFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) {
-            // Show bottom navigation bar and playing song bar
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
-                    if(((MainActivity)getActivity()).playMusicFragment.mediaPlayer.isPlaying()){
-                        ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
-                    }
-                }
-            }, 100);
-
-            songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
-
+            //
+            ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
+            if(((MainActivity)getActivity()).playMusicFragment.mediaPlayer.isPlaying()){
+                ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
+            }
         } else {
 
             bundle = this.getArguments();
@@ -109,6 +112,10 @@ public class SongMenuOptionFragment extends Fragment {
         songMenuOptionDownload              = view.findViewById(R.id.menu_option_download);
         songMenuOptionDeleteFile            = view.findViewById(R.id.menu_option_delete_file);
 
+        menuContainer = view.findViewById(R.id.song_menu_option_view_container);
+        lvPlaylist = view.findViewById(R.id.listView_playlist_to_add);
+        lvPlaylist.setVisibility(View.GONE);
+
         item_click = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.menu_option_item_click);
 
         // Hide menu when click to outside area
@@ -116,7 +123,11 @@ public class SongMenuOptionFragment extends Fragment {
         songMenuOptionHideArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //
                 ((MainActivity)getActivity()).hideSongMenuOptionFragment();
+                songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
+
+                //
             }
         });
 
@@ -142,24 +153,56 @@ public class SongMenuOptionFragment extends Fragment {
             public void onClick(View v) {
                 songMenuOptionAddToPlaylist.startAnimation(item_click);
 
-                if(bundle != null){
-                    if(bundle.getString("type") == "local"){
+                menuContainer.setVisibility(View.INVISIBLE);
 
-                        // songID = bundle.getString("songID");
-                        String songPath = bundle.getString("songPath");
-                        String songName = bundle.getString("songName");
-                        String songArtist = bundle.getString("songArtist");
-                        String songAlbum = bundle.getString("songAlbum");
+                PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
+                List<String> listPlaylist =  mydb.getPlaylistSongNotAdded(bundle.getString("songPath"));
 
-                        PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-                        mydb.addSongToPlaylist("Playlist 1", songName, songArtist, songAlbum, songPath);
-                    }
+                arrPlaylist = new ArrayList<>();
 
+                for (int i=0; i<listPlaylist.size(); i++){
+                    arrPlaylist.add(listPlaylist.get(i));
+                    // System.out.println(listPlaylist.get(i));
                 }
+
+                playlistListViewAdapter = new PlaylistToAddAdapter(arrPlaylist);
+
+
+                lvPlaylist.setVisibility(View.VISIBLE);
+
+                lvPlaylist.setAdapter(playlistListViewAdapter);
+
+                lvPlaylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String playlistName = playlistListViewAdapter.getItem(position);
+                        if(bundle != null){
+                            if(bundle.getString("type") == "local" && playlistName != "null"){
+                                String songPath = bundle.getString("songPath");
+                                String songName = bundle.getString("songName");
+                                String songArtist = bundle.getString("songArtist");
+                                String songAlbum = bundle.getString("songAlbum");
+
+                                PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
+                                mydb.addSongToPlaylist(playlistName, songName, songArtist, songAlbum, songPath);
+                            }
+                            else if(bundle.getString("online") == "local" && playlistName != "null"){
+                                //
+                            }
+
+                        }
+
+
+                    }
+                });
+
+
 
 
             }
         });
+
+
 
         //Remove song from playlist
         songMenuOptionRemoveFromPlaylist.setOnClickListener(new View.OnClickListener() {
@@ -169,12 +212,11 @@ public class SongMenuOptionFragment extends Fragment {
 
                 if(bundle != null){
 
-                    if(bundle.getString("type") == "local"){
-                        String playlistName = bundle.getString("playlistName");
+                    String playlistName = bundle.getString("playlistName");
+                    if(bundle.getString("type") == "local" && playlistName != "null"){
                         String songPath = bundle.getString("songPath");
                         PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-                        // mydb.deleteSongFromPlaylist("Playlist 1", songPath);
-                        System.out.println(playlistName);
+                        mydb.deleteSongFromPlaylist(playlistName, songPath);
                     }
                     else if(bundle.getString("type") == "online"){
                     }
@@ -213,9 +255,51 @@ public class SongMenuOptionFragment extends Fragment {
     }
 
 
-    public void showMenuOption(){
+}
 
+
+//
+
+class PlaylistToAddAdapter extends BaseAdapter {
+
+    final ArrayList<String> arrPlaylist;
+
+    PlaylistToAddAdapter (ArrayList<String> arrPlaylist) {
+        this.arrPlaylist = arrPlaylist;
+    }
+
+    @Override
+    public int getCount() {
+        return arrPlaylist.size();
+    }
+
+    @Override
+    public String getItem(int position) {
+        return arrPlaylist.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
     }
 
 
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        View viewPlaylist;
+        if (convertView == null) {
+            viewPlaylist = View.inflate(parent.getContext(), R.layout.playlist_view, null);
+        } else viewPlaylist = convertView;
+
+        //Bind sữ liệu phần tử vào View
+        String playlistName = (String) getItem(position);
+
+
+        TextView txtPlaylistName = viewPlaylist.findViewById(R.id.textView_playlistName);
+        txtPlaylistName.setText(playlistName);
+
+        return viewPlaylist;
+    }
 }

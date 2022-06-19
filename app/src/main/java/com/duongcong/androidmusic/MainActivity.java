@@ -3,6 +3,7 @@ package com.duongcong.androidmusic;
 import android.animation.ObjectAnimator;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected AccountFragment accountFragment               = new AccountFragment();
 
     public PlayMusicFragment playMusicFragment              = new PlayMusicFragment();
-    public SongMenuOptionFragment songMenuOptionFragment = new SongMenuOptionFragment();
+    public SongMenuOptionFragment songMenuOptionFragment    = new SongMenuOptionFragment();
 
     public SongOnDeviceFragment songOnDeviceFragment        = new SongOnDeviceFragment();
     public SongOnPlaylistFragment songOnPlaylistFragment    = new SongOnPlaylistFragment();
@@ -158,8 +159,8 @@ public class MainActivity extends AppCompatActivity {
         fragmentList.add(browseFragment);
         fragmentList.add(accountFragment);
 
-        fragmentList.add(playMusicFragment);
-        fragmentList.add(songMenuOptionFragment);
+        // fragmentList.add(playMusicFragment);
+        // fragmentList.add(songMenuOptionFragment);
 
         fragmentList.add(songOnDeviceFragment);
         fragmentList.add(songOnPlaylistFragment);
@@ -266,8 +267,8 @@ public class MainActivity extends AppCompatActivity {
         if (!playMusicFragment.isAdded()) {
             transaction.add(R.id.fragment_container, playMusicFragment);
         }
-        transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).show(playMusicFragment);
-        transaction.commit();
+        transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).show(playMusicFragment).addToBackStack(null).commit();
+        //transaction.commit();
     }
 
     //
@@ -275,18 +276,51 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (playMusicFragment.isResumed()) {
             transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).hide(playMusicFragment);
+            transaction.remove(playMusicFragment);
             transaction.commit();
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    navigation.setVisibility(View.VISIBLE);
+                    songPlayingBar.setVisibility(View.VISIBLE);
+                }
+            }, 200);
+
         }
     }
 
     //
-    public void displaySongMenuOptionFragment() {
+    public void displaySongMenuOptionFragment(String type, String playlistName, String songName, String songArtist, String songAlbum, String songPath) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        Bundle bundle = new Bundle();
+
+        bundle.putString("type", type);
+        bundle.putString("playlistName", playlistName);
+        bundle.putString("songPath", songPath);
+        bundle.putString("songName",songName);
+        bundle.putString("songArtist",songArtist);
+        bundle.putString("songAlbum",songAlbum);
+
+        songMenuOptionFragment.setArguments(bundle);
+
         if (!songMenuOptionFragment.isAdded()) {
             transaction.add(R.id.fragment_container, songMenuOptionFragment);
         }
-        transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).show(songMenuOptionFragment);
+        transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).show(songMenuOptionFragment).addToBackStack(null);
         transaction.commit();
+
+
+
+    }
+
+    public void showMenuOption(){
+
+
+
+
     }
 
     //
@@ -294,7 +328,19 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (songMenuOptionFragment.isResumed()) {
             transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).hide(songMenuOptionFragment);
+            transaction.remove(songMenuOptionFragment);
             transaction.commit();
+            // Show bottom navigation bar and playing song bar
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    navigation.setVisibility(View.VISIBLE);
+                    if(playMusicFragment.mediaPlayer.isPlaying()){
+                        songPlayingBar.setVisibility(View.VISIBLE);
+                    }
+                }
+            }, 100);
         }
     }
 

@@ -108,6 +108,22 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
         return playlist;
     }
 
+    // Get list local playlist
+    public List<String> getPlaylistSongNotAdded(String songPath) {
+        List<String> playlist = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT DISTINCT playlistName FROM playlist WHERE playlistName NOT IN (SELECT playlist.playlistName FROM playlist, songPlaylist WHERE playlist.playlistName = songPlaylist.playlistName AND songPath = \"" + songPath + "\")";
+        Cursor res =  db.rawQuery( sql, null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            playlist.add(res.getString(res.getColumnIndexOrThrow("playlistName")));
+            res.moveToNext();
+        }
+
+        return playlist;
+    }
+
     // Get list song in a playlist
     public List<AudioModel> getPlaylistData(String playlistName) {
         List<AudioModel> listSong = new ArrayList<>();

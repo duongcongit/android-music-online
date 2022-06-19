@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.duongcong.androidmusic.MainActivity;
@@ -25,6 +26,8 @@ public class HomePlaylistFragment extends Fragment {
     PlaylistAdapter playlistListViewAdapter;
     ListView lvPlaylist;
 
+    ConstraintLayout btnCreatePlaylist;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -36,6 +39,8 @@ public class HomePlaylistFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        btnCreatePlaylist = view.findViewById(R.id.btn_create_playlist);
 
         PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
         List<String> listPlaylist =  mydb.getPlaylist();

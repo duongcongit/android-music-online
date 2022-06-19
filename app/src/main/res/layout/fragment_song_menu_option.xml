@@ -7,19 +7,20 @@
     android:layout_height="match_parent"
     android:descendantFocusability="blocksDescendants">
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/songMenuOptionHideArea"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/songMenuOptionView"
+        app:layout_constraintBottom_toTopOf="@+id/songMenuOptionFragmentContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/songMenuOptionView"
+    <FrameLayout
+        android:id="@+id/songMenuOptionFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/song_menu_option_rounded"
@@ -28,7 +29,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <ListView
+            android:id="@+id/listView_playlist_to_add"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
+
+            android:id="@+id/song_menu_option_view_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -265,7 +275,9 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </FrameLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

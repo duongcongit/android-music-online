@@ -29,7 +29,7 @@ public class SongOnPlaylistFragment extends Fragment {
     SongOnPlaylistAdapter songOnPlaylistAdapter;
     ListView lvSong;
 
-    String thisPlaylistName;
+    private String thisPlaylistName;
 
 
     @Nullable
@@ -142,7 +142,7 @@ class SongOnPlaylistAdapter extends BaseAdapter {
     final ArrayList<AudioModel> arrSong;
     private Context mContext;
 
-    String thisPlaylistName;
+    private String thisPlaylistName;
 
     SongOnPlaylistAdapter (ArrayList<AudioModel> arrSong, Context context, String playlistName) {
         this.arrSong = arrSong;
@@ -173,7 +173,9 @@ class SongOnPlaylistAdapter extends BaseAdapter {
         View viewSong;
         if (convertView == null) {
             viewSong = View.inflate(parent.getContext(), R.layout.song_view, null);
-        } else viewSong = convertView;
+        } else {
+            viewSong = convertView;
+        }
 
         //
         AudioModel song = (AudioModel) getItem(position);
@@ -192,21 +194,14 @@ class SongOnPlaylistAdapter extends BaseAdapter {
         ((TextView) viewSong.findViewById(R.id.textView_playlistName)).setText(songName);
         ((TextView) viewSong.findViewById(R.id.textView_songArtist)).setText(songArtist);
 
+        // Display option menu when click to button
         ((ImageButton) viewSong.findViewById(R.id.btn_song_more_option)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mContext instanceof MainActivity) {
-                    Bundle bundle = new Bundle();
-                    // bundle.putString("playlistName", thisPlaylistName);
-                    bundle.putString("type", "local");
-                    bundle.putString("songPath", song.getaPath());
-                    bundle.putString("songName",song.getaName());
-                    bundle.putString("songArtist",song.getaArtist());
-                    bundle.putString("songAlbum",song.getaAlbum());
 
-                    ((MainActivity)mContext).songMenuOptionFragment.setArguments(bundle);
+                    ((MainActivity)mContext).displaySongMenuOptionFragment("local", thisPlaylistName, song.getaName(), song.getaArtist(), song.getaAlbum(), song.getaPath());
 
-                    ((MainActivity)mContext).displaySongMenuOptionFragment();
                 }
             }
         });
