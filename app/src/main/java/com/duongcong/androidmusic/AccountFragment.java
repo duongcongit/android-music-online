@@ -2,59 +2,63 @@ package com.duongcong.androidmusic;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.ActionMenuView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.tabs.TabLayout;
+import java.util.zip.Inflater;
 
+public class AccountFragment extends Fragment {
+    private Button btnPopup;
 
-public class AccountFragment extends Fragment{
-    Button btnLogin,btnSignUp;
-    EditText edtUserName,edtUserPassW;
-    TabLayout tabLayout;
-    ViewPager viewPager;
-
-    public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_account,container,false);
-
-        tabLayout =(TabLayout) root.findViewById(R.id.tab_layout);
-        viewPager =(ViewPager) root.findViewById(R.id.view_pager);
-        tabLayout.addTab(tabLayout.newTab().setText("Đăng nhập"));
-        tabLayout.addTab(tabLayout.newTab().setText("Đăng kí"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        btnSignUp =(Button) root.findViewById(R.id.btnSignUp);
-
-        //set adapter
-        final LoginAdapter adapter = new LoginAdapter(getActivity().getSupportFragmentManager(),this,tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
-
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
-
+        btnPopup =(Button) root.findViewById(R.id.ButtonPopupMenu);
+        btnPopup.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
+            public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(getContext(), btnPopup);
+                popupMenu.getMenuInflater().inflate(R.menu.menu,popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch (menuItem.getItemId()){
+                            case R.id.menu_dowwnload:
+                                Toast.makeText(getActivity().getApplicationContext(), "download", Toast.LENGTH_SHORT).show();
+                                return true;
+                            case R.id.menu_logout:
+                                Toast.makeText(getActivity().getApplicationContext(), "log out", Toast.LENGTH_SHORT).show();
+                                return true;
+                            case R.id.menu_upload:
+                                Toast.makeText(getActivity().getApplicationContext(), "upload", Toast.LENGTH_SHORT).show();
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+                popupMenu.show();
             }
         });
-
         return root;
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu,menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 }

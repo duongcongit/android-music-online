@@ -19,9 +19,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class LoginTabFragment extends Fragment {
-    Button btnLogin;
-    EditText edtUserName,edtUserPassW;
-    String username,password;
+    private Button btnLogin;
+    private EditText edtUserName,edtUserPassW;
+    private String username,password;
 
 
     @Override

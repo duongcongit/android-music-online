@@ -23,9 +23,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SignUpTabFragment extends Fragment {
-    Button btnSignUp;
-    EditText phoneNum,password,rePassWord,name;
-    String phone,uName,pass,rePass;
+    private Button btnSignUp;
+    private EditText phoneNum,password,rePassWord,name;
+    private String phone,uName,pass,rePass;
 
     private ProgressDialog progressDialog;
 
