@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic.home.recent;
+package com.duongcong.androidmusic.Discovery;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,13 +11,11 @@ import androidx.fragment.app.Fragment;
 
 import com.duongcong.androidmusic.R;
 
-public class HomeRecentFragment extends Fragment {
+public class DiscoveryFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.fragment_home_recent, container, false);
-
+        return inflater.inflate(R.layout.fragment_discovery, container, false);
     }
 }

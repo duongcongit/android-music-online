@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic.home.songondevice;
+package com.duongcong.androidmusic.Home.songondevice;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.duongcong.androidmusic.AudioModel;
+import com.duongcong.androidmusic.Model.LocalSongModel;
 import com.duongcong.androidmusic.MainActivity;
 import com.duongcong.androidmusic.R;
 
@@ -26,7 +26,7 @@ import java.util.List;
 
 public class SongOnDeviceFragment extends Fragment {
 
-    ArrayList<AudioModel> arrSong;
+    ArrayList<LocalSongModel> arrSong;
     SongAdapter songListViewAdapter;
     ListView lvSong;
 
@@ -38,87 +38,44 @@ public class SongOnDeviceFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_song_on_device, container, false);
     }
 
-    //
-
-
-
-    public List<AudioModel> getAllAudioFromDevice(final Context context) {
-
-        final List<AudioModel> tempAudioList = new ArrayList<>();
-
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST,};
-        Cursor c = context.getContentResolver().query(uri, projection, null, null, null);
-
-        if (c != null) {
-            while (c.moveToNext()) {
-                String path = c.getString(0);
-                if(path.endsWith(".mp3")){
-                    AudioModel audioModel = new AudioModel();
-                    String album = c.getString(1);
-                    String artist = c.getString(2);
-
-                    String name = path.substring(path.lastIndexOf("/") + 1, path.length() - 4);
-
-                    audioModel.setaName(name);
-                    audioModel.setaAlbum(album);
-                    audioModel.setaArtist(artist);
-                    audioModel.setaPath(path);
-
-                    tempAudioList.add(audioModel);
-                }
-
-
-            }
-            c.close();
-        }
-
-        return tempAudioList;
-    }
-
-
 
     //
-
-
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
-        final List<AudioModel> audioList = getAllAudioFromDevice(getActivity().getApplicationContext());
+        final List<LocalSongModel> audioList = getAllSongFromDevice(getActivity().getApplicationContext());
 
         arrSong = new ArrayList<>();
-
         for (int i=0; i<audioList.size(); i++){
-            // String name = audioList.get(i).aName;
+            // String name = audioList.get(i).getName();
             arrSong.add(audioList.get(i));
         }
 
+        // Set adapter
         songListViewAdapter = new SongAdapter(arrSong, (MainActivity)getContext());
         lvSong = view.findViewById(R.id.listViewSongOnDevice);
-
         lvSong.setAdapter(songListViewAdapter);
 
-
+        // On click a song in list
         lvSong.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                AudioModel song = (AudioModel) songListViewAdapter.getItem(position);
+                LocalSongModel song = (LocalSongModel) songListViewAdapter.getItem(position);
 
-                String songArtist = song.getaArtist();
+                String songArtist = song.getArtist();
 
                 if(songArtist.equals("<unknown>")){
                     songArtist = "Unknown artist";
                 }
 
-                String songName = song.getaName();
+                String songName = song.getName();
 
                 Bundle bundle = new Bundle();
                 bundle.putString("playType", "new play");
-                bundle.putString("songPath", song.getaPath());
+                bundle.putString("songPath", song.getPath());
                 bundle.putString("songName",songName);
                 bundle.putString("songArtist",songArtist);
-                bundle.putString("songAlbum",song.getaAlbum());
+                bundle.putString("songAlbum",song.getAlbum());
 
 
                 ((MainActivity)getActivity()).playMusicFragment.setArguments(bundle);
@@ -142,18 +99,54 @@ public class SongOnDeviceFragment extends Fragment {
 
     }
 
+    // Get all song on device
+    public List<LocalSongModel> getAllSongFromDevice(final Context context) {
+
+        final List<LocalSongModel> tempAudioList = new ArrayList<>();
+
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST,};
+        Cursor c = context.getContentResolver().query(uri, projection, null, null, null);
+
+        if (c != null) {
+            while (c.moveToNext()) {
+                String path = c.getString(0);
+                if(path.endsWith(".mp3")){
+                    LocalSongModel audioModel = new LocalSongModel();
+                    String album = c.getString(1);
+                    String artist = c.getString(2);
+
+                    String name = path.substring(path.lastIndexOf("/") + 1, path.length() - 4);
+
+                    audioModel.setName(name);
+                    audioModel.setAlbum(album);
+                    audioModel.setArtist(artist);
+                    audioModel.setPath(path);
+
+                    tempAudioList.add(audioModel);
+                }
+
+
+            }
+            c.close();
+        }
+
+        return tempAudioList;
+    }
+
 
 
 }
 
 
+// Listview adapter
 class SongAdapter extends BaseAdapter {
 
-    final ArrayList<AudioModel> arrSong;
+    final ArrayList<LocalSongModel> arrSong;
     private Context mContext;
 
 
-    SongAdapter (ArrayList<AudioModel> arrSong, Context context) {
+    SongAdapter (ArrayList<LocalSongModel> arrSong, Context context) {
         this.arrSong = arrSong;
         this.mContext = context;
     }
@@ -186,12 +179,12 @@ class SongAdapter extends BaseAdapter {
         }
 
         //
-        AudioModel song = (AudioModel) getItem(position);
+        LocalSongModel song = (LocalSongModel) getItem(position);
 
-        String songName     = song.getaName();
-        String songArtist   = song.getaArtist();
-        String songAlbum    = song.getaAlbum();
-        String songPath     = song.getaPath();
+        String songName     = song.getName();
+        String songArtist   = song.getArtist();
+        String songAlbum    = song.getAlbum();
+        String songPath     = song.getPath();
 
         if(songArtist.equals("<unknown>")){
             songArtist = "Unknown artist";
@@ -212,7 +205,7 @@ class SongAdapter extends BaseAdapter {
             public void onClick(View v) {
                 if (mContext instanceof MainActivity) {
 
-                    ((MainActivity)mContext).displaySongMenuOptionFragment("local", "null", song.getaName(), song.getaArtist(), song.getaAlbum(), song.getaPath());
+                    ((MainActivity)mContext).displaySongMenuOptionFragment("local", "null", song.getName(), song.getArtist(), song.getAlbum(), song.getPath());
                 }
             }
         });

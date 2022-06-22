@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import com.duongcong.androidmusic.home.playlist.PlaylistLocalDBHelper;
+import com.duongcong.androidmusic.DBHelper.PlaylistLocalDBHelper;
 
 import java.util.ArrayList;
 import java.util.List;

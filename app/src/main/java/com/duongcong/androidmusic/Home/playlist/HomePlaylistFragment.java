@@ -1,5 +1,6 @@
-package com.duongcong.androidmusic.home.playlist;
+package com.duongcong.androidmusic.Home.playlist;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.duongcong.androidmusic.DBHelper.PlaylistLocalDBHelper;
 import com.duongcong.androidmusic.MainActivity;
 import com.duongcong.androidmusic.R;
 
@@ -36,11 +39,39 @@ public class HomePlaylistFragment extends Fragment {
 
     }
 
+    public void createPlaylist(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+
+        builder.setView(inflater.inflate(R.layout.create_playlist_dialog, null))
+                .setPositiveButton("Tạo playlist", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                })
+                .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Cancel
+                    }
+                });
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         btnCreatePlaylist = view.findViewById(R.id.btn_create_playlist);
+
+        btnCreatePlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createPlaylist();
+            }
+        });
 
         PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
         List<String> listPlaylist =  mydb.getPlaylist();

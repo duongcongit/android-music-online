@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic.home;
+package com.duongcong.androidmusic.Home;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -38,10 +38,12 @@ public class HomeFragment extends Fragment {
 
     }
 
+
+
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
 
 
         mTabLayout = view.findViewById(R.id.tab_layout);
@@ -51,7 +53,6 @@ public class HomeFragment extends Fragment {
 
         mViewPager2.setAdapter(viewPagerAdapterHome);
 
-        //new TabLayoutMediator(mTabLayout, mViewPager2, "OK").attach();
 
         new TabLayoutMediator(mTabLayout, mViewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
@@ -61,6 +62,9 @@ public class HomeFragment extends Fragment {
                     tab.setText("Gần đây");
             }
         }).attach();
+
+
+
 
         CardView cardView_song, cardView_on_device, cardView_upload, cardView_download, cardView_album;
 

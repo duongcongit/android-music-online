@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic.home.playlist;
+package com.duongcong.androidmusic.DBHelper;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.duongcong.androidmusic.AudioModel;
+import com.duongcong.androidmusic.Model.LocalSongModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,25 +125,25 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
     }
 
     // Get list song in a playlist
-    public List<AudioModel> getPlaylistData(String playlistName) {
-        List<AudioModel> listSong = new ArrayList<>();
+    public List<LocalSongModel> getPlaylistData(String playlistName) {
+        List<LocalSongModel> listSong = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor res =  db.rawQuery( "SELECT * FROM songPlaylist WHERE playlistName = \"" + playlistName + "\";", null );
         res.moveToFirst();
 
         while(res.isAfterLast() == false){
-            AudioModel audioModel = new AudioModel();
+            LocalSongModel audioModel = new LocalSongModel();
 
             String songName = res.getString(res.getColumnIndexOrThrow("songName"));
             String artist = res.getString(res.getColumnIndexOrThrow("artist"));
             String album = res.getString(res.getColumnIndexOrThrow("album"));
             String songPath = res.getString(res.getColumnIndexOrThrow("songPath"));
 
-            audioModel.setaName(songName);
-            audioModel.setaArtist(artist);
-            audioModel.setaAlbum(album);
-            audioModel.setaPath(songPath);
+            audioModel.setName(songName);
+            audioModel.setArtist(artist);
+            audioModel.setAlbum(album);
+            audioModel.setPath(songPath);
 
             listSong.add(audioModel);
 

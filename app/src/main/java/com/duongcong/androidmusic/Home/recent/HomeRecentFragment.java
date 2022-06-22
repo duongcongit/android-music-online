@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic.browse;
+package com.duongcong.androidmusic.Home.recent;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,13 +11,13 @@ import androidx.fragment.app.Fragment;
 
 import com.duongcong.androidmusic.R;
 
-public class BrowseFragment extends Fragment {
+public class HomeRecentFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_browse, container, false);
+
+        return inflater.inflate(R.layout.fragment_home_recent, container, false);
 
     }
-
 }

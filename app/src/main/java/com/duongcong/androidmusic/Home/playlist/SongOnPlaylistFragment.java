@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic.home.playlist;
+package com.duongcong.androidmusic.Home.playlist;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -16,7 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.duongcong.androidmusic.AudioModel;
+import com.duongcong.androidmusic.DBHelper.PlaylistLocalDBHelper;
+import com.duongcong.androidmusic.Model.LocalSongModel;
 import com.duongcong.androidmusic.MainActivity;
 import com.duongcong.androidmusic.R;
 
@@ -25,7 +26,7 @@ import java.util.List;
 
 public class SongOnPlaylistFragment extends Fragment {
 
-    ArrayList<AudioModel> arrSong;
+    ArrayList<LocalSongModel> arrSong;
     SongOnPlaylistAdapter songOnPlaylistAdapter;
     ListView lvSong;
 
@@ -58,7 +59,7 @@ public class SongOnPlaylistFragment extends Fragment {
         if(bundle != null){
             thisPlaylistName = bundle.getString("playlistName");
             PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-            final List<AudioModel> audioList = mydb.getPlaylistData(thisPlaylistName);
+            final List<LocalSongModel> audioList = mydb.getPlaylistData(thisPlaylistName);
 
             arrSong = new ArrayList<>();
 
@@ -75,22 +76,22 @@ public class SongOnPlaylistFragment extends Fragment {
         lvSong.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                AudioModel song = (AudioModel) songOnPlaylistAdapter.getItem(position);
+                LocalSongModel song = (LocalSongModel) songOnPlaylistAdapter.getItem(position);
 
-                String songArtist = song.getaArtist();
+                String songArtist = song.getArtist();
 
                 if(songArtist.equals("<unknown>")){
                     songArtist = "Unknown artist";
                 }
 
-                String songName = song.getaName();
+                String songName = song.getName();
 
                 Bundle bundle = new Bundle();
                 bundle.putString("playType", "new play");
-                bundle.putString("songPath", song.getaPath());
+                bundle.putString("songPath", song.getPath());
                 bundle.putString("songName",songName);
                 bundle.putString("songArtist",songArtist);
-                bundle.putString("songAlbum",song.getaAlbum());
+                bundle.putString("songAlbum",song.getAlbum());
 
                 ((MainActivity)getActivity()).playMusicFragment.setArguments(bundle);
 
@@ -118,7 +119,7 @@ public class SongOnPlaylistFragment extends Fragment {
         if(bundle != null){
             thisPlaylistName = bundle.getString("playlistName");
             PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-            final List<AudioModel> audioList = mydb.getPlaylistData(thisPlaylistName);
+            final List<LocalSongModel> audioList = mydb.getPlaylistData(thisPlaylistName);
 
             arrSong = new ArrayList<>();
 
@@ -139,12 +140,12 @@ public class SongOnPlaylistFragment extends Fragment {
 
 class SongOnPlaylistAdapter extends BaseAdapter {
 
-    final ArrayList<AudioModel> arrSong;
+    final ArrayList<LocalSongModel> arrSong;
     private Context mContext;
 
     private String thisPlaylistName;
 
-    SongOnPlaylistAdapter (ArrayList<AudioModel> arrSong, Context context, String playlistName) {
+    SongOnPlaylistAdapter (ArrayList<LocalSongModel> arrSong, Context context, String playlistName) {
         this.arrSong = arrSong;
         this.mContext = context;
         this.thisPlaylistName = playlistName;
@@ -178,10 +179,10 @@ class SongOnPlaylistAdapter extends BaseAdapter {
         }
 
         //
-        AudioModel song = (AudioModel) getItem(position);
+        LocalSongModel song = (LocalSongModel) getItem(position);
 
-        String songName = song.getaName();
-        String songArtist = song.getaArtist();
+        String songName = song.getName();
+        String songArtist = song.getArtist();
 
         if(songArtist.equals("<unknown>")){
             songArtist = "Unknown artist";
@@ -200,7 +201,7 @@ class SongOnPlaylistAdapter extends BaseAdapter {
             public void onClick(View v) {
                 if (mContext instanceof MainActivity) {
 
-                    ((MainActivity)mContext).displaySongMenuOptionFragment("local", thisPlaylistName, song.getaName(), song.getaArtist(), song.getaAlbum(), song.getaPath());
+                    ((MainActivity)mContext).displaySongMenuOptionFragment("local", thisPlaylistName, song.getName(), song.getArtist(), song.getAlbum(), song.getPath());
 
                 }
             }

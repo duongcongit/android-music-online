@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic.home;
+package com.duongcong.androidmusic.Home;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -6,8 +6,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.duongcong.androidmusic.home.playlist.HomePlaylistFragment;
-import com.duongcong.androidmusic.home.recent.HomeRecentFragment;
+import com.duongcong.androidmusic.Home.playlist.HomePlaylistFragment;
+import com.duongcong.androidmusic.Home.recent.HomeRecentFragment;
 
 public class ViewPagerAdapterHome extends FragmentStateAdapter {
 

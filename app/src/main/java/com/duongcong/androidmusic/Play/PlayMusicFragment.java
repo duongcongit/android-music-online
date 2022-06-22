@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic.play;
+package com.duongcong.androidmusic.Play;
 
 import android.animation.ObjectAnimator;
 import android.media.MediaPlayer;

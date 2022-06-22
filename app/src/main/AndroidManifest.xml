@@ -6,33 +6,20 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_laucher_music"
+        android:icon="@mipmap/ic_launcher_music"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_laucher_music"
+        android:roundIcon="@mipmap/ic_launcher_music"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidMusic"
         tools:targetApi="31">
         <activity
-            android:name=".play.PlayMusicFragment"
-            android:exported="false" />
-        <activity
-            android:name=".account.AccountFragment"
-            android:exported="false" />
-        <activity
-            android:name=".browse.BrowseFragment"
-            android:exported="false" />
-        <activity
-            android:name=".discovery.DiscoveryFragment"
-            android:exported="false" />
-        <activity
-            android:name=".account.LoginActivity"
+            android:name=".Account.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

@@ -1,4 +1,4 @@
-package com.duongcong.androidmusic.discovery;
+package com.duongcong.androidmusic.Browse;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,11 +11,13 @@ import androidx.fragment.app.Fragment;
 
 import com.duongcong.androidmusic.R;
 
-public class DiscoveryFragment extends Fragment {
+public class BrowseFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_discovery, container, false);
+        return inflater.inflate(R.layout.fragment_browse, container, false);
+
     }
+
 }
