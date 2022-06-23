@@ -52,8 +52,6 @@ public class AccountFragment extends Fragment {
         user_displayName = firebaseUser.getDisplayName();
 
 
-
-
         //Gan du lieu
         username.setText(user_email);
         userName.setText(user_displayName);

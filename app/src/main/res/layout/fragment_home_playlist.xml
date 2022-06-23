@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/btn_create_playlist"
+        android:id="@+id/menu_option_btn_create_playlist"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,12 +23,12 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/imageView2"
+            app:layout_constraintStart_toEndOf="@+id/menu_option_img_create_playlist"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.483" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/menu_option_img_create_playlist"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="5dp"
@@ -49,5 +49,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_create_playlist" />
+        app:layout_constraintTop_toBottomOf="@+id/menu_option_btn_create_playlist" />
 </androidx.constraintlayout.widget.ConstraintLayout>

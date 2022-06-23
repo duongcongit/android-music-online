@@ -1,12 +1,14 @@
 package com.duongcong.androidmusic.Home.playlist;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,18 +20,31 @@ import androidx.fragment.app.Fragment;
 
 import com.duongcong.androidmusic.DBHelper.PlaylistLocalDBHelper;
 import com.duongcong.androidmusic.MainActivity;
+import com.duongcong.androidmusic.Model.PlaylistModel;
 import com.duongcong.androidmusic.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class HomePlaylistFragment extends Fragment {
 
-    ArrayList<String> arrPlaylist;
+    ArrayList<PlaylistModel> arrPlaylist;
     PlaylistAdapter playlistListViewAdapter;
     ListView lvPlaylist;
 
     ConstraintLayout btnCreatePlaylist;
+
+    EditText txtCreatePlaylistName;
+    Button btnConfirmCreatePlaylist, btnCancelCreatePlaylist;
+
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
 
     @Nullable
     @Override
@@ -39,62 +54,96 @@ public class HomePlaylistFragment extends Fragment {
 
     }
 
-    public void createPlaylist(){
+
+    private void createPlaylistDialog() {
+        // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
 
-        builder.setView(inflater.inflate(R.layout.create_playlist_dialog, null))
-                .setPositiveButton("Tạo playlist", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-
-                    }
-                })
-                .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Cancel
-                    }
-                });
+        builder.setView(inflater.inflate(R.layout.create_playlist_dialog, null));
         AlertDialog dialog = builder.create();
 
         dialog.show();
+
+        txtCreatePlaylistName = dialog.findViewById(R.id.playlist_name_create);
+
+        btnConfirmCreatePlaylist = dialog.findViewById(R.id.btn_confirm_create_playlist);
+        btnCancelCreatePlaylist = dialog.findViewById(R.id.btn_cancel_create_playlist);
+
+        btnConfirmCreatePlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String playlistName = txtCreatePlaylistName.getText().toString();
+
+                // PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
+                // mydb.createPlaylist(playlistName, "local");
+
+                FirebaseDatabase database = FirebaseDatabase.getInstance();;
+                DatabaseReference myFirebaseRef = database.getReference();
+
+                // myFirebaseRef.child("users").child(firebaseUser.getUid()).child("playlists").child(playlistName);
+
+                // myFirebaseRef.child(playlistName).child()
+
+
+                dialog.dismiss();
+                getPlaylist();
+            }
+        });
+
+        // Click cancel button
+        btnCancelCreatePlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        btnCreatePlaylist = view.findViewById(R.id.btn_create_playlist);
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        btnCreatePlaylist = view.findViewById(R.id.menu_option_btn_create_playlist);
+
+        lvPlaylist = view.findViewById(R.id.listViewPlaylist);
 
         btnCreatePlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createPlaylist();
+                createPlaylistDialog();
+
             }
         });
 
-        PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-        List<String> listPlaylist =  mydb.getPlaylist();
+        getPlaylist();
 
-        arrPlaylist = new ArrayList<>();
 
-        for (int i=0; i<listPlaylist.size(); i++){
-            arrPlaylist.add(listPlaylist.get(i));
-            System.out.println(listPlaylist.get(i));
-        }
+    }
 
+    // Show playlists
+    private void showPlaylist(){
         playlistListViewAdapter = new PlaylistAdapter(arrPlaylist);
-        lvPlaylist = view.findViewById(R.id.listViewPlaylist);
 
         lvPlaylist.setAdapter(playlistListViewAdapter);
 
         lvPlaylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String playlistName = playlistListViewAdapter.getItem(position);
-                System.out.println(playlistName);
+                PlaylistModel playlistModel = (PlaylistModel) playlistListViewAdapter.getItem(position);
+                String playlistName = playlistModel.getName();
+                String playlistType = playlistModel.getType();
+
                 Bundle bundle = new Bundle();
                 bundle.putString("playlistName", playlistName);
+                bundle.putString("type", playlistType);
+
+                System.out.println(playlistName + playlistType);
 
                 ((MainActivity)getActivity()).songOnPlaylistFragment.setArguments(bundle);
 
@@ -102,18 +151,73 @@ public class HomePlaylistFragment extends Fragment {
 
             }
         });
-
     }
 
+    // Get playlists
+    private void getPlaylist(){
+        //
+        arrPlaylist = new ArrayList<>();
+
+        // Get playlist from local
+        PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
+        ArrayList<PlaylistModel> listPlaylist =  mydb.getPlaylist();
+        for (int i=0; i<listPlaylist.size(); i++){
+            arrPlaylist.add(listPlaylist.get(i));
+        }
+
+        // If signed in, get playlists from cloud
+        if(firebaseUser!=null){
+            FirebaseDatabase database = FirebaseDatabase.getInstance();;
+            DatabaseReference myFirebaseRef = database.getReference();
+            myFirebaseRef.child("users").child(firebaseUser.getUid()).child("playlists").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String playlistName = (String) ds.child("name").getValue();
+                    String playlistType = (String) ds.child("type").getValue();
+
+                    PlaylistModel playlistModel = new PlaylistModel();
+                    playlistModel.setName(playlistName);
+                    playlistModel.setType(playlistType);
+
+                    arrPlaylist.add(playlistModel);
+                }
+            }
+            //
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                //
+            }
+
+        });
+        }
+
+        // Wait for receive data from database and show
+        for (int i=0; i<10000; i+=200){
+            final int a = i;
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showPlaylist();
+                }
+            }, a);
+        }
+
+
+
+
+    }
 
 }
 
 
+// Class adapter
 class PlaylistAdapter extends BaseAdapter {
 
-    final ArrayList<String> arrPlaylist;
+    final ArrayList<PlaylistModel> arrPlaylist;
 
-    PlaylistAdapter (ArrayList<String> arrPlaylist) {
+    PlaylistAdapter (ArrayList<PlaylistModel> arrPlaylist) {
         this.arrPlaylist = arrPlaylist;
     }
 
@@ -123,13 +227,17 @@ class PlaylistAdapter extends BaseAdapter {
     }
 
     @Override
-    public String getItem(int position) {
+    public Object getItem(int position) {
         return arrPlaylist.get(position);
     }
 
     @Override
     public long getItemId(int position) {
         return 0;
+    }
+
+    public int getType(int position){
+        return position;
     }
 
 
@@ -140,10 +248,11 @@ class PlaylistAdapter extends BaseAdapter {
         View viewPlaylist;
         if (convertView == null) {
             viewPlaylist = View.inflate(parent.getContext(), R.layout.playlist_view, null);
-        } else viewPlaylist = convertView;
+        } else viewPlaylist = convertView;getItem(position);
 
         //Bind sữ liệu phần tử vào View
-        String playlistName = (String) getItem(position);
+        PlaylistModel playlist = (PlaylistModel) getItem(position);
+        String playlistName = (String) playlist.getName();
 
 
         TextView txtPlaylistName = viewPlaylist.findViewById(R.id.textView_playlistName);

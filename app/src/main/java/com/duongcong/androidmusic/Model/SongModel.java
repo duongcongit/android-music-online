@@ -1,6 +1,6 @@
 package com.duongcong.androidmusic.Model;
 
-public class OnlineSongModel {
+public class SongModel {
 
     String id;
     String name;
