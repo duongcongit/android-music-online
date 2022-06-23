@@ -1,0 +1,154 @@
+package com.duongcong.androidmusic.Home.playlist;
+
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+
+import com.duongcong.androidmusic.DBHelper.PlaylistLocalDBHelper;
+import com.duongcong.androidmusic.MainActivity;
+import com.duongcong.androidmusic.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class HomePlaylistFragment extends Fragment {
+
+    ArrayList<String> arrPlaylist;
+    PlaylistAdapter playlistListViewAdapter;
+    ListView lvPlaylist;
+
+    ConstraintLayout btnCreatePlaylist;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        return inflater.inflate(R.layout.fragment_home_playlist, container, false);
+
+    }
+
+    public void createPlaylist(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+
+        builder.setView(inflater.inflate(R.layout.create_playlist_dialog, null))
+                .setPositiveButton("Tạo playlist", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                })
+                .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Cancel
+                    }
+                });
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        btnCreatePlaylist = view.findViewById(R.id.btn_create_playlist);
+
+        btnCreatePlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createPlaylist();
+            }
+        });
+
+        PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
+        List<String> listPlaylist =  mydb.getPlaylist();
+
+        arrPlaylist = new ArrayList<>();
+
+        for (int i=0; i<listPlaylist.size(); i++){
+            arrPlaylist.add(listPlaylist.get(i));
+            System.out.println(listPlaylist.get(i));
+        }
+
+        playlistListViewAdapter = new PlaylistAdapter(arrPlaylist);
+        lvPlaylist = view.findViewById(R.id.listViewPlaylist);
+
+        lvPlaylist.setAdapter(playlistListViewAdapter);
+
+        lvPlaylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String playlistName = playlistListViewAdapter.getItem(position);
+                System.out.println(playlistName);
+                Bundle bundle = new Bundle();
+                bundle.putString("playlistName", playlistName);
+
+                ((MainActivity)getActivity()).songOnPlaylistFragment.setArguments(bundle);
+
+                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).songOnPlaylistFragment);
+
+            }
+        });
+
+    }
+
+
+}
+
+
+class PlaylistAdapter extends BaseAdapter {
+
+    final ArrayList<String> arrPlaylist;
+
+    PlaylistAdapter (ArrayList<String> arrPlaylist) {
+        this.arrPlaylist = arrPlaylist;
+    }
+
+    @Override
+    public int getCount() {
+        return arrPlaylist.size();
+    }
+
+    @Override
+    public String getItem(int position) {
+        return arrPlaylist.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        View viewPlaylist;
+        if (convertView == null) {
+            viewPlaylist = View.inflate(parent.getContext(), R.layout.playlist_view, null);
+        } else viewPlaylist = convertView;
+
+        //Bind sữ liệu phần tử vào View
+        String playlistName = (String) getItem(position);
+
+
+        TextView txtPlaylistName = viewPlaylist.findViewById(R.id.textView_playlistName);
+        txtPlaylistName.setText(playlistName);
+
+        return viewPlaylist;
+    }
+}

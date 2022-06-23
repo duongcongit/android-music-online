@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#181125"
-    tools:context=".AccountFragment">
+    tools:context="Account.AccountFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -46,8 +46,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.666"
                 app:layout_constraintStart_toEndOf="@+id/searchView"
-                app:layout_constraintTop_toTopOf="parent">
-            </Button>
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck"></Button>
 
 
 
@@ -190,6 +190,7 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
+
             <Button
                 android:id="@+id/btn_login_test"
                 android:layout_width="50dp"
@@ -199,8 +200,9 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/CardView"
+                app:layout_constraintVertical_bias="0.0"
                 app:layout_constraintWidth_percent="0.8"
-                app:layout_constraintVertical_bias="0.0">
+                tools:ignore="SpeakableTextPresentCheck">
 
             </Button>
 

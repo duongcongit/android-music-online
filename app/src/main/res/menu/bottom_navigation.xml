@@ -11,7 +11,7 @@
     android:enabled="true"
     android:visible="true"
     android:icon="@mipmap/ic_bottom_navigation_discovery"
-    android:title="@string/title_discover"/>
+    android:title="@string/title_discover" />
 <item
     android:id="@+id/page_browse"
     android:enabled="true"
