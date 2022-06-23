@@ -21,14 +21,22 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.duongcong.androidmusic.DBHelper.PlaylistLocalDBHelper;
+import com.duongcong.androidmusic.Model.PlaylistModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 public class SongMenuOptionFragment extends Fragment {
 
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
 
     protected ConstraintLayout songMenuOptionHideArea;
 
@@ -47,7 +55,7 @@ public class SongMenuOptionFragment extends Fragment {
 
     private Bundle bundle;
 
-    ArrayList<String> arrPlaylist;
+    ArrayList<PlaylistModel> arrPlaylist;
     PlaylistToAddAdapter playlistListViewAdapter;
     ListView lvPlaylist;
     ConstraintLayout menuPlaylistToAdd;
@@ -115,10 +123,9 @@ public class SongMenuOptionFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Firebase
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
 
-        myRef.setValue("Hello, World!");
         //
         songMenuOption                      = view.findViewById(R.id.song_menu_option);
 
@@ -199,9 +206,11 @@ public class SongMenuOptionFragment extends Fragment {
                 lvPlaylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String playlistName = playlistListViewAdapter.getItem(position);
+                        PlaylistModel playlistModel = (PlaylistModel) playlistListViewAdapter.getItem(position);
+                        String playlistName = playlistModel.getName();
+                        String playlistType = playlistModel.getType();
                         if(bundle != null){
-                            if(bundle.getString("type") == "local" && playlistName != "null"){
+                            if(playlistType == "local" && playlistName != "null"){
                                 String songPath = bundle.getString("songPath");
                                 String songName = bundle.getString("songName");
                                 String songArtist = bundle.getString("songArtist");
@@ -214,7 +223,7 @@ public class SongMenuOptionFragment extends Fragment {
                                 songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
 
                             }
-                            else if(bundle.getString("online") == "local" && playlistName != "null"){
+                            else if(bundle.getString("type") == "local" && playlistName != "null"){
                                 //
                             }
 
@@ -280,20 +289,68 @@ public class SongMenuOptionFragment extends Fragment {
 
     // Get and show playlist
     private void getPlaylist(){
-
-        PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-        List<String> listPlaylist =  mydb.getPlaylistSongNotAdded(bundle.getString("songPath"));
-
+        //
         arrPlaylist = new ArrayList<>();
 
-        for (int i=0; i<listPlaylist.size(); i++){
-            arrPlaylist.add(listPlaylist.get(i));
-            // System.out.println(listPlaylist.get(i));
+        String songPath = bundle.getString("songPath");
+
+        // Get playlist from local
+        PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
+        ArrayList<PlaylistModel> listPlaylist =  mydb.getPlaylistSongNotAdded(songPath);
+        arrPlaylist.addAll(listPlaylist);
+
+        // If signed in, get playlists from cloud
+        if(firebaseUser!=null){
+            FirebaseDatabase database = FirebaseDatabase.getInstance();;
+            DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists");
+            myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for(DataSnapshot ds : snapshot.getChildren()) { // Browse each playlist
+                        boolean isAdded = false;
+                        for (DataSnapshot dsSong : ds.getChildren()){ // Browse each child item of playlist
+                            if(Objects.equals(dsSong.getKey(), "songs")){ // If meet item named song
+                                for (DataSnapshot dsListSong : dsSong.getChildren()){ // Browse each song in item
+                                    String tmpPath = (String) dsListSong.child("path").getValue(); // Get path of song in database
+                                    if(Objects.equals(tmpPath, songPath)){ // Check if path of song in database not equal path of song is choosed
+                                        isAdded = true;                    // Mean song is added in this playlist
+                                    }
+                                }
+                            }
+                        }
+
+                        if(!isAdded){
+                            PlaylistModel pl = new PlaylistModel();
+                            pl.setName((String) ds.child("name").getValue());
+                            pl.setType((String) ds.child("type").getValue());
+                            arrPlaylist.add(pl);
+                        }
+
+                    }
+                }
+                //
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    //
+                }
+
+            });
         }
 
-        playlistListViewAdapter = new PlaylistToAddAdapter(arrPlaylist);
+        // Wait for receive data from database and show
+        for (int i=0; i<10000; i+=200){
+            final int a = i;
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playlistListViewAdapter = new PlaylistToAddAdapter(arrPlaylist);
+                    lvPlaylist.setAdapter(playlistListViewAdapter);
+                }
+            }, a);
+        }
 
-        lvPlaylist.setAdapter(playlistListViewAdapter);
+
     }
 
 
@@ -342,9 +399,9 @@ public class SongMenuOptionFragment extends Fragment {
 // Playlist to add Adapter
 class PlaylistToAddAdapter extends BaseAdapter {
 
-    final ArrayList<String> arrPlaylist;
+    final ArrayList<PlaylistModel> arrPlaylist;
 
-    PlaylistToAddAdapter (ArrayList<String> arrPlaylist) {
+    PlaylistToAddAdapter (ArrayList<PlaylistModel> arrPlaylist) {
         this.arrPlaylist = arrPlaylist;
     }
 
@@ -354,7 +411,7 @@ class PlaylistToAddAdapter extends BaseAdapter {
     }
 
     @Override
-    public String getItem(int position) {
+    public Object getItem(int position) {
         return arrPlaylist.get(position);
     }
 
@@ -374,7 +431,8 @@ class PlaylistToAddAdapter extends BaseAdapter {
         } else viewPlaylist = convertView;
 
         //Bind sữ liệu phần tử vào View
-        String playlistName = (String) getItem(position);
+        PlaylistModel playlist = (PlaylistModel) getItem(position);
+        String playlistName = (String) playlist.getName();
 
 
         TextView txtPlaylistName = viewPlaylist.findViewById(R.id.textView_playlistName);

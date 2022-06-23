@@ -204,9 +204,7 @@ public class HomePlaylistFragment extends Fragment {
         // Get playlist from local
         PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
         ArrayList<PlaylistModel> listPlaylist =  mydb.getPlaylist();
-        for (int i=0; i<listPlaylist.size(); i++){
-            arrPlaylist.add(listPlaylist.get(i));
-        }
+        arrPlaylist.addAll(listPlaylist);
 
         // If signed in, get playlists from cloud
         if(firebaseUser!=null){
@@ -279,9 +277,6 @@ class PlaylistAdapter extends BaseAdapter {
         return 0;
     }
 
-    public int getType(int position){
-        return position;
-    }
 
 
 

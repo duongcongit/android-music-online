@@ -332,8 +332,8 @@ public class MainActivity extends AppCompatActivity {
 
         Bundle bundle = new Bundle();
 
-        bundle.putString("type", type);
-        bundle.putString("playlistName", playlistName);
+        bundle.putString("type", type); // Type local or online
+        bundle.putString("playlistName", playlistName); // If is in a playlist, this data will using for function remove from playlist
         bundle.putString("songPath", songPath);
         bundle.putString("songName",songName);
         bundle.putString("songArtist",songArtist);
