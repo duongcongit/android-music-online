@@ -75,19 +75,49 @@ public class HomePlaylistFragment extends Fragment {
             public void onClick(View v) {
                 String playlistName = txtCreatePlaylistName.getText().toString();
 
-                // PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-                // mydb.createPlaylist(playlistName, "local");
+                // If signed in, get playlists from cloud
+                if(firebaseUser!=null){
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();;
+                    DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists").child(playlistName);
+                    myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){
+                                txtCreatePlaylistName.setError("Danh sách phát online này đã tồn tại!");
+                                txtCreatePlaylistName.requestFocus();
+                            }
+                            else {
+                                myFirebaseRef.child("name").setValue(playlistName);
+                                myFirebaseRef.child("type").setValue("online");
+                                dialog.dismiss();
+                            }
+                        }
 
-                FirebaseDatabase database = FirebaseDatabase.getInstance();;
-                DatabaseReference myFirebaseRef = database.getReference();
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                // myFirebaseRef.child("users").child(firebaseUser.getUid()).child("playlists").child(playlistName);
+                        }
+                    });
+                }
+                // Else not signed in, create local playlist
+                else {
+                    /* PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
+                    ArrayList<PlaylistModel> playlists = mydb.getPlaylist();
+                    for (int i=0; i<playlists.size(); i++){
 
-                // myFirebaseRef.child(playlistName).child()
+                    }
+                    mydb.createPlaylist(playlistName, "local");
+                    dialog.dismiss(); */
+                }
 
-
-                dialog.dismiss();
-                getPlaylist();
+                // Close dialog and refresh list
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getPlaylist();
+                    }
+                }, 2000);
             }
         });
 
