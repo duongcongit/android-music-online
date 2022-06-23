@@ -20,6 +20,12 @@
         android:theme="@style/Theme.AndroidMusic"
         tools:targetApi="31">
         <activity
+            android:name=".FavouriteListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ShowAllSongActivity"
+            android:exported="false" />
+        <activity
             android:name=".Account.SongUploadActivity"
             android:exported="false" />
         <activity

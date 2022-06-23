@@ -26,8 +26,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.duongcong.androidmusic.FavouriteListActivity;
 import com.duongcong.androidmusic.Model.OnlineSongModel;
 import com.duongcong.androidmusic.R;
+import com.duongcong.androidmusic.ShowAllSongActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -155,6 +157,7 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
             string_artist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             string_title = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
 
+
         }
     }
 
@@ -208,9 +211,10 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
                     storageReference1.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            OnlineSongModel onlineSongModel = new OnlineSongModel("",string_title,uri.toString(),string_albumArt,string_artist,song_categories);
                             String uploadId = databaseReference.push().getKey();
-                            databaseReference.child(firebaseUser.getUid()).child(uploadId).setValue(onlineSongModel);
+                            OnlineSongModel onlineSongModel = new OnlineSongModel(uploadId,string_title,uri.toString(),string_albumArt,string_artist,song_categories,string_duration);
+//                            databaseReference.child(firebaseUser.getUid()).child(uploadId).setValue(onlineSongModel);
+                              databaseReference.child(uploadId).setValue(onlineSongModel);
                         }
                     });
                 }
@@ -231,5 +235,15 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
         ContentResolver contentResolver = getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(audioUri));
+    }
+
+    public void showAllSongs(View view) {
+        Intent i = new Intent(SongUploadActivity.this, ShowAllSongActivity.class);
+        startActivity(i);
+    }
+
+    public void openFavorListActivity(View v){
+        Intent i = new Intent(SongUploadActivity.this, FavouriteListActivity.class);
+        startActivity(i);
     }
 }

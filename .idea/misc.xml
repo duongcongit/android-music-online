@@ -4,14 +4,26 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../../../layout/custom_preview.xml" value="0.1239488731920619" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/activity_favourite_list.xml" value="0.22" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/activity_favourtie_list.xml" value="0.1921875" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/activity_main.xml" value="0.1921875" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/activity_show_all_song.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/activity_song_upload.xml" value="0.2" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_account.xml" value="0.1921875" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_browse.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_discovery.xml" value="0.1921875" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_home.xml" value="0.1921875" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_home_playlist.xml" value="0.1921875" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_home_recent.xml" value="0.22" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_play_music.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_song_menu_option.xml" value="0.1921875" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_song_on_device.xml" value="0.1921875" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_song_on_playlist.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/login_tab_fragment.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/playlist_to_add_view.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/playlist_view.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/sign_up_tab_fragment.xml" value="0.22" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/song_item.xml" value="0.46125" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/song_menu_option_view.xml" value="0.5" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/song_view.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/menu/menu.xml" value="0.1921875" />

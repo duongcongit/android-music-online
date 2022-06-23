@@ -8,8 +8,18 @@ public class OnlineSongModel {
     String album;
     String artist;
     String type;
+    String duration;
 
-    public OnlineSongModel(String id, String name, String path, String album, String artist, String type) {
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+
+    public OnlineSongModel(String id, String name, String path, String album, String artist, String type,String duration) {
         if(name.trim().equals("")){
             name = "Bài hát không tên";
         }else{
@@ -21,6 +31,7 @@ public class OnlineSongModel {
         this.album = album;
         this.artist = artist;
         this.type = type;
+        this.duration = duration;
     }
 
     public OnlineSongModel() {
