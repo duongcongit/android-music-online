@@ -31,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class HomePlaylistFragment extends Fragment {
 
@@ -101,13 +102,25 @@ public class HomePlaylistFragment extends Fragment {
                 }
                 // Else not signed in, create local playlist
                 else {
-                    /* PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
+                    PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
                     ArrayList<PlaylistModel> playlists = mydb.getPlaylist();
-                    for (int i=0; i<playlists.size(); i++){
-
+                    //
+                    boolean isExist = false;
+                    for(int i=0; i<playlists.size(); i++){
+                        if(Objects.equals(playlists.get(i).getName(), playlistName)){
+                            isExist = true;
+                            break;
+                        }
                     }
-                    mydb.createPlaylist(playlistName, "local");
-                    dialog.dismiss(); */
+                    if(isExist){
+                        txtCreatePlaylistName.setError("Danh sách phát này đã tồn tại!");
+                        txtCreatePlaylistName.requestFocus();
+                    }
+                    else {
+                        mydb.createPlaylist(playlistName, "local");
+                        dialog.dismiss();
+                    }
+
                 }
 
                 // Close dialog and refresh list
