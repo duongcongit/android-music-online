@@ -5,7 +5,10 @@
       <map>
         <entry key="../../../../../../layout/custom_preview.xml" value="0.1239488731920619" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2625" />
+        <entry key="app/src/main/res/drawable/btn_delete_playlist_confirm_dialog_circle.xml" value="0.265" />
         <entry key="app/src/main/res/drawable/button_bg.xml" value="0.239" />
+        <entry key="app/src/main/res/drawable/dialog_confirm_delete_playlist.xml" value="0.265" />
+        <entry key="app/src/main/res/drawable/edit_text_bg.xml" value="0.265" />
         <entry key="app/src/main/res/drawable/ic_baseline_account_circle_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_date_range_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_email_24.xml" value="0.1" />
@@ -25,7 +28,9 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main2.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/activity_play_music.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/context_menu_playlist.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/layout/create_playlist_dialog.xml" value="0.35520833333333335" />
+        <entry key="app/src/main/res/layout/delete_playlist_dialog_cofirm.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/layout/fragment_account.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_browse.xml" value="0.17325227963525835" />
         <entry key="app/src/main/res/layout/fragment_discovery.xml" value="0.33" />
@@ -37,7 +42,7 @@
         <entry key="app/src/main/res/layout/fragment_song_menu_option.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_song_on_device.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/fragment_song_on_playlist.xml" value="0.35625" />
-        <entry key="app/src/main/res/layout/login_tab_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/login_tab_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/navigation.xml" value="0.17325227963525835" />
         <entry key="app/src/main/res/layout/playlist_to_add_view.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/playlist_view.xml" value="0.3446557971014493" />
@@ -46,6 +51,7 @@
         <entry key="app/src/main/res/layout/song_view.xml" value="0.5" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.18177083333333333" />
         <entry key="app/src/main/res/menu/bottom_navigation.xml" value="0.35625" />
+        <entry key="app/src/main/res/menu/context_menu_playlist.xml" value="0.35625" />
         <entry key="app/src/main/res/menu/menu.xml" value="0.35625" />
       </map>
     </option>

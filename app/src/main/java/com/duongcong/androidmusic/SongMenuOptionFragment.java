@@ -210,12 +210,14 @@ public class SongMenuOptionFragment extends Fragment {
                         String playlistName = playlistModel.getName();
                         String playlistType = playlistModel.getType();
                         if(bundle != null){
-                            if(playlistType == "local" && playlistName != "null"){
-                                String songPath = bundle.getString("songPath");
-                                String songName = bundle.getString("songName");
-                                String songArtist = bundle.getString("songArtist");
-                                String songAlbum = bundle.getString("songAlbum");
+                            // Data of song
+                            String songPath = bundle.getString("songPath");
+                            String songName = bundle.getString("songName");
+                            String songArtist = bundle.getString("songArtist");
+                            String songAlbum = bundle.getString("songAlbum");
 
+                            // If add to local playlist
+                            if(playlistType == "local" && playlistName != "null"){
                                 PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
                                 mydb.addSongToPlaylist(playlistName, songName, songArtist, songAlbum, songPath);
 
@@ -223,8 +225,9 @@ public class SongMenuOptionFragment extends Fragment {
                                 songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
 
                             }
-                            else if(bundle.getString("type") == "local" && playlistName != "null"){
+                            else if(playlistType == "online" && playlistName != "null"){
                                 //
+                                System.out.println("ONNN");
                             }
 
                         }

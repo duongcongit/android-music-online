@@ -57,6 +57,14 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    // Delete a playlist
+    public boolean deletePlaylist(String playlistName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("songPlaylist", "playlistName=?", new String[] {playlistName});
+        db.delete("playlist", "playlistName=?", new String[] {playlistName});
+        return true;
+    }
+
     // Update playlist
     public void updatePlaylist(String playlistName, String newPlaylistName, String type){
         SQLiteDatabase db = this.getWritableDatabase();

@@ -5,7 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="55dp"
     android:maxHeight="55dp"
-    app:layout_constraintHeight_max="55dp">
+    app:layout_constraintHeight_max="55dp"
+    android:descendantFocusability="blocksDescendants">
+
+    <ImageButton
+        android:id="@+id/btn_playlist_more_option"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/ic_menu_vertical"
+        android:contentDescription="@string/app_name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TouchTargetSizeCheck" />
 
     <ImageView
         android:id="@+id/imageView_ic_playlist"

@@ -1,14 +1,20 @@
 package com.duongcong.androidmusic.Home.playlist;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -76,7 +82,7 @@ public class HomePlaylistFragment extends Fragment {
             public void onClick(View v) {
                 String playlistName = txtCreatePlaylistName.getText().toString();
 
-                // If signed in, get playlists from cloud
+                // If signed in, create playlists in cloud
                 if(firebaseUser!=null){
                     FirebaseDatabase database = FirebaseDatabase.getInstance();;
                     DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists").child(playlistName);
@@ -149,13 +155,16 @@ public class HomePlaylistFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
+        // Button create playlist
         btnCreatePlaylist = view.findViewById(R.id.menu_option_btn_create_playlist);
 
+        // Listview playlists
         lvPlaylist = view.findViewById(R.id.listViewPlaylist);
-
+        // Button create playlist
         btnCreatePlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,13 +173,16 @@ public class HomePlaylistFragment extends Fragment {
             }
         });
 
+        // Get and show playlists
         getPlaylist();
 
+        // Register context menu for listview playlist
+        registerForContextMenu(lvPlaylist);
 
     }
 
     // Show playlists
-    private void showPlaylist(){
+    public void showPlaylist(){
         playlistListViewAdapter = new PlaylistAdapter(arrPlaylist);
 
         lvPlaylist.setAdapter(playlistListViewAdapter);
@@ -178,10 +190,12 @@ public class HomePlaylistFragment extends Fragment {
         lvPlaylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get playlist info
                 PlaylistModel playlistModel = (PlaylistModel) playlistListViewAdapter.getItem(position);
                 String playlistName = playlistModel.getName();
                 String playlistType = playlistModel.getType();
 
+                // Send playlist info
                 Bundle bundle = new Bundle();
                 bundle.putString("playlistName", playlistName);
                 bundle.putString("type", playlistType);
@@ -223,6 +237,7 @@ public class HomePlaylistFragment extends Fragment {
 
                     arrPlaylist.add(playlistModel);
                 }
+                showPlaylist();
             }
             //
             @Override
@@ -232,24 +247,76 @@ public class HomePlaylistFragment extends Fragment {
 
         });
         }
-
-        // Wait for receive data from database and show
-        for (int i=0; i<10000; i+=200){
-            final int a = i;
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    showPlaylist();
-                }
-            }, a);
+        else {
+            showPlaylist();
         }
-
-
 
 
     }
 
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.context_menu_playlist, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        // If select delete playlist selected
+        if (item.getItemId() == R.id.btn_delete_playlist) {
+            // Get selected playlist data
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+            int listPosition = info.position;
+            PlaylistModel playlistModel = (PlaylistModel) playlistListViewAdapter.getItem(listPosition);
+            String playlistName = playlistModel.getName();
+            String playlistType = playlistModel.getType();
+
+            // Create and show dialog confirm delete playlist
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = requireActivity().getLayoutInflater();
+            builder.setView(inflater.inflate(R.layout.delete_playlist_dialog_cofirm, null));
+            AlertDialog dialog = builder.create();
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.show();
+
+            // Button
+            Button btnConfirmDelete = dialog.findViewById(R.id.btn_confirm_delete_playlist);
+            Button btnCancelDelete  = dialog.findViewById(R.id.btn_cancel_delete_playlist);
+            // Button confirm delete
+            btnConfirmDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Selected playlist is local playlist
+                    if(Objects.equals(playlistType, "local")){
+                        PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
+                        mydb.deletePlaylist(playlistName);
+                        dialog.dismiss();
+                        getPlaylist();
+                    }
+                    // Selected playlist is online playlist
+                    else if (Objects.equals(playlistType, "online")){
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();;
+                        DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists").child(playlistName);
+                        myFirebaseRef.removeValue();
+                        dialog.dismiss();
+                        getPlaylist();
+                    }
+                }
+            });
+
+            // Button cancel
+            btnCancelDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
 
 
@@ -296,6 +363,18 @@ class PlaylistAdapter extends BaseAdapter {
         TextView txtPlaylistName = viewPlaylist.findViewById(R.id.textView_playlistName);
         txtPlaylistName.setText(playlistName);
 
+        // Display option menu when click to button
+        ImageButton btn_option = ((ImageButton) viewPlaylist.findViewById(R.id.btn_playlist_more_option));
+        btn_option.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Show context menu
+                parent.showContextMenuForChild(v);
+            }
+        });
+
         return viewPlaylist;
+
+
     }
 }
