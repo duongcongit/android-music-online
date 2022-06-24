@@ -31,27 +31,32 @@ public class SongOnDeviceFragment extends Fragment {
     SongAdapter songListViewAdapter;
     ListView lvSong;
 
+    List<SongModel> audioList;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_song_on_device, container, false);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) {
+            //
+        } else {
+            audioList = getAllSongFromDevice(getActivity().getApplicationContext());
+            showList();
+        }
     }
 
     //
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         // Get all audio file from local device
-        final List<SongModel> audioList = getAllSongFromDevice(getActivity().getApplicationContext());
-
-        arrSong = new ArrayList<>();
-        // Add list SongModel to Arraylist
-        arrSong.addAll(audioList);
-
-        // Create adapter
-        songListViewAdapter = new SongAdapter(arrSong, (MainActivity)getContext());
-        // Set adapter for listivew
+        audioList = getAllSongFromDevice(getActivity().getApplicationContext());
         lvSong = view.findViewById(R.id.listViewSongOnDevice);
-        lvSong.setAdapter(songListViewAdapter);
 
+        showList();
         // Event on click to a song in list
         lvSong.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -97,6 +102,18 @@ public class SongOnDeviceFragment extends Fragment {
 
     }
 
+    // Show list
+    public void showList(){
+        arrSong = new ArrayList<>();
+        // Add list SongModel to Arraylist
+        arrSong.addAll(audioList);
+
+        // Create adapter
+        songListViewAdapter = new SongAdapter(arrSong, (MainActivity)getContext());
+        // Set adapter for listivew
+        lvSong.setAdapter(songListViewAdapter);
+    }
+
     // Function get all audio file on device
     public List<SongModel> getAllSongFromDevice(final Context context) {
         final List<SongModel> tempAudioList = new ArrayList<>();
@@ -134,7 +151,6 @@ public class SongOnDeviceFragment extends Fragment {
 
         return tempAudioList;
     }
-
 
 }
 

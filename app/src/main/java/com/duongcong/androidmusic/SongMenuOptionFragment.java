@@ -159,7 +159,7 @@ public class SongMenuOptionFragment extends Fragment {
         // Check if online song is downloaded
         String path = ((MainActivity)getActivity()).appExternalStoragePath + "/" + songName + ".mp3";
         File file = new File(path);
-        if(file.exists()){
+        if(Objects.equals(songType, "online") && file.exists()){
             songMenuOptionDownload.setVisibility(View.GONE);
         }
         //
@@ -384,6 +384,11 @@ public class SongMenuOptionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 songMenuOptionDeleteFile.startAnimation(item_click);
+                File file = new File(songPath);
+                file.delete();
+                ((MainActivity)getActivity()).songOnDeviceFragment.onHiddenChanged(false);
+                ((MainActivity)getActivity()).hideSongMenuOptionFragment();
+                songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
             }
         });
 
