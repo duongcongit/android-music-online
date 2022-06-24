@@ -23,7 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class AccountFragment extends Fragment {
-    private Button btnPopup,btnLogin;
+    private Button btnPopup;
     private TextView username,userName,userRegisDate;
     private String user_email,user_password,user_displayName;
     private FirebaseAuth firebaseAuth;
@@ -37,22 +37,23 @@ public class AccountFragment extends Fragment {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_account,container,false);
 
 
+        //Ngăn người dùng bấm nút back bị trở lại form đăng nhập sau khi đã đăng nhập
         root.setFocusableInTouchMode(true);
         root.requestFocus();
         root.setOnKeyListener(new View.OnKeyListener() {
-                                  @Override
-                                  public boolean onKey(View v, int keyCode, KeyEvent event) {
-                                      if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                                          if (keyCode == KeyEvent.KEYCODE_BACK) {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
 
-                                              return true;
-                                          }
-                                      }
-                                      return false;
-                                  }
-                              });
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
-        btnLogin =(Button) root.findViewById(R.id.btn_login_test);
+
         btnPopup =(Button) root.findViewById(R.id.ButtonPopupMenu);
         username = (TextView) root.findViewById(R.id.user_name);
         userName = (TextView) root.findViewById(R.id.user_Name);
@@ -69,8 +70,6 @@ public class AccountFragment extends Fragment {
         user_displayName = firebaseUser.getDisplayName();
 
 
-
-
         //Gan du lieu
         username.setText(user_email);
         userName.setText(user_displayName);
@@ -78,8 +77,6 @@ public class AccountFragment extends Fragment {
 
 //        String lastSignInDate = user.auth().currentUser.metadata.lastSignInDate;
 //        String regisDate = Auth.auth().currentUser.metadata.creationDate;
-
-
 
 
         //Popup button
@@ -102,7 +99,8 @@ public class AccountFragment extends Fragment {
                                 startActivity(intent);
                                 return true;
                             case R.id.menu_upload:
-                                Toast.makeText(getActivity().getApplicationContext(), "upload", Toast.LENGTH_SHORT).show();
+                                Intent intent1 = new Intent(getActivity().getApplicationContext(), SongUploadActivity.class);
+                                startActivity(intent1);
                                 return true;
                             default:
                                 return false;
@@ -110,14 +108,6 @@ public class AccountFragment extends Fragment {
                     }
                 });
                 popupMenu.show();
-            }
-        });
-
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent1 = new Intent(getActivity().getApplicationContext(), SongUploadActivity.class);
-                startActivity(intent1);
             }
         });
 

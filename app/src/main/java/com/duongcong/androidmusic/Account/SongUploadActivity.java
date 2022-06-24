@@ -199,12 +199,15 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    //Upload len FIrebase
+    //Upload len FIrebase , bài hát sẽ được up vào storage,thông tin lưu trong realtimeDB
     private void uploadFiles() {
         if(uri != null){
             Toast.makeText(this, "Xin vui lòng đợi", Toast.LENGTH_SHORT).show();
             progressBar.setVisibility(View.VISIBLE);
+
+            //gs://androidmusic-3d470.appshot.com/...
             final StorageReference storageReference1 = storageReference.child(System.currentTimeMillis()+"."+getFileExtension(uri));
+
             storageTask = storageReference1.putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
@@ -212,9 +215,8 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
                         @Override
                         public void onSuccess(Uri uri) {
                             String uploadId = databaseReference.push().getKey();
-                            OnlineSongModel onlineSongModel = new OnlineSongModel(uploadId,string_title,uri.toString(),string_albumArt,string_artist,song_categories,string_duration);
-//                            databaseReference.child(firebaseUser.getUid()).child(uploadId).setValue(onlineSongModel);
-                              databaseReference.child(uploadId).setValue(onlineSongModel);
+                            OnlineSongModel onlineSongModel = new OnlineSongModel(uploadId,string_title,uri.toString(),string_albumArt,string_artist,"online",string_duration,song_categories,firebaseUser.getUid());
+                            databaseReference.child(uploadId).setValue(onlineSongModel);
                         }
                     });
                 }
@@ -231,19 +233,17 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
         }
     }
 
+    //Lấy định dạng đuôi file. VD:mp3
     private String getFileExtension(Uri audioUri){
         ContentResolver contentResolver = getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(audioUri));
     }
 
+
     public void showAllSongs(View view) {
         Intent i = new Intent(SongUploadActivity.this, ShowAllSongActivity.class);
         startActivity(i);
     }
 
-    public void openFavorListActivity(View v){
-        Intent i = new Intent(SongUploadActivity.this, FavouriteListActivity.class);
-        startActivity(i);
-    }
 }

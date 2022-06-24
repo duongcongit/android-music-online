@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.duongcong.androidmusic.Model.LocalSongModel;
+import com.duongcong.androidmusic.Model.SongModel;
 import com.duongcong.androidmusic.MainActivity;
 import com.duongcong.androidmusic.R;
 
@@ -26,7 +26,7 @@ import java.util.List;
 
 public class SongOnDeviceFragment extends Fragment {
 
-    ArrayList<LocalSongModel> arrSong;
+    ArrayList<SongModel> arrSong;
     SongAdapter songListViewAdapter;
     ListView lvSong;
 
@@ -43,7 +43,7 @@ public class SongOnDeviceFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
-        final List<LocalSongModel> audioList = getAllSongFromDevice(getActivity().getApplicationContext());
+        final List<SongModel> audioList = getAllSongFromDevice(getActivity().getApplicationContext());
 
         arrSong = new ArrayList<>();
         for (int i=0; i<audioList.size(); i++){
@@ -60,7 +60,7 @@ public class SongOnDeviceFragment extends Fragment {
         lvSong.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                LocalSongModel song = (LocalSongModel) songListViewAdapter.getItem(position);
+                SongModel song = (SongModel) songListViewAdapter.getItem(position);
 
                 String songArtist = song.getArtist();
 
@@ -100,9 +100,9 @@ public class SongOnDeviceFragment extends Fragment {
     }
 
     // Get all song on device
-    public List<LocalSongModel> getAllSongFromDevice(final Context context) {
+    public List<SongModel> getAllSongFromDevice(final Context context) {
 
-        final List<LocalSongModel> tempAudioList = new ArrayList<>();
+        final List<SongModel> tempAudioList = new ArrayList<>();
 
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST,};
@@ -112,7 +112,7 @@ public class SongOnDeviceFragment extends Fragment {
             while (c.moveToNext()) {
                 String path = c.getString(0);
                 if(path.endsWith(".mp3")){
-                    LocalSongModel audioModel = new LocalSongModel();
+                    SongModel audioModel = new SongModel();
                     String album = c.getString(1);
                     String artist = c.getString(2);
 
@@ -142,11 +142,11 @@ public class SongOnDeviceFragment extends Fragment {
 // Listview adapter
 class SongAdapter extends BaseAdapter {
 
-    final ArrayList<LocalSongModel> arrSong;
+    final ArrayList<SongModel> arrSong;
     private Context mContext;
 
 
-    SongAdapter (ArrayList<LocalSongModel> arrSong, Context context) {
+    SongAdapter (ArrayList<SongModel> arrSong, Context context) {
         this.arrSong = arrSong;
         this.mContext = context;
     }
@@ -179,7 +179,7 @@ class SongAdapter extends BaseAdapter {
         }
 
         //
-        LocalSongModel song = (LocalSongModel) getItem(position);
+        SongModel song = (SongModel) getItem(position);
 
         String songName     = song.getName();
         String songArtist   = song.getArtist();

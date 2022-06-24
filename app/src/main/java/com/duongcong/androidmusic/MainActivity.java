@@ -28,7 +28,7 @@ import com.duongcong.androidmusic.Discovery.DiscoveryFragment;
 import com.duongcong.androidmusic.Home.HomeFragment;
 import com.duongcong.androidmusic.Home.playlist.SongOnPlaylistFragment;
 import com.duongcong.androidmusic.Home.songondevice.SongOnDeviceFragment;
-import com.duongcong.androidmusic.Model.LocalSongModel;
+import com.duongcong.androidmusic.Model.SongModel;
 import com.duongcong.androidmusic.Play.PlayMusicFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -42,7 +42,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
 
+    // Firebase
+    // public FirebaseDatabase database = FirebaseDatabase.getInstance();;
+    // public DatabaseReference myFirebaseRef = database.getReference();
     private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
 
     public BottomNavigationView navigation;
 
@@ -79,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     public void plays(){
         // Song 1
         String songName     = "CUT K391 Alan Walker  Ahrix  End of Time Lyrics";
@@ -101,15 +106,15 @@ public class MainActivity extends AppCompatActivity {
         String album3        = "A3";
         String songPath3     = "/storage/emulated/0/Music/CUT Move up remix hay nhất.mp3";
 
-        LocalSongModel song1 = new LocalSongModel();
+        SongModel song1 = new SongModel();
         song1.setName(songName);
         song1.setPath(songPath);
 
-        LocalSongModel song2 = new LocalSongModel();
+        SongModel song2 = new SongModel();
         song2.setName(songName2);
         song2.setPath(songPath2);
 
-        LocalSongModel song3 = new LocalSongModel();
+        SongModel song3 = new SongModel();
         song3.setName(songName3);
         song3.setPath(songPath3);
 
@@ -166,6 +171,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Firebase
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        // myFirebaseRef.child("songs").child("user1").child("baihat");
+        /* myFirebaseRef.child("songs").child("user1").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    System.out.println(ds.getKey());
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+
+        }); */
+
+
+
+
+        // System.out.println(myFirebaseRef.child("songs").child("user1").get());
+
         // Navigation bar
         navigation = findViewById(R.id.navigation);
         navigation.setOnItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -182,9 +214,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentList.add(browseFragment);
         fragmentList.add(accountFragment);
 
-        // fragmentList.add(playMusicFragment);
-        // fragmentList.add(songMenuOptionFragment);
-
         fragmentList.add(songOnDeviceFragment);
         fragmentList.add(songOnPlaylistFragment);
 
@@ -194,10 +223,10 @@ public class MainActivity extends AppCompatActivity {
         requestPermission();
 
 
-
         // Create media player
         playMusicFragment.mediaPlayer = new MediaPlayer();
 
+        // SONG PLAYING BAR
         songPlayingBar.setVisibility(View.GONE);
         // Animation rotate image
         animImgSongPlaying = ObjectAnimator.ofFloat(imgSongPlayingBar, "rotation", 0, 360);
@@ -205,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
         animImgSongPlaying.setRepeatCount(Animation.INFINITE);
         animImgSongPlaying.setRepeatMode(ObjectAnimator.RESTART);
 
+        // When click in bar, open play music fragment
         songPlayingBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,6 +245,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Event click button in song playing bar
+        // Button play
         btnPlayBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -223,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Button pause
         btnPauseBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -235,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //
+    // Get fragment index in list
     public int getFragmentIndex(Fragment fragment) {
         int index = -1;
         for (int i = 0; i < fragmentList.size(); i++) {
@@ -246,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
         return index;
     }
 
-    //
+    // Display a fragment
     public void displayFragment(Fragment fragment) {
         int index = getFragmentIndex(fragment);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -263,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    //
+    // Display play music fragment
     public void displayPlayMusicFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (!playMusicFragment.isAdded()) {
@@ -273,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
         //transaction.commit();
     }
 
-    //
+    // Hide play music fragment
     public void hidePlayMusicFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (playMusicFragment.isResumed()) {
@@ -293,14 +326,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //
+    // Display menu option fragment
     public void displaySongMenuOptionFragment(String type, String playlistName, String songName, String songArtist, String songAlbum, String songPath) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         Bundle bundle = new Bundle();
 
-        bundle.putString("type", type);
-        bundle.putString("playlistName", playlistName);
+        bundle.putString("type", type); // Type local or online
+        bundle.putString("playlistName", playlistName); // If is in a playlist, this data will using for function remove from playlist
         bundle.putString("songPath", songPath);
         bundle.putString("songName",songName);
         bundle.putString("songArtist",songArtist);
@@ -318,8 +351,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    //
+    // Display menu option fragment
     public void hideSongMenuOptionFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (songMenuOptionFragment.isResumed()) {
@@ -343,27 +375,28 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    // Event click bottom navigation items
     private NavigationBarView.OnItemSelectedListener mOnNavigationItemSelectedListener
             = new NavigationBarView.OnItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.page_home:
+                case R.id.page_home: // Home
                     displayFragment(homeFragment);
                     navigation.setVisibility(View.VISIBLE);
                     break;
-                case R.id.page_discovery:
+                case R.id.page_discovery: // Discovery
                     Bundle bundle = new Bundle();
                     bundle.putString("playType", "resume play");
                     playMusicFragment.setArguments(bundle);
                     displayPlayMusicFragment();
                     navigation.setVisibility(View.GONE);
                     break;
-                case R.id.page_browse:
+                case R.id.page_browse: // Browse
                     displayFragment(browseFragment);
                     navigation.setVisibility(View.VISIBLE);
                     break;
-                case R.id.page_account:
+                case R.id.page_account: // Account
                     // Check user firebase
                     firebaseAuth = FirebaseAuth.getInstance();
                     FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -430,9 +463,9 @@ public class MainActivity extends AppCompatActivity {
 
 class SongInPlayList {
     int index;
-    LocalSongModel song;
+    SongModel song;
 
-    public SongInPlayList(int index, LocalSongModel song){
+    public SongInPlayList(int index, SongModel song){
         this.index = index;
         this.song = song;
     }

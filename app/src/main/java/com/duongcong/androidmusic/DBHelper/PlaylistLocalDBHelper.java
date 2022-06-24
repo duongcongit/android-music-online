@@ -6,7 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.duongcong.androidmusic.Model.LocalSongModel;
+import com.duongcong.androidmusic.Model.SongModel;
+import com.duongcong.androidmusic.Model.PlaylistModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,14 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    // Delete a playlist
+    public boolean deletePlaylist(String playlistName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("songPlaylist", "playlistName=?", new String[] {playlistName});
+        db.delete("playlist", "playlistName=?", new String[] {playlistName});
+        return true;
+    }
+
     // Update playlist
     public void updatePlaylist(String playlistName, String newPlaylistName, String type){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -92,8 +101,8 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
     }
 
     // Get list local playlist
-    public List<String> getPlaylist() {
-        List<String> playlist = new ArrayList<>();
+    public ArrayList<PlaylistModel> getPlaylist() {
+        ArrayList<PlaylistModel> playlist = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "SELECT DISTINCT playlistName " +
                 "FROM playlist " +
@@ -101,7 +110,11 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
         res.moveToFirst();
 
         while(res.isAfterLast() == false){
-            playlist.add(res.getString(res.getColumnIndexOrThrow("playlistName")));
+            PlaylistModel playlistModel = new PlaylistModel();
+            playlistModel.setName(res.getString(res.getColumnIndexOrThrow("playlistName")));
+            playlistModel.setType("local");
+
+            playlist.add(playlistModel);
             res.moveToNext();
         }
 
@@ -109,15 +122,19 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
     }
 
     // Get list local playlist
-    public List<String> getPlaylistSongNotAdded(String songPath) {
-        List<String> playlist = new ArrayList<>();
+    public ArrayList<PlaylistModel> getPlaylistSongNotAdded(String songPath) {
+        ArrayList<PlaylistModel> playlist = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT DISTINCT playlistName FROM playlist WHERE playlistName NOT IN (SELECT playlist.playlistName FROM playlist, songPlaylist WHERE playlist.playlistName = songPlaylist.playlistName AND songPath = \"" + songPath + "\")";
         Cursor res =  db.rawQuery( sql, null );
         res.moveToFirst();
 
         while(res.isAfterLast() == false){
-            playlist.add(res.getString(res.getColumnIndexOrThrow("playlistName")));
+            PlaylistModel playlistModel = new PlaylistModel();
+            playlistModel.setName(res.getString(res.getColumnIndexOrThrow("playlistName")));
+            playlistModel.setType("local");
+
+            playlist.add(playlistModel);
             res.moveToNext();
         }
 
@@ -125,15 +142,15 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
     }
 
     // Get list song in a playlist
-    public List<LocalSongModel> getPlaylistData(String playlistName) {
-        List<LocalSongModel> listSong = new ArrayList<>();
+    public List<SongModel> getPlaylistData(String playlistName) {
+        List<SongModel> listSong = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor res =  db.rawQuery( "SELECT * FROM songPlaylist WHERE playlistName = \"" + playlistName + "\";", null );
         res.moveToFirst();
 
         while(res.isAfterLast() == false){
-            LocalSongModel audioModel = new LocalSongModel();
+            SongModel audioModel = new SongModel();
 
             String songName = res.getString(res.getColumnIndexOrThrow("songName"));
             String artist = res.getString(res.getColumnIndexOrThrow("artist"));

@@ -61,6 +61,7 @@ public class SignUpTabFragment extends Fragment {
         return root;
     }
 
+    //Validate
     private void Validation(){
         uEmail = email.getText().toString();
         uName = name.getText().toString();
@@ -162,6 +163,7 @@ public class SignUpTabFragment extends Fragment {
         return m.matches();
     }
 
+    //Validate Email
     private boolean emailCheck(String uEmail) {
         Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+");
         Matcher m = emailPattern.matcher(uEmail);

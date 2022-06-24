@@ -9,6 +9,24 @@ public class OnlineSongModel {
     String artist;
     String type;
     String duration;
+    String category;
+    String uid;
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getDuration() {
         return duration;
@@ -19,7 +37,7 @@ public class OnlineSongModel {
     }
 
 
-    public OnlineSongModel(String id, String name, String path, String album, String artist, String type,String duration) {
+    public OnlineSongModel(String id, String name, String path, String album, String artist, String type,String duration,String category,String uid) {
         if(name.trim().equals("")){
             name = "Bài hát không tên";
         }else{
@@ -32,6 +50,8 @@ public class OnlineSongModel {
         this.artist = artist;
         this.type = type;
         this.duration = duration;
+        this.category = category;
+        this.uid = uid;
     }
 
     public OnlineSongModel() {
