@@ -142,7 +142,7 @@ public class SongOnPlaylistFragment extends Fragment {
             if(Objects.equals(thisPlaylistType, "local")){
                 PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
                 List<SongModel> audioList = mydb.getPlaylistData(thisPlaylistName);
-                showListSong(view, audioList, thisPlaylistName);
+                showListSong(view, audioList);
             }
             // Show list song in online playlist
             else if(Objects.equals(thisPlaylistType, "online")){
@@ -156,15 +156,15 @@ public class SongOnPlaylistFragment extends Fragment {
                         if(dataSnapshot.exists()){
                             // Get song info
                             for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                                String songId   = (String) ds.child("id").getValue();
-                                String songName   = (String) ds.child("name").getValue();
-                                String songPath = (String) ds.child("path").getValue();
-                                String songAlbum = (String) ds.child("album").getValue();
-                                String songArtist = (String) ds.child("artist").getValue();
-                                String songCategory   = (String) ds.child("category").getValue();
-                                String songDuration   = (String) ds.child("duration").getValue();
-                                String songType   = (String) ds.child("type").getValue();
-                                //System.out.println(songName + songPath +songArtist + songAlbum);
+                                String songId       = (String) ds.child("id").getValue();
+                                String songName     = (String) ds.child("name").getValue();
+                                String songPath     = (String) ds.child("path").getValue();
+                                String songAlbum    = (String) ds.child("album").getValue();
+                                String songArtist   = (String) ds.child("artist").getValue();
+                                String songCategory = (String) ds.child("category").getValue();
+                                String songDuration = (String) ds.child("duration").getValue();
+                                String songType     = (String) ds.child("type").getValue();
+                                // System.out.println(songId);
 
                                 // Create a model
                                 SongModel song = new SongModel();
@@ -182,7 +182,7 @@ public class SongOnPlaylistFragment extends Fragment {
                             }
                         }
                         // Show list song
-                        showListSong(view, audioList, thisPlaylistName);
+                        showListSong(view, audioList);
 
                     }
                     //
@@ -200,13 +200,13 @@ public class SongOnPlaylistFragment extends Fragment {
     }
 
     // Show list song
-    private void showListSong(View view, List<SongModel> audioList, String thisPlaylistName){
+    private void showListSong(View view, List<SongModel> audioList){
         arrSong = new ArrayList<>();
         // Add List SongModel to Arraylist
         arrSong.addAll(audioList);
 
         // Create adapter
-        songOnPlaylistAdapter = new SongOnPlaylistAdapter(arrSong, (MainActivity)getContext(), thisPlaylistName);
+        songOnPlaylistAdapter = new SongOnPlaylistAdapter(arrSong, (MainActivity)getContext(), thisPlaylistName, thisPlaylistType);
         // Set adapter for listview
         lvSong.setAdapter(songOnPlaylistAdapter);
 
@@ -222,11 +222,13 @@ class SongOnPlaylistAdapter extends BaseAdapter {
     private Context mContext;
 
     private String thisPlaylistName;
+    private String thisPlaylistType;
 
-    SongOnPlaylistAdapter (ArrayList<SongModel> arrSong, Context context, String playlistName) {
+    SongOnPlaylistAdapter (ArrayList<SongModel> arrSong, Context context, String playlistName, String playlistType) {
         this.arrSong = arrSong;
         this.mContext = context;
         this.thisPlaylistName = playlistName;
+        this.thisPlaylistType = playlistType;
     }
 
     @Override
@@ -277,9 +279,9 @@ class SongOnPlaylistAdapter extends BaseAdapter {
             public void onClick(View v) {
                 if (mContext instanceof MainActivity) {
                     HashMap<String, String> songHashMap = new HashMap<>();
-                    songHashMap.put("isInPlaylist", "no");
-                    songHashMap.put("playlistName", "null");
-                    songHashMap.put("playlistType", "null");
+                    songHashMap.put("isInPlaylist", "yes");
+                    songHashMap.put("playlistName", thisPlaylistName);
+                    songHashMap.put("playlistType", thisPlaylistType);
                     songHashMap.put("songId", song.getId());
                     songHashMap.put("songName", song.getName());
                     songHashMap.put("songPath", song.getPath());
@@ -291,6 +293,7 @@ class SongOnPlaylistAdapter extends BaseAdapter {
 
                     // Call function from MainActivity
                     ((MainActivity)mContext).displaySongMenuOptionFragment(songHashMap);
+
                 }
             }
         });

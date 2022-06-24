@@ -70,7 +70,7 @@ public class SongMenuOptionFragment extends Fragment {
     Button btnConfirmCreatePlaylist, btnCancelCreatePlaylist;
 
     String isInPlaylist, playlistName, playlistType; // Get data if song in playlist
-    String songID, songName, songPath, songAlbum, songArtist, songCategory, songDuration, songType;
+    String songId, songName, songPath, songAlbum, songArtist, songCategory, songDuration, songType;
 
     @Nullable
     @Override
@@ -101,7 +101,7 @@ public class SongMenuOptionFragment extends Fragment {
     private void getBundleData(){
         if(bundle!=null){
             // Get song data
-            songID          = bundle.getString("songID");
+            songId          = bundle.getString("songId");
             songName        = bundle.getString("songName");
             songPath        = bundle.getString("songPath");
             songAlbum       = bundle.getString("songAlbum");
@@ -241,7 +241,7 @@ public class SongMenuOptionFragment extends Fragment {
                             // If add to local playlist
                             if(Objects.equals(playlistSelectedType, "local")){
                                 PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-                                mydb.addSongToPlaylist(playlistNameSelected, songID, songName, songArtist, songAlbum, songPath, songCategory, songDuration, songType);
+                                mydb.addSongToPlaylist(playlistNameSelected, songId, songName, songArtist, songAlbum, songPath, songCategory, songDuration, songType);
 
                                 Toast.makeText( getContext(),"Đã thêm thành công!", Toast.LENGTH_SHORT).show();
                                 // Hide menu option
@@ -295,16 +295,32 @@ public class SongMenuOptionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 songMenuOptionRemoveFromPlaylist.startAnimation(item_click);
-
                 if(bundle != null){
-
-                    String playlistName = bundle.getString("playlistName");
-                    if(bundle.getString("type") == "local" && playlistName != "null"){
-                        String songPath = bundle.getString("songPath");
+                    if(Objects.equals(playlistType, "local")){
                         PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
                         mydb.deleteSongFromPlaylist(playlistName, songPath);
+                        Toast.makeText( getContext(),"Đã xóa thành công!", Toast.LENGTH_SHORT).show();
+                        // Hide menu option
+                        ((MainActivity)getActivity()).hideSongMenuOptionFragment();
+                        songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
+                        // Refresh list song in playlist
+                        ((MainActivity)getActivity()).songOnPlaylistFragment.onHiddenChanged(false);
                     }
-                    else if(bundle.getString("type") == "online"){
+                    else if(Objects.equals(playlistType, "online")){
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();;
+                        DatabaseReference myFirebaseRef = database.getReference();
+                        myFirebaseRef.child("users").child(firebaseUser.getUid()).child("playlists")
+                                .child(playlistName).child("songs").child(songId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText( getContext(),"Đã xóa thành công!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                        // Hide menu option
+                        ((MainActivity)getActivity()).hideSongMenuOptionFragment();
+                        songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
+                        // Refresh list song in playlist
+                        ((MainActivity)getActivity()).songOnPlaylistFragment.onHiddenChanged(false);
                     }
 
                 }
