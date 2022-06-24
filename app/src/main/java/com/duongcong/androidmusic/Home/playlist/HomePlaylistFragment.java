@@ -56,12 +56,40 @@ public class HomePlaylistFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.fragment_home_playlist, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        // Button create playlist
+        btnCreatePlaylist = view.findViewById(R.id.menu_option_btn_create_playlist);
+
+        // Listview playlists
+        lvPlaylist = view.findViewById(R.id.listViewPlaylist);
+        // Button create playlist
+        btnCreatePlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createPlaylistDialog();
+
+            }
+        });
+
+        // Get and show playlists
+        getPlaylist();
+
+        // Register context menu for listview playlist
+        registerForContextMenu(lvPlaylist);
 
     }
 
-
+    // Dialog create playlist
     private void createPlaylistDialog() {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -147,37 +175,6 @@ public class HomePlaylistFragment extends Fragment {
                 dialog.dismiss();
             }
         });
-
-    }
-
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        //
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-
-        // Button create playlist
-        btnCreatePlaylist = view.findViewById(R.id.menu_option_btn_create_playlist);
-
-        // Listview playlists
-        lvPlaylist = view.findViewById(R.id.listViewPlaylist);
-        // Button create playlist
-        btnCreatePlaylist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createPlaylistDialog();
-
-            }
-        });
-
-        // Get and show playlists
-        getPlaylist();
-
-        // Register context menu for listview playlist
-        registerForContextMenu(lvPlaylist);
 
     }
 

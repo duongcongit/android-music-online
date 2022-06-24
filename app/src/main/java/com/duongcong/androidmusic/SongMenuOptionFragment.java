@@ -219,7 +219,7 @@ public class SongMenuOptionFragment extends Fragment {
                             // If add to local playlist
                             if(playlistType == "local" && playlistName != "null"){
                                 PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-                                mydb.addSongToPlaylist(playlistName, songName, songArtist, songAlbum, songPath);
+                                mydb.addSongToPlaylist(playlistName, "null", songName, songArtist, songAlbum, songPath, "null", "null", "local");
 
                                 ((MainActivity)getActivity()).hideSongMenuOptionFragment();
                                 songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);

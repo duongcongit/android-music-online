@@ -148,8 +148,8 @@ public class SongOnPlaylistFragment extends Fragment {
                 List<SongModel> audioList = new ArrayList<>();
                 // Get songs from cloud
                 FirebaseDatabase database = FirebaseDatabase.getInstance();;
-                DatabaseReference myFirebaseRef = database.getReference();
-                myFirebaseRef.child("users").child(firebaseUser.getUid()).child("playlists").child(thisPlaylistName).child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
+                DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists").child(thisPlaylistName).child("songs");
+                myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()){

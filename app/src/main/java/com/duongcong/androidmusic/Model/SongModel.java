@@ -7,6 +7,8 @@ public class SongModel {
     String path;
     String album;
     String artist;
+    String category;
+    String duration;
     String type;
 
     // Set data
@@ -20,7 +22,12 @@ public class SongModel {
 
     public void setArtist(String artist) {this.artist = artist;}
 
+    public void setCategory(String category) {this.category = category; }
+
+    public void setDuration(String duration) {this.duration = duration; }
+
     public void setType(String type) {this.type = type; }
+
 
     // Get data
     public String getId() {return id; }
@@ -32,6 +39,10 @@ public class SongModel {
     public String getAlbum() {return album;}
 
     public String getArtist() {return artist;}
+
+    public String getCategory()  {return category;}
+
+    public String getDuration()  {return duration;}
 
     public String getType()  {return type;}
 

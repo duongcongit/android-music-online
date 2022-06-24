@@ -175,28 +175,6 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        // myFirebaseRef.child("songs").child("user1").child("baihat");
-        /* myFirebaseRef.child("songs").child("user1").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    System.out.println(ds.getKey());
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-
-        }); */
-
-
-
-
-        // System.out.println(myFirebaseRef.child("songs").child("user1").get());
 
         // Navigation bar
         navigation = findViewById(R.id.navigation);
@@ -221,7 +199,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Request permission
         requestPermission();
-
 
         // Create media player
         playMusicFragment.mediaPlayer = new MediaPlayer();
@@ -386,11 +363,7 @@ public class MainActivity extends AppCompatActivity {
                     navigation.setVisibility(View.VISIBLE);
                     break;
                 case R.id.page_discovery: // Discovery
-                    Bundle bundle = new Bundle();
-                    bundle.putString("playType", "resume play");
-                    playMusicFragment.setArguments(bundle);
-                    displayPlayMusicFragment();
-                    navigation.setVisibility(View.GONE);
+                    displayFragment(discoveryFragment);
                     break;
                 case R.id.page_browse: // Browse
                     displayFragment(browseFragment);

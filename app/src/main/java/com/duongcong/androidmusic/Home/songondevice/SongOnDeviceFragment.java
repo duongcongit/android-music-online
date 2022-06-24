@@ -30,65 +30,63 @@ public class SongOnDeviceFragment extends Fragment {
     SongAdapter songListViewAdapter;
     ListView lvSong;
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_song_on_device, container, false);
     }
-
 
     //
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
+        // Get all audio file from local device
         final List<SongModel> audioList = getAllSongFromDevice(getActivity().getApplicationContext());
 
         arrSong = new ArrayList<>();
-        for (int i=0; i<audioList.size(); i++){
-            // String name = audioList.get(i).getName();
-            arrSong.add(audioList.get(i));
-        }
+        // Add list SongModel to Arraylist
+        arrSong.addAll(audioList);
 
-        // Set adapter
+        // Create adapter
         songListViewAdapter = new SongAdapter(arrSong, (MainActivity)getContext());
+        // Set adapter for listivew
         lvSong = view.findViewById(R.id.listViewSongOnDevice);
         lvSong.setAdapter(songListViewAdapter);
 
-        // On click a song in list
+        // Event on click to a song in list
         lvSong.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get song data
                 SongModel song = (SongModel) songListViewAdapter.getItem(position);
-
                 String songArtist = song.getArtist();
-
+                // Set artist if artist is <unknown>
                 if(songArtist.equals("<unknown>")){
                     songArtist = "Unknown artist";
                 }
-
                 String songName = song.getName();
-
+                // Set bundle to send song data to play music fragment
                 Bundle bundle = new Bundle();
                 bundle.putString("playType", "new play");
-                bundle.putString("songPath", song.getPath());
+                bundle.putString("songId", song.getId());
                 bundle.putString("songName",songName);
+                bundle.putString("songPath", song.getPath());
                 bundle.putString("songArtist",songArtist);
                 bundle.putString("songAlbum",song.getAlbum());
-
-
+                bundle.putString("songCategory",song.getCategory());
+                bundle.putString("songDuration",song.getDuration());
+                bundle.putString("songType", song.getType());
                 ((MainActivity)getActivity()).playMusicFragment.setArguments(bundle);
 
+                // Display play music fragment
                 ((MainActivity)getActivity()).displayPlayMusicFragment();
 
+                // Set view and animation for playing bar
                 ((MainActivity)getActivity()).animImgSongPlaying.start();
                 TextView txtSongPlayingName, txtSongPlayingArtist;
                 txtSongPlayingName = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_name);
                 txtSongPlayingArtist = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_artist);
                 txtSongPlayingName.setText(songName);
                 txtSongPlayingArtist.setText(songArtist);
-                // Animation text
+                // Text animation while playing
                 txtSongPlayingName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
                 txtSongPlayingName.setSelected(true);
                 txtSongPlayingName.setSingleLine(true);
@@ -96,14 +94,11 @@ public class SongOnDeviceFragment extends Fragment {
             }
         });
 
-
     }
 
-    // Get all song on device
+    // Function get all audio file on device
     public List<SongModel> getAllSongFromDevice(final Context context) {
-
         final List<SongModel> tempAudioList = new ArrayList<>();
-
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST,};
         Cursor c = context.getContentResolver().query(uri, projection, null, null, null);
@@ -116,12 +111,17 @@ public class SongOnDeviceFragment extends Fragment {
                     String album = c.getString(1);
                     String artist = c.getString(2);
 
+                    // Get file name from path
                     String name = path.substring(path.lastIndexOf("/") + 1, path.length() - 4);
 
+                    audioModel.setId("null");
                     audioModel.setName(name);
                     audioModel.setAlbum(album);
                     audioModel.setArtist(artist);
                     audioModel.setPath(path);
+                    audioModel.setCategory("null");
+                    audioModel.setDuration("null");
+                    audioModel.setType("local");
 
                     tempAudioList.add(audioModel);
                 }
@@ -133,7 +133,6 @@ public class SongOnDeviceFragment extends Fragment {
 
         return tempAudioList;
     }
-
 
 
 }
@@ -178,33 +177,31 @@ class SongAdapter extends BaseAdapter {
             viewSong = convertView;
         }
 
-        //
+        // Get song data
         SongModel song = (SongModel) getItem(position);
-
         String songName     = song.getName();
         String songArtist   = song.getArtist();
         String songAlbum    = song.getAlbum();
         String songPath     = song.getPath();
 
+        // Set artist if artist is <unknown>
         if(songArtist.equals("<unknown>")){
             songArtist = "Unknown artist";
         }
-
-
+        // Set song name if is too long
         if(songName.length() > 40){
             songName = songName.substring(0, 35) + "...";
         }
 
+        // Set view for listview item
         ((TextView) viewSong.findViewById(R.id.textView_playlistName)).setText(songName);
         ((TextView) viewSong.findViewById(R.id.textView_songArtist)).setText(songArtist);
-
 
         // Display option menu when click to button
         ((ImageButton) viewSong.findViewById(R.id.btn_song_more_option)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mContext instanceof MainActivity) {
-
                     ((MainActivity)mContext).displaySongMenuOptionFragment("local", "null", song.getName(), song.getArtist(), song.getAlbum(), song.getPath());
                 }
             }
