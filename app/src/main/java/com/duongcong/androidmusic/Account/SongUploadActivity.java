@@ -47,6 +47,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class SongUploadActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private ProgressBar progressBar;
@@ -147,15 +148,19 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
 //            Bitmap bitmap = BitmapFactory.decodeByteArray(art,0,art.length);
 //            imageView.setImageBitmap(bitmap);
 
-            album.setText(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
-            duration.setText(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-            title.setText(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
-            artist.setText(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
-            data_song.setText(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE));
 
             string_duration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             string_artist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             string_title = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            string_duration=millisecondsToTime(Long.parseLong(string_duration));
+
+            album.setText(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
+            duration.setText(string_duration);
+            title.setText(string_title);
+            artist.setText(string_artist);
+            data_song.setText(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE));
+
+
 
 
         }
@@ -244,6 +249,22 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
     public void showAllSongs(View view) {
         Intent i = new Intent(SongUploadActivity.this, ShowAllSongActivity.class);
         startActivity(i);
+    }
+
+
+    //Convert milis to minutes:second
+    private String millisecondsToTime(long milliseconds) {
+        long minutes = (milliseconds / 1000) / 60;
+        long seconds = (milliseconds / 1000) % 60;
+        String secondsStr = Long.toString(seconds);
+        String secs;
+        if (secondsStr.length() >= 2) {
+            secs = secondsStr.substring(0, 2);
+        } else {
+            secs = "0" + secondsStr;
+        }
+
+        return minutes + ":" + secs;
     }
 
 }

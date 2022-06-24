@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.duongcong.androidmusic.R;
+import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -62,7 +63,6 @@ public class AccountFragment extends Fragment {
         firebaseUser = firebaseAuth.getCurrentUser();
 
 
-
         //Lay du lieu tu phan dang nhap
         Intent intent = getActivity().getIntent();
         user_email = firebaseUser.getEmail();
@@ -73,6 +73,7 @@ public class AccountFragment extends Fragment {
         //Gan du lieu
         username.setText(user_email);
         userName.setText(user_displayName);
+
 
 
 //        String lastSignInDate = user.auth().currentUser.metadata.lastSignInDate;
