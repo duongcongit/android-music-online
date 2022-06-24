@@ -29,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -147,7 +148,7 @@ public class SongOnPlaylistFragment extends Fragment {
             else if(Objects.equals(thisPlaylistType, "online")){
                 List<SongModel> audioList = new ArrayList<>();
                 // Get songs from cloud
-                FirebaseDatabase database = FirebaseDatabase.getInstance();;
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists").child(thisPlaylistName).child("songs");
                 myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -155,18 +156,26 @@ public class SongOnPlaylistFragment extends Fragment {
                         if(dataSnapshot.exists()){
                             // Get song info
                             for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                String songId   = (String) ds.child("id").getValue();
                                 String songName   = (String) ds.child("name").getValue();
                                 String songPath = (String) ds.child("path").getValue();
-                                String songArtist = (String) ds.child("artist").getValue();
                                 String songAlbum = (String) ds.child("album").getValue();
+                                String songArtist = (String) ds.child("artist").getValue();
+                                String songCategory   = (String) ds.child("category").getValue();
+                                String songDuration   = (String) ds.child("duration").getValue();
+                                String songType   = (String) ds.child("type").getValue();
                                 //System.out.println(songName + songPath +songArtist + songAlbum);
 
                                 // Create a model
                                 SongModel song = new SongModel();
+                                song.setId(songId);
                                 song.setName(songName);
                                 song.setPath(songPath);
-                                song.setArtist(songArtist);
                                 song.setAlbum(songAlbum);
+                                song.setArtist(songArtist);
+                                song.setCategory(songCategory);
+                                song.setDuration(songDuration);
+                                song.setType(songType);
 
                                 // Add to list
                                 audioList.add(song);
@@ -267,8 +276,21 @@ class SongOnPlaylistAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 if (mContext instanceof MainActivity) {
+                    HashMap<String, String> songHashMap = new HashMap<>();
+                    songHashMap.put("isInPlaylist", "no");
+                    songHashMap.put("playlistName", "null");
+                    songHashMap.put("playlistType", "null");
+                    songHashMap.put("songId", song.getId());
+                    songHashMap.put("songName", song.getName());
+                    songHashMap.put("songPath", song.getPath());
+                    songHashMap.put("songAlbum", song.getAlbum());
+                    songHashMap.put("songArtist", song.getArtist());
+                    songHashMap.put("songCategory", song.getCategory());
+                    songHashMap.put("songDuration", song.getDuration());
+                    songHashMap.put("songType", song.getType());
+
                     // Call function from MainActivity
-                    ((MainActivity)mContext).displaySongMenuOptionFragment("local", thisPlaylistName, song.getName(), song.getArtist(), song.getAlbum(), song.getPath());
+                    ((MainActivity)mContext).displaySongMenuOptionFragment(songHashMap);
                 }
             }
         });

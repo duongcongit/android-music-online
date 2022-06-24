@@ -17,11 +17,12 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.duongcong.androidmusic.Model.SongModel;
 import com.duongcong.androidmusic.MainActivity;
+import com.duongcong.androidmusic.Model.SongModel;
 import com.duongcong.androidmusic.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SongOnDeviceFragment extends Fragment {
@@ -181,8 +182,6 @@ class SongAdapter extends BaseAdapter {
         SongModel song = (SongModel) getItem(position);
         String songName     = song.getName();
         String songArtist   = song.getArtist();
-        String songAlbum    = song.getAlbum();
-        String songPath     = song.getPath();
 
         // Set artist if artist is <unknown>
         if(songArtist.equals("<unknown>")){
@@ -202,7 +201,20 @@ class SongAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 if (mContext instanceof MainActivity) {
-                    ((MainActivity)mContext).displaySongMenuOptionFragment("local", "null", song.getName(), song.getArtist(), song.getAlbum(), song.getPath());
+                    HashMap<String, String> songHashMap = new HashMap<>();
+                    songHashMap.put("isInPlaylist", "no");
+                    songHashMap.put("playlistName", "null");
+                    songHashMap.put("playlistType", "null");
+                    songHashMap.put("songId", song.getId());
+                    songHashMap.put("songName", song.getName());
+                    songHashMap.put("songPath", song.getPath());
+                    songHashMap.put("songAlbum", song.getAlbum());
+                    songHashMap.put("songArtist", song.getArtist());
+                    songHashMap.put("songCategory", song.getCategory());
+                    songHashMap.put("songDuration", song.getDuration());
+                    songHashMap.put("songType", song.getType());
+
+                    ((MainActivity)mContext).displaySongMenuOptionFragment(songHashMap);
                 }
             }
         });

@@ -37,7 +37,9 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -175,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-
         // Navigation bar
         navigation = findViewById(R.id.navigation);
         navigation.setOnItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -242,7 +243,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
     }
 
     // Get fragment index in list
@@ -304,20 +304,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Display menu option fragment
-    public void displaySongMenuOptionFragment(String type, String playlistName, String songName, String songArtist, String songAlbum, String songPath) {
+    public void displaySongMenuOptionFragment(HashMap<String, String> songHashMap) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         Bundle bundle = new Bundle();
-
-        bundle.putString("type", type); // Type local or online
-        bundle.putString("playlistName", playlistName); // If is in a playlist, this data will using for function remove from playlist
-        bundle.putString("songPath", songPath);
-        bundle.putString("songName",songName);
-        bundle.putString("songArtist",songArtist);
-        bundle.putString("songAlbum",songAlbum);
+        Set<String> keySet = songHashMap.keySet();
+        for (String key : keySet) {
+            bundle.putString(key, songHashMap.get(key));
+        }
 
         songMenuOptionFragment.setArguments(bundle);
-
         if (!songMenuOptionFragment.isAdded()) {
             transaction.add(R.id.fragment_container, songMenuOptionFragment);
         }

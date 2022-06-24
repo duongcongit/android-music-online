@@ -24,13 +24,13 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
     // String create table
     private static final String DATABASE_CREATE_SONG_PLAYLIST = "CREATE TABLE songPlaylist (" +
             "playlistName text NOT NULL," +
-            "songId text NOT NULL," +
+            "songId text," +
             "songName text NOT NULL," +
             "songArtist  text," +
             "songAlbum text," +
             "songPath text NOT NULL," +
-            "songCategory text NOT NULL," +
-            "songDuration text NOT NULL," +
+            "songCategory text," +
+            "songDuration text," +
             "songType text NOT NULL," +
             "PRIMARY KEY(playlistName,songPath)," +
             "FOREIGN KEY(playlistName) REFERENCES playlist(playlistName) );";
