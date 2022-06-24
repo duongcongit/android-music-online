@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +36,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     // public DatabaseReference myFirebaseRef = database.getReference();
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
+
+    public String appExternalStorageFolder;
+    public String appExternalStoragePath;
 
     public BottomNavigationView navigation;
 
@@ -82,10 +87,7 @@ public class MainActivity extends AppCompatActivity {
     protected List<SongInPlayList> playlist;
     protected SongInPlayList songPlaying;
 
-
-
-
-
+    // Test
     public void plays(){
         // Song 1
         String songName     = "CUT K391 Alan Walker  Ahrix  End of Time Lyrics";
@@ -166,12 +168,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Set app folder in sdcard
+        appExternalStorageFolder = "Music";
+        appExternalStoragePath = Environment.getExternalStorageDirectory().getPath() + "/" + appExternalStorageFolder;
+        File appExternalStorageDir = new File(appExternalStoragePath);
+
+        // Create app folder in sdcard if not exists
+        if(!appExternalStorageDir.exists() || !appExternalStorageDir.isDirectory()) {
+            appExternalStorageDir.mkdir();
+        }
 
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance();
@@ -344,8 +354,6 @@ public class MainActivity extends AppCompatActivity {
             }, 100);
         }
     }
-
-
 
 
     // Event click bottom navigation items

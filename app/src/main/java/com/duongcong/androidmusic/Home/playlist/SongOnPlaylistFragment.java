@@ -103,7 +103,7 @@ public class SongOnPlaylistFragment extends Fragment {
                 SongModel song = (SongModel) songOnPlaylistAdapter.getItem(position);
                 // Set artist if it is <unknown>
                 String songArtist = song.getArtist();
-                if(songArtist.equals("<unknown>")){
+                if(songArtist == null || songArtist.equals("<unknown>")){
                     songArtist = "Unknown artist";
                 }
                 String songName = song.getName();
@@ -262,7 +262,7 @@ class SongOnPlaylistAdapter extends BaseAdapter {
         String songName = song.getName();
         String songArtist = song.getArtist();
         // Set artist if it is <unknown>
-        if(songArtist.equals("<unknown>")){
+        if(songArtist == null || songArtist.equals("<unknown>")){
             songArtist = "Unknown artist";
         }
         // Set song name if it is too long

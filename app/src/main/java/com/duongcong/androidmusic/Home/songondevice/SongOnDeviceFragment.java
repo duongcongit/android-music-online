@@ -60,7 +60,7 @@ public class SongOnDeviceFragment extends Fragment {
                 SongModel song = (SongModel) songListViewAdapter.getItem(position);
                 String songArtist = song.getArtist();
                 // Set artist if artist is <unknown>
-                if(songArtist.equals("<unknown>")){
+                if(songArtist == null || songArtist.equals("<unknown>")){
                     songArtist = "Unknown artist";
                 }
                 String songName = song.getName();
@@ -184,7 +184,7 @@ class SongAdapter extends BaseAdapter {
         String songArtist   = song.getArtist();
 
         // Set artist if artist is <unknown>
-        if(songArtist.equals("<unknown>")){
+        if(songArtist == null || songArtist.equals("<unknown>")){
             songArtist = "Unknown artist";
         }
         // Set song name if is too long

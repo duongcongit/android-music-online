@@ -1,6 +1,10 @@
 package com.duongcong.androidmusic;
 
+import android.app.DownloadManager;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
@@ -98,6 +103,35 @@ public class SongMenuOptionFragment extends Fragment {
 
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) {
+            //
+            ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
+            if(((MainActivity)getActivity()).playMusicFragment.mediaPlayer.isPlaying()){
+                ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
+            }
+        } else {
+            bundle = this.getArguments();
+            getBundleData();
+
+            // Hide bottom navigation bar and playing song bar
+            ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
+            ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_show);
+                }
+            }, 250);
+
+        }
+    }
+
+    // Get data
     private void getBundleData(){
         if(bundle!=null){
             // Get song data
@@ -116,46 +150,41 @@ public class SongMenuOptionFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (hidden) {
-            //
-            ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
-            if(((MainActivity)getActivity()).playMusicFragment.mediaPlayer.isPlaying()){
-                ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
-            }
-        } else {
-
-            bundle = this.getArguments();
-
-            getBundleData();
-
-            // Hide bottom navigation bar and playing song bar
-            ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
-            ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
-
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_show);
-                }
-            }, 250);
-
+    // Display or hide menu items by song
+    private void setMenuItemView(){
+        if(Objects.equals(songType, "local")){
+            songMenuOptionRemoveFromUpload.setVisibility(View.GONE);
+            songMenuOptionDownload.setVisibility(View.GONE);
         }
+        // Check if online song is downloaded
+        String path = ((MainActivity)getActivity()).appExternalStoragePath + "/" + songName + ".mp3";
+        File file = new File(path);
+        if(file.exists()){
+            songMenuOptionDownload.setVisibility(View.GONE);
+        }
+        //
+        if(Objects.equals(isInPlaylist, "no")){
+            songMenuOptionRemoveFromPlaylist.setVisibility(View.GONE);
+        }
+        //
+        if(Objects.equals(songType, "online")){
+            songMenuOptionUpload.setVisibility(View.GONE);
+            songMenuOptionDeleteFile.setVisibility(View.GONE);
+        }
+        //
+
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        //
-        songMenuOption                      = view.findViewById(R.id.song_menu_option);
+        // Parent fragment
+        songMenuOption    = view.findViewById(R.id.song_menu_option);
 
         // Menu container
         menuContainer = view.findViewById(R.id.song_menu_option_view_container);
@@ -167,6 +196,10 @@ public class SongMenuOptionFragment extends Fragment {
         songMenuOptionUpload                = view.findViewById(R.id.menu_option_upload);
         songMenuOptionDownload              = view.findViewById(R.id.menu_option_download);
         songMenuOptionDeleteFile            = view.findViewById(R.id.menu_option_delete_file);
+
+        // Set display or hide menu items
+        setMenuItemView();
+
         // Animation click
         item_click = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.menu_option_item_click);
 
@@ -176,20 +209,18 @@ public class SongMenuOptionFragment extends Fragment {
         menuPlaylistToAdd.setVisibility(View.GONE);
         btnMenuCreatePlaylist = view.findViewById(R.id.menu_option_btn_create_playlist);
 
-
         // Hide menu when click to outside area
         songMenuOptionHideArea = view.findViewById(R.id.songMenuOptionHideArea);
         songMenuOptionHideArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //
                 ((MainActivity)getActivity()).hideSongMenuOptionFragment();
                 songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
-
                 //
             }
         });
 
+        //
         songMenuOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -342,6 +373,9 @@ public class SongMenuOptionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 songMenuOptionDownload.startAnimation(item_click);
+                downloadSong(songPath, songName+".mp3");
+                ((MainActivity)getActivity()).hideSongMenuOptionFragment();
+                songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
             }
         });
 
@@ -353,9 +387,7 @@ public class SongMenuOptionFragment extends Fragment {
             }
         });
 
-
     }
-
 
     // Get and show playlist
     private void getPlaylist(){
@@ -423,7 +455,6 @@ public class SongMenuOptionFragment extends Fragment {
 
     }
 
-
     // Create playlist
     private void createPlaylistDialog() {
         // Use the Builder class for convenient dialog construction
@@ -462,6 +493,23 @@ public class SongMenuOptionFragment extends Fragment {
 
     }
 
+    // Download song
+    public void downloadSong(String url, String fileName){
+        //
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);
+        request.setTitle(fileName);
+        request.setDescription("Đang tải nhạc...");
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, fileName);
+
+        DownloadManager downloadManager = (DownloadManager) requireActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+        if(downloadManager != null){
+            request.allowScanningByMediaScanner();
+            downloadManager.enqueue(request);
+        }
+
+    }
 
 }
 
