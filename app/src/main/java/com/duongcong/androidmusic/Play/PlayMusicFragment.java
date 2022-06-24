@@ -68,37 +68,6 @@ public class PlayMusicFragment extends Fragment {
         return rootLayout;
     }
 
-    // Listen when hide or show play music fragment
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        // Get play type send from another fragment
-        Bundle bundle = this.getArguments();
-        String playType = "";
-        if(bundle != null){
-            playType = bundle.getString("playType");
-        }
-        super.onHiddenChanged(hidden);
-        if (hidden) {
-            // Show bottom navigation and playing bar
-           ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
-           ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
-        } else {
-            // Hide bottom navigation bar and playing song bar
-            ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
-            ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
-
-            // Set new song if play type is "new play"
-            if(Objects.equals(playType, "new play")){
-                // If a song is playing, reset media player
-                if(mediaPlayer.isPlaying()){
-                    mediaPlayer.reset();
-                }
-                getSong();
-                setViewSongDetail(getView());
-            }
-        }
-    }
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -189,31 +158,41 @@ public class PlayMusicFragment extends Fragment {
         // Receive song info
         Bundle bundle = this.getArguments();
         if(bundle != null){
-            songId          = bundle.getString("songID");
-            songName        = bundle.getString("songName");
-            songPath        = bundle.getString("songPath");
-            songAlbum       = bundle.getString("songAlbum");
-            songArtist      = bundle.getString("songArtist");
-            songCategory    = bundle.getString("songCategory");
-            songDuration    = bundle.getString("songDuration");
-            songType        = bundle.getString("songType");
-        }
+            if(Objects.equals(bundle.getString("playType"), "new play")){
+                // If a song is playing, reset media player
+                if(mediaPlayer.isPlaying()){
+                    mediaPlayer.reset();
+                }
+                songId          = bundle.getString("songID");
+                songName        = bundle.getString("songName");
+                songPath        = bundle.getString("songPath");
+                songAlbum       = bundle.getString("songAlbum");
+                songArtist      = bundle.getString("songArtist");
+                songCategory    = bundle.getString("songCategory");
+                songDuration    = bundle.getString("songDuration");
+                songType        = bundle.getString("songType");
 
-        // Set path of song
-        String PATH_TO_FILE = songPath;
+                // Set path of song
+                String PATH_TO_FILE = songPath;
 
-        // Create media player
-        mediaPlayer = new MediaPlayer();
+                // Create media player
+                mediaPlayer = new MediaPlayer();
 
-        // Get song from path and play
-        try {
-            mediaPlayer.setDataSource(PATH_TO_FILE);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-            // Update when song is playing
-            myHandler.postDelayed(UpdateSongTime,100);
-        } catch (IOException e) {
-            e.printStackTrace();
+                // Get song from path and play
+                try {
+                    mediaPlayer.setDataSource(PATH_TO_FILE);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                    // Update when song is playing
+                    myHandler.postDelayed(UpdateSongTime,100);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //
+                setViewSongDetail(getView());
+
+            }
         }
 
     }

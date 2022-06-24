@@ -252,7 +252,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     // Get fragment index in list
@@ -289,8 +288,8 @@ public class MainActivity extends AppCompatActivity {
         if (!playMusicFragment.isAdded()) {
             transaction.add(R.id.fragment_container, playMusicFragment);
         }
-        transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).show(playMusicFragment).addToBackStack(null).commit();
-        //transaction.commit();
+        transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).show(playMusicFragment).addToBackStack(null);
+        transaction.commit();
     }
 
     // Hide play music fragment
