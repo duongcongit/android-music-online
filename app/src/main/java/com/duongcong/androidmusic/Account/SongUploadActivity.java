@@ -89,7 +89,7 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
 
         //
         mediaMetadataRetriever = new MediaMetadataRetriever();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("songs");
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
         storageReference = FirebaseStorage.getInstance().getReference().child("songs");
 
         //Set up
@@ -221,7 +221,7 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
                         public void onSuccess(Uri uri) {
                             String uploadId = databaseReference.push().getKey();
                             OnlineSongModel onlineSongModel = new OnlineSongModel(uploadId,string_title,uri.toString(),string_albumArt,string_artist,"online",string_duration,song_categories,firebaseUser.getUid());
-                            databaseReference.child(uploadId).setValue(onlineSongModel);
+                            databaseReference.child(firebaseUser.getUid()).child("songs").child(uploadId).setValue(onlineSongModel);
                         }
                     });
                 }
