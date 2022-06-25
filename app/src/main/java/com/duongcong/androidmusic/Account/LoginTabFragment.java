@@ -47,7 +47,6 @@ public class LoginTabFragment extends Fragment {
         return root;
     }
 
-    //Validate đăng nhập
     private void Validation() {
         username = edtUserName.getText().toString();
         password = edtUserPassW.getText().toString();
@@ -65,7 +64,6 @@ public class LoginTabFragment extends Fragment {
 
     }
 
-    //Kiểm tra dữ liệu từ DB
     private void checkFromDB() {
         //Firebase Auth
         firebaseAuth.signInWithEmailAndPassword(username,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {

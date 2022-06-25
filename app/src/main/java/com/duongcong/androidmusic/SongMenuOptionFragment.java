@@ -1,7 +1,12 @@
 package com.duongcong.androidmusic;
 
+import android.app.DownloadManager;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +28,8 @@ import androidx.fragment.app.Fragment;
 
 import com.duongcong.androidmusic.DBHelper.PlaylistLocalDBHelper;
 import com.duongcong.androidmusic.Model.PlaylistModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,8 +38,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
 
 public class SongMenuOptionFragment extends Fragment {
 
@@ -65,6 +75,9 @@ public class SongMenuOptionFragment extends Fragment {
     EditText txtCreatePlaylistName;
     Button btnConfirmCreatePlaylist, btnCancelCreatePlaylist;
 
+    String isInPlaylist, playlistName, playlistType; // Get data if song in playlist
+    String songId, songName, songPath, songAlbum, songArtist, songCategory, songDuration, songType;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -73,6 +86,7 @@ public class SongMenuOptionFragment extends Fragment {
         // Hide bottom navigation bar and playing song bar
         ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
         ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
+        ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -83,6 +97,7 @@ public class SongMenuOptionFragment extends Fragment {
         }, 250);
 
         bundle = this.getArguments();
+        getBundleData();
 
         //
         return rootLayout;
@@ -96,16 +111,18 @@ public class SongMenuOptionFragment extends Fragment {
         if (hidden) {
             //
             ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.VISIBLE);
             if(((MainActivity)getActivity()).playMusicFragment.mediaPlayer.isPlaying()){
                 ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
             }
         } else {
-
             bundle = this.getArguments();
+            getBundleData();
 
             // Hide bottom navigation bar and playing song bar
             ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
             ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
 
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -118,19 +135,73 @@ public class SongMenuOptionFragment extends Fragment {
         }
     }
 
+    // Get data
+    private void getBundleData(){
+        if(bundle!=null){
+            // Get song data
+            songId          = bundle.getString("songId");
+            songName        = bundle.getString("songName");
+            songPath        = bundle.getString("songPath");
+            songAlbum       = bundle.getString("songAlbum");
+            songArtist      = bundle.getString("songArtist");
+            songCategory    = bundle.getString("songCategory");
+            songDuration    = bundle.getString("songDuration");
+            songType        = bundle.getString("songType");
+            // Get data if song in playlist
+            isInPlaylist    = bundle.getString("isInPlaylist");
+            playlistName    = bundle.getString("playlistName");
+            playlistType    = bundle.getString("playlistType");
+        }
+    }
+
+    // Display or hide menu items by song
+    private void setMenuItemView(){
+        if(Objects.equals(songType, "local")){
+            songMenuOptionRemoveFromUpload.setVisibility(View.GONE);
+            songMenuOptionDownload.setVisibility(View.GONE);
+        }
+        // Check if online song is downloaded
+        String path = ((MainActivity)getActivity()).appExternalStoragePath + "/" + songName + ".mp3";
+        File file = new File(path);
+        if(Objects.equals(songType, "online") && file.exists()){
+            songMenuOptionDownload.setVisibility(View.GONE);
+        }
+        //
+        if(Objects.equals(isInPlaylist, "no")){
+            songMenuOptionRemoveFromPlaylist.setVisibility(View.GONE);
+        }
+        //
+        if(Objects.equals(songType, "online")){
+            songMenuOptionUpload.setVisibility(View.GONE);
+            songMenuOptionDeleteFile.setVisibility(View.GONE);
+        }
+        //
+
+    }
+
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        //
-        songMenuOption                      = view.findViewById(R.id.song_menu_option);
+        // Parent fragment
+        songMenuOption    = view.findViewById(R.id.song_menu_option);
 
         // Menu container
         menuContainer = view.findViewById(R.id.song_menu_option_view_container);
+
+        // Song info
+        TextView songNameView   = (TextView) view.findViewById(R.id.txt_menu_songName);
+        TextView songArtistView = (TextView) view.findViewById(R.id.txt_menu_songArtist);
+        songNameView.setText(songName);
+        songNameView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        songNameView.setSelected(true);
+        songNameView.setSingleLine(true);
+        songArtistView.setText(songArtist);
+
 
         // Menu items
         songMenuOptionRemoveFromUpload      = view.findViewById(R.id.menu_option_rm_from_upload);
@@ -139,6 +210,10 @@ public class SongMenuOptionFragment extends Fragment {
         songMenuOptionUpload                = view.findViewById(R.id.menu_option_upload);
         songMenuOptionDownload              = view.findViewById(R.id.menu_option_download);
         songMenuOptionDeleteFile            = view.findViewById(R.id.menu_option_delete_file);
+
+        // Set display or hide menu items
+        setMenuItemView();
+
         // Animation click
         item_click = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.menu_option_item_click);
 
@@ -148,20 +223,18 @@ public class SongMenuOptionFragment extends Fragment {
         menuPlaylistToAdd.setVisibility(View.GONE);
         btnMenuCreatePlaylist = view.findViewById(R.id.menu_option_btn_create_playlist);
 
-
         // Hide menu when click to outside area
         songMenuOptionHideArea = view.findViewById(R.id.songMenuOptionHideArea);
         songMenuOptionHideArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //
                 ((MainActivity)getActivity()).hideSongMenuOptionFragment();
                 songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
-
                 //
             }
         });
 
+        //
         songMenuOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,8 +242,7 @@ public class SongMenuOptionFragment extends Fragment {
             }
         });
 
-        // ITEMS CLICK
-
+        // ========= ITEMS CLICK
         // Remove song from uploaded
         songMenuOptionRemoveFromUpload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,28 +278,52 @@ public class SongMenuOptionFragment extends Fragment {
                 lvPlaylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        // Get playlist data
                         PlaylistModel playlistModel = (PlaylistModel) playlistListViewAdapter.getItem(position);
-                        String playlistName = playlistModel.getName();
-                        String playlistType = playlistModel.getType();
+                        String playlistNameSelected = playlistModel.getName();
+                        String playlistSelectedType = playlistModel.getType();
                         if(bundle != null){
-                            // Data of song
-                            String songPath = bundle.getString("songPath");
-                            String songName = bundle.getString("songName");
-                            String songArtist = bundle.getString("songArtist");
-                            String songAlbum = bundle.getString("songAlbum");
-
                             // If add to local playlist
-                            if(playlistType == "local" && playlistName != "null"){
+                            if(Objects.equals(playlistSelectedType, "local")){
                                 PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-                                mydb.addSongToPlaylist(playlistName, songName, songArtist, songAlbum, songPath);
+                                mydb.addSongToPlaylist(playlistNameSelected, songId, songName, songArtist, songAlbum, songPath, songCategory, songDuration, songType);
 
+                                Toast.makeText( getContext(),"Đã thêm thành công!", Toast.LENGTH_SHORT).show();
+                                // Hide menu option
                                 ((MainActivity)getActivity()).hideSongMenuOptionFragment();
                                 songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
 
                             }
-                            else if(playlistType == "online" && playlistName != "null"){
+                            // If add to online playlist
+                            else if(Objects.equals(playlistSelectedType, "online")){
+                                String tmpId = songType;
+                                // Generate random song id if song type is local (id is null)
+                                if(Objects.equals(songType, "local")){
+                                    tmpId = "local" + UUID.randomUUID().toString().replaceAll("-", "");
+                                }
                                 //
-                                System.out.println("ONNN");
+                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid())
+                                        .child("playlists").child(playlistNameSelected).child("songs").child(tmpId);
+                                // Insert data to firebase
+                                myFirebaseRef.child("id").setValue(tmpId);
+                                myFirebaseRef.child("name").setValue(songName);
+                                myFirebaseRef.child("path").setValue(songPath);
+                                myFirebaseRef.child("album").setValue(songAlbum);
+                                myFirebaseRef.child("artist").setValue(songArtist);
+                                myFirebaseRef.child("category").setValue(songCategory);
+                                myFirebaseRef.child("duration").setValue(songDuration);
+                                myFirebaseRef.child("type").setValue(songType).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText( getContext(),"Đã thêm thành công!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                                // Hide menu option
+                                ((MainActivity)getActivity()).hideSongMenuOptionFragment();
+                                songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
+
                             }
 
                         }
@@ -244,16 +340,32 @@ public class SongMenuOptionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 songMenuOptionRemoveFromPlaylist.startAnimation(item_click);
-
                 if(bundle != null){
-
-                    String playlistName = bundle.getString("playlistName");
-                    if(bundle.getString("type") == "local" && playlistName != "null"){
-                        String songPath = bundle.getString("songPath");
+                    if(Objects.equals(playlistType, "local")){
                         PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
                         mydb.deleteSongFromPlaylist(playlistName, songPath);
+                        Toast.makeText( getContext(),"Đã xóa thành công!", Toast.LENGTH_SHORT).show();
+                        // Hide menu option
+                        ((MainActivity)getActivity()).hideSongMenuOptionFragment();
+                        songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
+                        // Refresh list song in playlist
+                        ((MainActivity)getActivity()).songOnPlaylistFragment.onHiddenChanged(false);
                     }
-                    else if(bundle.getString("type") == "online"){
+                    else if(Objects.equals(playlistType, "online")){
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();;
+                        DatabaseReference myFirebaseRef = database.getReference();
+                        myFirebaseRef.child("users").child(firebaseUser.getUid()).child("playlists")
+                                .child(playlistName).child("songs").child(songId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText( getContext(),"Đã xóa thành công!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                        // Hide menu option
+                        ((MainActivity)getActivity()).hideSongMenuOptionFragment();
+                        songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
+                        // Refresh list song in playlist
+                        ((MainActivity)getActivity()).songOnPlaylistFragment.onHiddenChanged(false);
                     }
 
                 }
@@ -275,6 +387,9 @@ public class SongMenuOptionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 songMenuOptionDownload.startAnimation(item_click);
+                downloadSong(songPath, songName+".mp3");
+                ((MainActivity)getActivity()).hideSongMenuOptionFragment();
+                songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
             }
         });
 
@@ -283,26 +398,29 @@ public class SongMenuOptionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 songMenuOptionDeleteFile.startAnimation(item_click);
+                File file = new File(songPath);
+                file.delete();
+                ((MainActivity)getActivity()).songOnDeviceFragment.onHiddenChanged(false);
+                ((MainActivity)getActivity()).hideSongMenuOptionFragment();
+                songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
             }
         });
 
-
     }
 
-
-    // Get and show playlist
+    // Get and display playlists to which the selected song has not been added
     private void getPlaylist(){
         //
         arrPlaylist = new ArrayList<>();
 
         String songPath = bundle.getString("songPath");
 
-        // Get playlist from local
+        // Get playlist which the selected song has not been added from local
         PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
         ArrayList<PlaylistModel> listPlaylist =  mydb.getPlaylistSongNotAdded(songPath);
         arrPlaylist.addAll(listPlaylist);
 
-        // If signed in, get playlists from cloud
+        // If signed in, get playlists which the selected song has not been added from cloud
         if(firebaseUser!=null){
             FirebaseDatabase database = FirebaseDatabase.getInstance();;
             DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists");
@@ -321,7 +439,7 @@ public class SongMenuOptionFragment extends Fragment {
                                 }
                             }
                         }
-
+                        // if song is not added, add this playlist to list
                         if(!isAdded){
                             PlaylistModel pl = new PlaylistModel();
                             pl.setName((String) ds.child("name").getValue());
@@ -330,6 +448,9 @@ public class SongMenuOptionFragment extends Fragment {
                         }
 
                     }
+                    // Show list playlist
+                    playlistListViewAdapter = new PlaylistToAddAdapter(arrPlaylist);
+                    lvPlaylist.setAdapter(playlistListViewAdapter);
                 }
                 //
                 @Override
@@ -339,25 +460,13 @@ public class SongMenuOptionFragment extends Fragment {
 
             });
         }
-
-        // Wait for receive data from database and show
-        for (int i=0; i<10000; i+=200){
-            final int a = i;
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playlistListViewAdapter = new PlaylistToAddAdapter(arrPlaylist);
-                    lvPlaylist.setAdapter(playlistListViewAdapter);
-                }
-            }, a);
-        }
-
+        // Show list playlist
+        playlistListViewAdapter = new PlaylistToAddAdapter(arrPlaylist);
+        lvPlaylist.setAdapter(playlistListViewAdapter);
 
     }
 
-
-    // Create playlist
+    // Create playlist dialog
     private void createPlaylistDialog() {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -373,15 +482,67 @@ public class SongMenuOptionFragment extends Fragment {
         btnConfirmCreatePlaylist = dialog.findViewById(R.id.btn_confirm_create_playlist);
         btnCancelCreatePlaylist = dialog.findViewById(R.id.btn_cancel_create_playlist);
 
+        // If confirm create playlist
         btnConfirmCreatePlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String playlistName = txtCreatePlaylistName.getText().toString();
 
-                PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-                mydb.createPlaylist(playlistName, "local");
-                dialog.dismiss();
-                getPlaylist();
+                // If signed in, create playlists in cloud
+                if(firebaseUser!=null){
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();;
+                    DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists").child(playlistName);
+                    myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){
+                                txtCreatePlaylistName.setError("Danh sách phát online này đã tồn tại!");
+                                txtCreatePlaylistName.requestFocus();
+                            }
+                            else {
+                                myFirebaseRef.child("name").setValue(playlistName);
+                                myFirebaseRef.child("type").setValue("online");
+                                dialog.dismiss();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+                // Else not signed in, create local playlist
+                else {
+                    PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
+                    ArrayList<PlaylistModel> playlists = mydb.getPlaylist();
+                    //
+                    boolean isExist = false;
+                    for(int i=0; i<playlists.size(); i++){
+                        if(Objects.equals(playlists.get(i).getName(), playlistName)){
+                            isExist = true;
+                            break;
+                        }
+                    }
+                    if(isExist){
+                        txtCreatePlaylistName.setError("Danh sách phát này đã tồn tại!");
+                        txtCreatePlaylistName.requestFocus();
+                    }
+                    else {
+                        mydb.createPlaylist(playlistName, "local");
+                        dialog.dismiss();
+                    }
+
+                }
+
+                // Close dialog and refresh list
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getPlaylist();
+                    }
+                }, 2000);
             }
         });
 
@@ -395,6 +556,23 @@ public class SongMenuOptionFragment extends Fragment {
 
     }
 
+    // Download song
+    public void downloadSong(String url, String fileName){
+        //
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);
+        request.setTitle(fileName);
+        request.setDescription("Đang tải nhạc...");
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, fileName);
+
+        DownloadManager downloadManager = (DownloadManager) requireActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+        if(downloadManager != null){
+            request.allowScanningByMediaScanner();
+            downloadManager.enqueue(request);
+        }
+
+    }
 
 }
 
@@ -438,7 +616,7 @@ class PlaylistToAddAdapter extends BaseAdapter {
         String playlistName = (String) playlist.getName();
 
 
-        TextView txtPlaylistName = viewPlaylist.findViewById(R.id.textView_playlistName);
+        TextView txtPlaylistName = viewPlaylist.findViewById(R.id.textView_songName);
         txtPlaylistName.setText(playlistName);
 
         return viewPlaylist;

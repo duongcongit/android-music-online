@@ -106,12 +106,22 @@
         app:layout_constraintVertical_bias="0">
 
         <TextView
+            android:id="@+id/textViewSongTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textViewSongTitle"
-            android:textSize="16sp"
             android:layout_marginBottom="5dp"
-            android:text="Tên bài hát:">
+            android:text="Tên bài hát: "
+            android:textSize="16sp">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/textViewSongTitleInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text=""
+            android:textSize="16sp">
 
         </TextView>
 
@@ -128,6 +138,16 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/textViewSongAlbumInfo"
+            android:textSize="16sp"
+            android:layout_marginBottom="5dp"
+            android:text="">
+
+        </TextView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/textViewSongArtist"
             android:layout_marginBottom="5dp"
             android:textSize="16sp"
@@ -138,12 +158,13 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textViewSongData"
+            android:id="@+id/textViewSongArtistInfo"
             android:layout_marginBottom="5dp"
             android:textSize="16sp"
-            android:text="Mô tả:">
+            android:text="">
 
         </TextView>
+
 
         <TextView
             android:layout_width="match_parent"
@@ -155,9 +176,29 @@
 
         </TextView>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewSongDurationInfo"
+            android:layout_marginBottom="5dp"
+            android:textSize="16sp"
+            android:text="">
+
+        </TextView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewSongImage"
+            android:layout_marginBottom="5dp"
+            android:textSize="16sp"
+            android:text="Hình ảnh: ">
+
+        </TextView>
+
         <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_gravity="center"
             android:id="@+id/imgView_image">
         </ImageView>
@@ -166,8 +207,10 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnOpenImgAct"
+        android:id="@+id/btnOpenImgFiles"
+        android:layout_marginTop="10dp"
         android:text="Chọn hình ảnh"
+        android:onClick="openImageFiles"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -175,18 +218,6 @@
         app:layout_constraintVertical_bias="0">
     </Button>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnShowAllSongs"
-        android:text="Xem tất cả bài hát"
-        android:onClick="showAllSongs"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnOpenImgAct"
-        app:layout_constraintVertical_bias="0">
-    </Button>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,6 @@ package com.duongcong.androidmusic.Account;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.duongcong.androidmusic.R;
-import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -37,30 +35,13 @@ public class AccountFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_account,container,false);
 
-
-        //Ngăn người dùng bấm nút back bị trở lại form đăng nhập sau khi đã đăng nhập
-        root.setFocusableInTouchMode(true);
-        root.requestFocus();
-        root.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    if (keyCode == KeyEvent.KEYCODE_BACK) {
-
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-
-
         btnPopup =(Button) root.findViewById(R.id.ButtonPopupMenu);
         username = (TextView) root.findViewById(R.id.user_name);
         userName = (TextView) root.findViewById(R.id.user_Name);
         userRegisDate = (TextView) root.findViewById(R.id.user_date_regis);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+
 
 
         //Lay du lieu tu phan dang nhap
@@ -73,7 +54,6 @@ public class AccountFragment extends Fragment {
         //Gan du lieu
         username.setText(user_email);
         userName.setText(user_displayName);
-
 
 
 //        String lastSignInDate = user.auth().currentUser.metadata.lastSignInDate;

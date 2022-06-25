@@ -24,11 +24,15 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
     // String create table
     private static final String DATABASE_CREATE_SONG_PLAYLIST = "CREATE TABLE songPlaylist (" +
             "playlistName text NOT NULL," +
+            "songId text," +
             "songName text NOT NULL," +
-            "artist  text," +
-            "album text," +
+            "songArtist  text," +
+            "songAlbum text," +
             "songPath text NOT NULL," +
-            "PRIMARY KEY(playlistName,songName)," +
+            "songCategory text," +
+            "songDuration text," +
+            "songType text NOT NULL," +
+            "PRIMARY KEY(playlistName,songPath)," +
             "FOREIGN KEY(playlistName) REFERENCES playlist(playlistName) );";
 
     public PlaylistLocalDBHelper(Context context){
@@ -74,16 +78,19 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
         db.update("playlist", contentValues, "playlistName=?", new String[] {playlistName});
     }
 
-
     // Insert a song into database
-    public boolean addSongToPlaylist (String playlistName, String songName, String artist, String album, String songPath) {
+    public boolean addSongToPlaylist (String playlistName, String songId , String songName, String artist, String album, String songPath, String songCategory, String songDuration, String songType) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("playlistName", playlistName);
+        contentValues.put("songId", songId);
         contentValues.put("songName", songName);
-        contentValues.put("artist", artist);
-        contentValues.put("album", album);
+        contentValues.put("songArtist", artist);
+        contentValues.put("songAlbum", album);
         contentValues.put("songPath", songPath);
+        contentValues.put("songCategory", songCategory);
+        contentValues.put("songDuration", songDuration);
+        contentValues.put("songType", songType);
         db.insert("songPlaylist", null, contentValues);
         return true;
     }
@@ -121,7 +128,7 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
         return playlist;
     }
 
-    // Get list local playlist
+    // Get list local playlist by a song is not added
     public ArrayList<PlaylistModel> getPlaylistSongNotAdded(String songPath) {
         ArrayList<PlaylistModel> playlist = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -129,7 +136,7 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
         Cursor res =  db.rawQuery( sql, null );
         res.moveToFirst();
 
-        while(res.isAfterLast() == false){
+        while(!res.isAfterLast()){
             PlaylistModel playlistModel = new PlaylistModel();
             playlistModel.setName(res.getString(res.getColumnIndexOrThrow("playlistName")));
             playlistModel.setType("local");
@@ -149,19 +156,29 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
         Cursor res =  db.rawQuery( "SELECT * FROM songPlaylist WHERE playlistName = \"" + playlistName + "\";", null );
         res.moveToFirst();
 
-        while(res.isAfterLast() == false){
+        while(!res.isAfterLast()){
+            // Get song data
             SongModel audioModel = new SongModel();
+            String songId       = res.getString(res.getColumnIndexOrThrow("songId"));
+            String songName     = res.getString(res.getColumnIndexOrThrow("songName"));
+            String artist       = res.getString(res.getColumnIndexOrThrow("songArtist"));
+            String album        = res.getString(res.getColumnIndexOrThrow("songAlbum"));
+            String songPath     = res.getString(res.getColumnIndexOrThrow("songPath"));
+            String songCategory = res.getString(res.getColumnIndexOrThrow("songCategory"));
+            String songDuration = res.getString(res.getColumnIndexOrThrow("songDuration"));
+            String songType     = res.getString(res.getColumnIndexOrThrow("songType"));
 
-            String songName = res.getString(res.getColumnIndexOrThrow("songName"));
-            String artist = res.getString(res.getColumnIndexOrThrow("artist"));
-            String album = res.getString(res.getColumnIndexOrThrow("album"));
-            String songPath = res.getString(res.getColumnIndexOrThrow("songPath"));
-
+            // Create a model
+            audioModel.setId(songId);
             audioModel.setName(songName);
             audioModel.setArtist(artist);
             audioModel.setAlbum(album);
             audioModel.setPath(songPath);
+            audioModel.setCategory(songCategory);
+            audioModel.setDuration(songDuration);
+            audioModel.setType(songType);
 
+            // Add to list
             listSong.add(audioModel);
 
             res.moveToNext();

@@ -8,8 +8,6 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,9 +21,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.duongcong.androidmusic.Account.SongUploadActivity;
-import com.duongcong.androidmusic.Model.Constrants;
-import com.duongcong.androidmusic.Model.OnlineFavorList;
+import com.duongcong.androidmusic.Model.SongModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -35,9 +31,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +58,7 @@ public class FavouriteListActivity extends AppCompatActivity implements View.OnC
         btnUpload.setOnClickListener(this);
 
         storageReference = FirebaseStorage.getInstance().getReference();
-        databaseReference = FirebaseDatabase.getInstance().getReference(Constrants.Database_PATH_UPLOADS);
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
         Spinner spinner1 =(Spinner) findViewById(R.id.spinner1);
 
         List<String> categories = new ArrayList<>();
@@ -108,33 +102,33 @@ public class FavouriteListActivity extends AppCompatActivity implements View.OnC
             ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
-            final StorageReference sRef = storageReference.child(Constrants.STORAGE_PATH_UPLOADS
+            final StorageReference sRef = storageReference.child("songs"+
             +System.currentTimeMillis()+"."+getFileExtension(uri));
 
-            sRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    String url = uri.toString();
-                    OnlineFavorList upload = new OnlineFavorList(edtFavor.getText().toString().trim(),url,songCategory);
-                    String uploadId = databaseReference.push().getKey();
-                    databaseReference.child(uploadId).setValue(upload);
-                    progressDialog.dismiss();
-                    Toast.makeText(FavouriteListActivity.this, "File đã được tải lên", Toast.LENGTH_SHORT).show();
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressDialog.dismiss();
-                    Toast.makeText(FavouriteListActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                    double progress = (100.0* snapshot.getBytesTransferred()/snapshot.getTotalByteCount());
-                    progressDialog.setMessage("Đang tải "+ ((int)progress)+"%..");
-                }
-            });
+//            sRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                @Override
+//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                    String url = uri.toString();
+//                    SongModel upload = new SongModel(edtFavor.getText().toString().trim(),url,songCategory);
+//                    String uploadId = databaseReference.push().getKey();
+//                    databaseReference.child(uploadId).setValue(upload);
+//                    progressDialog.dismiss();
+//                    Toast.makeText(FavouriteListActivity.this, "File đã được tải lên", Toast.LENGTH_SHORT).show();
+//
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//                    progressDialog.dismiss();
+//                    Toast.makeText(FavouriteListActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+//                }
+//            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+//                @Override
+//                public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+//                    double progress = (100.0* snapshot.getBytesTransferred()/snapshot.getTotalByteCount());
+//                    progressDialog.setMessage("Đang tải "+ ((int)progress)+"%..");
+//                }
+//            });
         }
     }
 

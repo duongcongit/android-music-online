@@ -2,7 +2,6 @@ package com.duongcong.androidmusic.Home.playlist;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,6 +58,7 @@ public class SongOnPlaylistFragment extends Fragment {
         super.onHiddenChanged(hidden);
         if (hidden) {
             //
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
         } else {
             // Get playlist info
             Bundle bundle = this.getArguments();
@@ -86,6 +87,7 @@ public class SongOnPlaylistFragment extends Fragment {
             thisPlaylistType = bundle.getString("type");
         }
 
+
         // Set textview playlist name
         txtViewPlaylistName = view.findViewById(R.id.playlistName_fragment);
         txtViewPlaylistName.setText(thisPlaylistName);
@@ -98,39 +100,11 @@ public class SongOnPlaylistFragment extends Fragment {
         lvSong.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get song info
-                SongModel song = (SongModel) songOnPlaylistAdapter.getItem(position);
-                // Set artist if it is <unknown>
-                String songArtist = song.getArtist();
-                if(songArtist.equals("<unknown>")){
-                    songArtist = "Unknown artist";
-                }
-                String songName = song.getName();
-                // Set bundle to send song info to play
-                Bundle bundle = new Bundle();
-                bundle.putString("playType", "new play");
-                bundle.putString("songPath", song.getPath());
-                bundle.putString("songName",songName);
-                bundle.putString("songArtist",songArtist);
-                bundle.putString("songAlbum",song.getAlbum());
-                ((MainActivity)getActivity()).playMusicFragment.setArguments(bundle);
-                // Display play music fragment
-                ((MainActivity)getActivity()).displayPlayMusicFragment();
-
-                // Set view and animation for playing bar
-                ((MainActivity)getActivity()).animImgSongPlaying.start();
-                TextView txtSongPlayingName, txtSongPlayingArtist;
-                txtSongPlayingName = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_name);
-                txtSongPlayingArtist = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_artist);
-                txtSongPlayingName.setText(songName);
-                txtSongPlayingArtist.setText(songArtist);
-                // Text animation while playing
-                txtSongPlayingName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-                txtSongPlayingName.setSelected(true);
-                txtSongPlayingName.setSingleLine(true);
-
+                ((MainActivity)getActivity()).playNewPlaylist(arrSong, 0);
             }
         });
+
+
     }
 
     private void getListSong(View view){
@@ -141,39 +115,47 @@ public class SongOnPlaylistFragment extends Fragment {
             if(Objects.equals(thisPlaylistType, "local")){
                 PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
                 List<SongModel> audioList = mydb.getPlaylistData(thisPlaylistName);
-                showListSong(view, audioList, thisPlaylistName);
+                showListSong(view, audioList);
             }
             // Show list song in online playlist
             else if(Objects.equals(thisPlaylistType, "online")){
                 List<SongModel> audioList = new ArrayList<>();
                 // Get songs from cloud
-                FirebaseDatabase database = FirebaseDatabase.getInstance();;
-                DatabaseReference myFirebaseRef = database.getReference();
-                myFirebaseRef.child("users").child(firebaseUser.getUid()).child("playlists").child(thisPlaylistName).child("songs").addListenerForSingleValueEvent(new ValueEventListener() {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists").child(thisPlaylistName).child("songs");
+                myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()){
                             // Get song info
                             for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                                String songName   = (String) ds.child("name").getValue();
-                                String songPath = (String) ds.child("path").getValue();
-                                String songArtist = (String) ds.child("artist").getValue();
-                                String songAlbum = (String) ds.child("album").getValue();
-                                //System.out.println(songName + songPath +songArtist + songAlbum);
+                                String songId       = (String) ds.child("id").getValue();
+                                String songName     = (String) ds.child("name").getValue();
+                                String songPath     = (String) ds.child("path").getValue();
+                                String songAlbum    = (String) ds.child("album").getValue();
+                                String songArtist   = (String) ds.child("artist").getValue();
+                                String songCategory = (String) ds.child("category").getValue();
+                                String songDuration = (String) ds.child("duration").getValue();
+                                String songType     = (String) ds.child("type").getValue();
+                                // System.out.println(songId);
 
                                 // Create a model
                                 SongModel song = new SongModel();
+                                song.setId(songId);
                                 song.setName(songName);
                                 song.setPath(songPath);
-                                song.setArtist(songArtist);
                                 song.setAlbum(songAlbum);
+                                song.setArtist(songArtist);
+                                song.setCategory(songCategory);
+                                song.setDuration(songDuration);
+                                song.setType(songType);
 
                                 // Add to list
                                 audioList.add(song);
                             }
                         }
                         // Show list song
-                        showListSong(view, audioList, thisPlaylistName);
+                        showListSong(view, audioList);
 
                     }
                     //
@@ -191,17 +173,35 @@ public class SongOnPlaylistFragment extends Fragment {
     }
 
     // Show list song
-    private void showListSong(View view, List<SongModel> audioList, String thisPlaylistName){
+    private void showListSong(View view, List<SongModel> audioList){
         arrSong = new ArrayList<>();
+
         // Add List SongModel to Arraylist
         arrSong.addAll(audioList);
 
         // Create adapter
-        songOnPlaylistAdapter = new SongOnPlaylistAdapter(arrSong, (MainActivity)getContext(), thisPlaylistName);
+        songOnPlaylistAdapter = new SongOnPlaylistAdapter(arrSong, (MainActivity)getContext(), thisPlaylistName, thisPlaylistType);
         // Set adapter for listview
         lvSong.setAdapter(songOnPlaylistAdapter);
 
         // songOnPlaylistAdapter.notifyDataSetChanged();
+
+        // If list song is not empty, show button play playlist
+        if(arrSong.size() > 0){
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.VISIBLE);
+            ((MainActivity)getActivity()).btnPlayPlaylist.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((MainActivity)getActivity()).playNewPlaylist(arrSong, 0);
+                }
+            });
+            System.out.println("Có");
+        }
+        else {
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
+            System.out.println("Trống");
+        }
+
     }
 
 }
@@ -213,11 +213,13 @@ class SongOnPlaylistAdapter extends BaseAdapter {
     private Context mContext;
 
     private String thisPlaylistName;
+    private String thisPlaylistType;
 
-    SongOnPlaylistAdapter (ArrayList<SongModel> arrSong, Context context, String playlistName) {
+    SongOnPlaylistAdapter (ArrayList<SongModel> arrSong, Context context, String playlistName, String playlistType) {
         this.arrSong = arrSong;
         this.mContext = context;
         this.thisPlaylistName = playlistName;
+        this.thisPlaylistType = playlistType;
     }
 
     @Override
@@ -251,7 +253,7 @@ class SongOnPlaylistAdapter extends BaseAdapter {
         String songName = song.getName();
         String songArtist = song.getArtist();
         // Set artist if it is <unknown>
-        if(songArtist.equals("<unknown>")){
+        if(songArtist == null || songArtist.equals("<unknown>")){
             songArtist = "Unknown artist";
         }
         // Set song name if it is too long
@@ -259,7 +261,7 @@ class SongOnPlaylistAdapter extends BaseAdapter {
             songName = songName.substring(0, 35) + "...";
         }
         // Set view for each item in list view
-        ((TextView) viewSong.findViewById(R.id.textView_playlistName)).setText(songName);
+        ((TextView) viewSong.findViewById(R.id.textView_songName)).setText(songName);
         ((TextView) viewSong.findViewById(R.id.textView_songArtist)).setText(songArtist);
 
         // Display option menu when click to button
@@ -267,8 +269,22 @@ class SongOnPlaylistAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 if (mContext instanceof MainActivity) {
+                    HashMap<String, String> songHashMap = new HashMap<>();
+                    songHashMap.put("isInPlaylist", "yes");
+                    songHashMap.put("playlistName", thisPlaylistName);
+                    songHashMap.put("playlistType", thisPlaylistType);
+                    songHashMap.put("songId", song.getId());
+                    songHashMap.put("songName", song.getName());
+                    songHashMap.put("songPath", song.getPath());
+                    songHashMap.put("songAlbum", song.getAlbum());
+                    songHashMap.put("songArtist", song.getArtist());
+                    songHashMap.put("songCategory", song.getCategory());
+                    songHashMap.put("songDuration", song.getDuration());
+                    songHashMap.put("songType", song.getType());
+
                     // Call function from MainActivity
-                    ((MainActivity)mContext).displaySongMenuOptionFragment("local", thisPlaylistName, song.getName(), song.getArtist(), song.getAlbum(), song.getPath());
+                    ((MainActivity)mContext).displaySongMenuOptionFragment(songHashMap);
+
                 }
             }
         });
