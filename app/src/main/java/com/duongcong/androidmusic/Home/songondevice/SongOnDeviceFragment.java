@@ -209,7 +209,7 @@ class SongAdapter extends BaseAdapter {
         }
 
         // Set view for listview item
-        ((TextView) viewSong.findViewById(R.id.textView_playlistName)).setText(songName);
+        ((TextView) viewSong.findViewById(R.id.textView_songName)).setText(songName);
         ((TextView) viewSong.findViewById(R.id.textView_songArtist)).setText(songArtist);
 
         // Display option menu when click to button

@@ -270,7 +270,7 @@ class SongOnPlaylistAdapter extends BaseAdapter {
             songName = songName.substring(0, 35) + "...";
         }
         // Set view for each item in list view
-        ((TextView) viewSong.findViewById(R.id.textView_playlistName)).setText(songName);
+        ((TextView) viewSong.findViewById(R.id.textView_songName)).setText(songName);
         ((TextView) viewSong.findViewById(R.id.textView_songArtist)).setText(songArtist);
 
         // Display option menu when click to button

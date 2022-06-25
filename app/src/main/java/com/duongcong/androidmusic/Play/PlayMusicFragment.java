@@ -69,11 +69,32 @@ public class PlayMusicFragment extends Fragment {
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        // If hide play music screen
+        if (hidden) {
+            // Show bottom navigation bar and playing song bar
+            ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
+            ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
+        }
+        // If display
+        else {
+            // Get song data and set player, views, mode,...
+            // If just display song is playing and not play mew song, do nothing
+            getSong();
+            // Hide bottom navigation bar and playing song bar
+            ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
+            ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Get song data and set player, views, mode,...
         getSong();
-        setViewSongDetail(view);
+        // setViewSongDetail(view);
 
         // Control button
         btn_forward = (ImageButton) view.findViewById(R.id.btn_forward);
@@ -158,6 +179,7 @@ public class PlayMusicFragment extends Fragment {
         // Receive song info
         Bundle bundle = this.getArguments();
         if(bundle != null){
+            // If is play new song, reset player and views
             if(Objects.equals(bundle.getString("playType"), "new play")){
                 // If a song is playing, reset media player
                 if(mediaPlayer.isPlaying()){
@@ -193,11 +215,13 @@ public class PlayMusicFragment extends Fragment {
                 setViewSongDetail(getView());
 
             }
+
+            // If just show song is playing, not reset
         }
 
     }
 
-    // Set detail view song
+    // Set detail view song and reset view to start state
     public void setViewSongDetail(View view){
 
         // Textview
@@ -325,7 +349,7 @@ public class PlayMusicFragment extends Fragment {
     }
 
     // Update when playing
-    private Runnable UpdateSongTime = new Runnable() {
+    private final Runnable UpdateSongTime = new Runnable() {
         public void run() {
             startTime = mediaPlayer.getCurrentPosition();
             txt_time_current.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) startTime), TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));

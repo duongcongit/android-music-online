@@ -357,7 +357,7 @@ class PlaylistAdapter extends BaseAdapter {
         String playlistName = (String) playlist.getName();
 
 
-        TextView txtPlaylistName = viewPlaylist.findViewById(R.id.textView_playlistName);
+        TextView txtPlaylistName = viewPlaylist.findViewById(R.id.textView_songName);
         txtPlaylistName.setText(playlistName);
 
         // Display option menu when click to button

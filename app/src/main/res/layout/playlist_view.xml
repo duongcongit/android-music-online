@@ -21,7 +21,7 @@
         tools:ignore="TouchTargetSizeCheck" />
 
     <ImageView
-        android:id="@+id/imageView_ic_playlist"
+        android:id="@+id/imageView_ic_song_avatar"
         android:layout_width="50sp"
         android:layout_height="50sp"
         android:layout_marginStart="4dp"
@@ -32,7 +32,7 @@
         tools:ignore="VectorDrawableCompat" />
 
     <TextView
-        android:id="@+id/textView_playlistName"
+        android:id="@+id/textView_songName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -40,7 +40,7 @@
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView_ic_playlist"
+        app:layout_constraintStart_toEndOf="@+id/imageView_ic_song_avatar"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

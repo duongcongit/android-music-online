@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -188,6 +189,16 @@ public class SongMenuOptionFragment extends Fragment {
 
         // Menu container
         menuContainer = view.findViewById(R.id.song_menu_option_view_container);
+
+        // Song info
+        TextView songNameView   = (TextView) view.findViewById(R.id.txt_menu_songName);
+        TextView songArtistView = (TextView) view.findViewById(R.id.txt_menu_songArtist);
+        songNameView.setText(songName);
+        songNameView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        songNameView.setSelected(true);
+        songNameView.setSingleLine(true);
+        songArtistView.setText(songArtist);
+
 
         // Menu items
         songMenuOptionRemoveFromUpload      = view.findViewById(R.id.menu_option_rm_from_upload);
@@ -394,19 +405,19 @@ public class SongMenuOptionFragment extends Fragment {
 
     }
 
-    // Get and show playlist
+    // Get and display playlists to which the selected song has not been added
     private void getPlaylist(){
         //
         arrPlaylist = new ArrayList<>();
 
         String songPath = bundle.getString("songPath");
 
-        // Get playlist from local
+        // Get playlist which the selected song has not been added from local
         PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
         ArrayList<PlaylistModel> listPlaylist =  mydb.getPlaylistSongNotAdded(songPath);
         arrPlaylist.addAll(listPlaylist);
 
-        // If signed in, get playlists from cloud
+        // If signed in, get playlists which the selected song has not been added from cloud
         if(firebaseUser!=null){
             FirebaseDatabase database = FirebaseDatabase.getInstance();;
             DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists");
@@ -425,7 +436,7 @@ public class SongMenuOptionFragment extends Fragment {
                                 }
                             }
                         }
-
+                        // if song is not added, add this playlist to list
                         if(!isAdded){
                             PlaylistModel pl = new PlaylistModel();
                             pl.setName((String) ds.child("name").getValue());
@@ -434,6 +445,9 @@ public class SongMenuOptionFragment extends Fragment {
                         }
 
                     }
+                    // Show list playlist
+                    playlistListViewAdapter = new PlaylistToAddAdapter(arrPlaylist);
+                    lvPlaylist.setAdapter(playlistListViewAdapter);
                 }
                 //
                 @Override
@@ -443,24 +457,13 @@ public class SongMenuOptionFragment extends Fragment {
 
             });
         }
-
-        // Wait for receive data from database and show
-        for (int i=0; i<10000; i+=200){
-            final int a = i;
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playlistListViewAdapter = new PlaylistToAddAdapter(arrPlaylist);
-                    lvPlaylist.setAdapter(playlistListViewAdapter);
-                }
-            }, a);
-        }
-
+        // Show list playlist
+        playlistListViewAdapter = new PlaylistToAddAdapter(arrPlaylist);
+        lvPlaylist.setAdapter(playlistListViewAdapter);
 
     }
 
-    // Create playlist
+    // Create playlist dialog
     private void createPlaylistDialog() {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -476,15 +479,67 @@ public class SongMenuOptionFragment extends Fragment {
         btnConfirmCreatePlaylist = dialog.findViewById(R.id.btn_confirm_create_playlist);
         btnCancelCreatePlaylist = dialog.findViewById(R.id.btn_cancel_create_playlist);
 
+        // If confirm create playlist
         btnConfirmCreatePlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String playlistName = txtCreatePlaylistName.getText().toString();
 
-                PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-                mydb.createPlaylist(playlistName, "local");
-                dialog.dismiss();
-                getPlaylist();
+                // If signed in, create playlists in cloud
+                if(firebaseUser!=null){
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();;
+                    DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists").child(playlistName);
+                    myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){
+                                txtCreatePlaylistName.setError("Danh sách phát online này đã tồn tại!");
+                                txtCreatePlaylistName.requestFocus();
+                            }
+                            else {
+                                myFirebaseRef.child("name").setValue(playlistName);
+                                myFirebaseRef.child("type").setValue("online");
+                                dialog.dismiss();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+                // Else not signed in, create local playlist
+                else {
+                    PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
+                    ArrayList<PlaylistModel> playlists = mydb.getPlaylist();
+                    //
+                    boolean isExist = false;
+                    for(int i=0; i<playlists.size(); i++){
+                        if(Objects.equals(playlists.get(i).getName(), playlistName)){
+                            isExist = true;
+                            break;
+                        }
+                    }
+                    if(isExist){
+                        txtCreatePlaylistName.setError("Danh sách phát này đã tồn tại!");
+                        txtCreatePlaylistName.requestFocus();
+                    }
+                    else {
+                        mydb.createPlaylist(playlistName, "local");
+                        dialog.dismiss();
+                    }
+
+                }
+
+                // Close dialog and refresh list
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getPlaylist();
+                    }
+                }, 2000);
             }
         });
 
@@ -558,7 +613,7 @@ class PlaylistToAddAdapter extends BaseAdapter {
         String playlistName = (String) playlist.getName();
 
 
-        TextView txtPlaylistName = viewPlaylist.findViewById(R.id.textView_playlistName);
+        TextView txtPlaylistName = viewPlaylist.findViewById(R.id.textView_songName);
         txtPlaylistName.setText(playlistName);
 
         return viewPlaylist;

@@ -297,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (playMusicFragment.isResumed()) {
             transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).hide(playMusicFragment);
-            transaction.remove(playMusicFragment);
+            // transaction.remove(playMusicFragment);
             transaction.commit();
 
             final Handler handler = new Handler();
