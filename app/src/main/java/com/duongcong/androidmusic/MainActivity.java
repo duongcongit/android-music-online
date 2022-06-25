@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                // If shuffle mode is on
                 if(Objects.equals(playMusicFragment.shuffleMode, "YES")){
                     // Set new index of song is random number from 0 to size of playlist - 1
                     songPlayingIndexInCurrentPlaylist = ThreadLocalRandom.current().nextInt(0,playlist.size()-1);
@@ -116,12 +117,15 @@ public class MainActivity extends AppCompatActivity {
                     playMusicFragment.playSong();
 
                 }
+                // Else if song is last in list
                 else if(songPlayingIndexInCurrentPlaylist == playlist.size()-1){
+                    // If repeat all
                     if(Objects.equals(playMusicFragment.repeatMode, "ALL")){
                         songPlayingIndexInCurrentPlaylist = 0;
                         setSong(playlist, songPlayingIndexInCurrentPlaylist);
                         playMusicFragment.playSong();
                     }
+                    //
                 }
                 else {
                     songPlayingIndexInCurrentPlaylist++;
@@ -308,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (playMusicFragment.isResumed()) {
             transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).hide(playMusicFragment);
-            // transaction.remove(playMusicFragment);
+            transaction.remove(playMusicFragment);
             transaction.commit();
 
             final Handler handler = new Handler();

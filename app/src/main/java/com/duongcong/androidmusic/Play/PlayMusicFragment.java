@@ -92,7 +92,22 @@ public class PlayMusicFragment extends Fragment {
         else {
             // Get song data and set player, views, mode,...
             // If just display song is playing and not play mew song, do nothing
-            playSong();
+            // Receive song info
+            Bundle bundle = this.getArguments();
+            if(bundle != null){
+                // If is play new song, reset player and views
+                if(Objects.equals(bundle.getString("playType"), "new play")){
+                    playSong();
+                }
+                else {
+                    // If just show song is playing, not reset
+                    // Set view
+                    setViewSongDetail(getView());
+                    // Set start play state for view
+                    setResumePlayState();
+                }
+            }
+
             // Hide bottom navigation bar and playing song bar
             ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
             ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
@@ -187,7 +202,7 @@ public class PlayMusicFragment extends Fragment {
                 }
                 //
                 ((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist = position;
-                System.out.println(((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist);
+                // System.out.println(((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist);
             }
         });
 
@@ -430,7 +445,14 @@ public class PlayMusicFragment extends Fragment {
         // ========== Play music screen ===========
         btn_play.setVisibility(View.INVISIBLE); // Hide btn play
         btn_pause.setVisibility(View.VISIBLE);  // Display btn pause
-        anim.resume();                          // Resume animation rotate img
+        // Resume animation rotate img
+        if(anim.isPaused()){
+            anim.resume();
+        }
+        else { // If anim had been reset by hidePlayMusicFragment(), start over
+            anim.start();
+        }
+
         // Enable animation textview song name
         txt_songName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         txt_songName.setSelected(true);
