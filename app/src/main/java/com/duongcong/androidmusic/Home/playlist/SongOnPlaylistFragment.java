@@ -44,6 +44,7 @@ public class SongOnPlaylistFragment extends Fragment {
     String thisPlaylistName;
     String thisPlaylistType;
 
+    ImageButton btnBack;
     TextView txtViewPlaylistName;
 
 
@@ -79,6 +80,15 @@ public class SongOnPlaylistFragment extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+
+        // Button back
+        btnBack = view.findViewById(R.id.btn_song_on_playlist_back);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).homeFragment);
+            }
+        });
 
         // Get playlist info
         Bundle bundle = this.getArguments();
@@ -186,20 +196,21 @@ public class SongOnPlaylistFragment extends Fragment {
 
         // songOnPlaylistAdapter.notifyDataSetChanged();
 
+        TextView txtPlaylistEmpty = view.findViewById(R.id.txtViewPlaylistEmpty);
         // If list song is not empty, show button play playlist
         if(arrSong.size() > 0){
             ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.VISIBLE);
+            txtPlaylistEmpty.setVisibility(View.INVISIBLE);
             ((MainActivity)getActivity()).btnPlayPlaylist.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     ((MainActivity)getActivity()).playNewPlaylist(arrSong, 0);
                 }
             });
-            System.out.println("Có");
         }
         else {
             ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
-            System.out.println("Trống");
+            txtPlaylistEmpty.setVisibility(View.VISIBLE);
         }
 
     }
@@ -257,8 +268,8 @@ class SongOnPlaylistAdapter extends BaseAdapter {
             songArtist = "Unknown artist";
         }
         // Set song name if it is too long
-        if(songName.length() > 40){
-            songName = songName.substring(0, 35) + "...";
+        if(songName.length() > 33){
+            songName = songName.substring(0, 33) + "...";
         }
         // Set view for each item in list view
         ((TextView) viewSong.findViewById(R.id.textView_songName)).setText(songName);

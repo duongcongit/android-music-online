@@ -57,7 +57,7 @@
                 android:layout_height="120dp"
                 android:layout_marginTop="36dp"
                 android:elevation="6dp"
-                android:src="@drawable/ic_music"
+                android:src="@drawable/ic_music_note"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"

@@ -331,8 +331,22 @@ public class PlayMusicFragment extends Fragment {
                 try {
                     mediaPlayer.reset();
                     mediaPlayer.setDataSource(PATH_TO_FILE);
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
+                    if(Objects.equals(songType, "local")){
+                        mediaPlayer.prepare();
+                    }
+                    else {
+                        mediaPlayer.prepareAsync();
+                    }
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mediaPlayer.start();
+                            // Set start play state for view
+                            setStartPlayState();
+
+                        }
+                    });
+
                     // Update when song is playing
                     myHandler.postDelayed(UpdateSongTime,100);
                 } catch (IOException e) {
@@ -341,8 +355,8 @@ public class PlayMusicFragment extends Fragment {
 
                 // Set view
                 setViewSongDetail(getView());
-                // Set start play state for view
-                setStartPlayState();
+
+
 
             }
 
@@ -366,8 +380,14 @@ public class PlayMusicFragment extends Fragment {
         anim.setRepeatMode(ObjectAnimator.RESTART);
 
         // Display final time of music
-        finalTime = mediaPlayer.getDuration();
-        txt_max_time.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) finalTime), TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
+        if(Objects.equals(songDuration, "null")){
+            finalTime = mediaPlayer.getDuration();
+            txt_max_time.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) finalTime), TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
+        }
+        else {
+            txt_max_time.setText(songDuration);
+        }
+
 
         // Set parameter for seekbar
         seekbar = (SeekBar)view.findViewById(R.id.seekBar);

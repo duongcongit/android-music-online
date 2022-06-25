@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,8 +72,7 @@ public class HomeFragment extends Fragment {
         cardView_song.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "song", Toast.LENGTH_SHORT).show();
-
+                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).songsFragment);
             }
         });
 
@@ -94,7 +92,7 @@ public class HomeFragment extends Fragment {
         cardView_upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "upload", Toast.LENGTH_SHORT).show();
+                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).uploadFragment);
 
 
             }
@@ -105,7 +103,7 @@ public class HomeFragment extends Fragment {
         cardView_download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "download", Toast.LENGTH_SHORT).show();
+                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).downloadFragment);
 
 
             }
@@ -116,7 +114,7 @@ public class HomeFragment extends Fragment {
         cardView_album.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "album", Toast.LENGTH_SHORT).show();
+                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).albumFragment);
 
 
             }

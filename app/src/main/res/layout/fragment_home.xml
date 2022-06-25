@@ -116,7 +116,7 @@
                                 android:contentDescription="TODO"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
-                                app:srcCompat="@drawable/ic_music"
+                                app:srcCompat="@drawable/ic_music_note"
                                 tools:ignore="ImageContrastCheck" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 

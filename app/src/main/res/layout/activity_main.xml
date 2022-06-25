@@ -37,7 +37,7 @@
         android:id="@+id/song_playing_bar"
         android:layout_width="match_parent"
         android:layout_height="54dp"
-        android:background="@drawable/bottom_navigation_background"
+        android:background="#242633"
         app:layout_constraintBottom_toTopOf="@id/navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -111,7 +111,7 @@
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:layout_gravity="bottom"
-        android:background="@drawable/bottom_navigation_background"
+        android:background="#242633"
         android:foreground="?attr/selectableItemBackground"
         app:itemIconTint="@android:color/white"
         app:itemTextColor="@android:color/white"
