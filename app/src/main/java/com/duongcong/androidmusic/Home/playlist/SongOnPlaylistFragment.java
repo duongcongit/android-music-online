@@ -100,7 +100,7 @@ public class SongOnPlaylistFragment extends Fragment {
         lvSong.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((MainActivity)getActivity()).playNewPlaylist(arrSong, 0);
+                ((MainActivity)getActivity()).playNewPlaylist(arrSong, position);
             }
         });
 

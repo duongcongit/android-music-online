@@ -41,7 +41,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -89,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     public FloatingActionButton btnPlayPlaylist;
     //
     public MediaPlayer mediaPlayer;
-    ArrayList<SongModel> currentPlaylist;
+    public ArrayList<SongModel> currentPlaylist;
     public SongModel songPlaying;
     public int songPlayingIndexInCurrentPlaylist;
 
@@ -107,9 +109,25 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                setSong(playlist, songPlayingIndexInCurrentPlaylist + 1);
-                playMusicFragment.playSong();
-                songPlayingIndexInCurrentPlaylist++;
+                if(Objects.equals(playMusicFragment.shuffleMode, "YES")){
+                    // Set new index of song is random number from 0 to size of playlist - 1
+                    songPlayingIndexInCurrentPlaylist = ThreadLocalRandom.current().nextInt(0,playlist.size()-1);
+                    setSong(playlist, songPlayingIndexInCurrentPlaylist);
+                    playMusicFragment.playSong();
+
+                }
+                else if(songPlayingIndexInCurrentPlaylist == playlist.size()-1){
+                    if(Objects.equals(playMusicFragment.repeatMode, "ALL")){
+                        songPlayingIndexInCurrentPlaylist = 0;
+                        setSong(playlist, songPlayingIndexInCurrentPlaylist);
+                        playMusicFragment.playSong();
+                    }
+                }
+                else {
+                    songPlayingIndexInCurrentPlaylist++;
+                    setSong(playlist, songPlayingIndexInCurrentPlaylist);
+                    playMusicFragment.playSong();
+                }
             }
 
         });
@@ -427,16 +445,5 @@ public class MainActivity extends AppCompatActivity {
         // END_INCLUDE(onRequestPermissionsResult)
     } */
 
-
-}
-
-class SongInPlayList {
-    int index;
-    SongModel song;
-
-    public SongInPlayList(int index, SongModel song){
-        this.index = index;
-        this.song = song;
-    }
 
 }

@@ -13,23 +13,27 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.duongcong.androidmusic.MainActivity;
+import com.duongcong.androidmusic.Model.SongModel;
 import com.duongcong.androidmusic.R;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class PlayMusicFragment extends Fragment {
 
     // View
     ImageView imgView;
-    private ImageButton btn_forward,btn_pause,btn_play,btn_repeat;
+    private ImageButton btn_forward, btn_next,btn_pause,btn_play,btn_repeat, btn_shuffle;
     private TextView txt_songName, txt_songArtist;
 
     // Song detail
@@ -40,7 +44,8 @@ public class PlayMusicFragment extends Fragment {
     // Media player
     public MediaPlayer mediaPlayer;
 
-    protected String repeatMode = "NO";
+    public String repeatMode    = "NO";
+    public String shuffleMode   = "NO";
 
     //
     private Handler myHandler = new Handler();;
@@ -113,13 +118,14 @@ public class PlayMusicFragment extends Fragment {
         btn_play    = (ImageButton) view.findViewById(R.id.btn_play); // Btn play
         btn_pause   = (ImageButton) view.findViewById(R.id.btn_pause); // Btn pause
         btn_repeat  = (ImageButton) view.findViewById(R.id.btn_repeat); // Btn repeat
+        btn_shuffle = (ImageButton) view.findViewById(R.id.btn_shuffle); // Btn shuffle
+        btn_forward = (ImageButton) view.findViewById(R.id.btn_forward); // Btn forward
+        btn_next    = (ImageButton) view.findViewById(R.id.btn_next);   // Btn next
 
         // Get song data and set player, views, mode,...
         playSong();
         // setViewSongDetail(view);
 
-        // Control button
-        btn_forward = (ImageButton) view.findViewById(R.id.btn_forward);
 
         // Button back/hide fragment
         ImageButton btn_back = (ImageButton)view.findViewById(R.id.btn_back);
@@ -157,15 +163,97 @@ public class PlayMusicFragment extends Fragment {
             }
         });
 
+        // When click button forward
+        btn_forward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = ((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist;
+                ArrayList<SongModel> currentPlaylist = ((MainActivity) requireActivity()).currentPlaylist;
+
+                if(Objects.equals(shuffleMode, "YES")){
+                    // Set new index of song is random number from 0 to size of playlist - 1
+                    position = ThreadLocalRandom.current().nextInt(0,currentPlaylist.size()-1);
+                    ((MainActivity) requireActivity()).setSong(currentPlaylist, position);
+                    playSong();
+
+                }
+                else if(position == 0){
+                    Toast.makeText(getActivity().getApplicationContext(), "Đã về đầu danh sách!", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    position--;
+                    ((MainActivity) requireActivity()).setSong(currentPlaylist, position);
+                    playSong();
+                }
+                //
+                ((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist = position;
+                System.out.println(((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist);
+            }
+        });
+
+        // When click button next
+        btn_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = ((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist;
+                ArrayList<SongModel> currentPlaylist = ((MainActivity) requireActivity()).currentPlaylist;
+
+                if(Objects.equals(shuffleMode, "YES")){
+                    // Set new index of song is random number from 0 to size of playlist - 1
+                    position = ThreadLocalRandom.current().nextInt(0,currentPlaylist.size()-1);
+                    ((MainActivity) requireActivity()).setSong(currentPlaylist, position);
+                    playSong();
+
+                }
+                else if(position == currentPlaylist.size()-1){
+                    if(Objects.equals(repeatMode, "ALL")){
+                        position = 0;
+                        ((MainActivity) requireActivity()).setSong(currentPlaylist, position);
+                        playSong();
+                    }
+                    else {
+                        Toast.makeText(getActivity().getApplicationContext(), "Đã tới cuối danh sách!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    position++;
+                    ((MainActivity) requireActivity()).setSong(currentPlaylist, position);
+                    playSong();
+                }
+                //
+                ((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist = position;
+                // System.out.println(((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist);
+            }
+        });
+
+        // When click button shuffle
+        btn_shuffle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Objects.equals(shuffleMode, "NO")){
+                    btn_shuffle.setBackgroundResource(R.drawable.ic_shuffle_yellow);
+                    shuffleMode = "YES";
+                }
+                else if (Objects.equals(shuffleMode, "YES")){
+                    btn_shuffle.setBackgroundResource(R.drawable.ic_shuffle_btn);
+                    shuffleMode = "NO";
+                }
+
+            }
+        });
+
         // When click button set repeat
         btn_repeat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer.isLooping()){
-                    setRepeatMode("NO");
+                if(Objects.equals(repeatMode, "NO")){
+                    setRepeatMode("ALL");
                 }
-                else {
+                else if(Objects.equals(repeatMode, "ALL")){
                     setRepeatMode("ONE");
+                }
+                else if(mediaPlayer.isLooping() || Objects.equals(repeatMode, "ONE")){
+                    setRepeatMode("NO");
                 }
             }
         });
@@ -365,19 +453,22 @@ public class PlayMusicFragment extends Fragment {
 
     // Set repeat mode
     public void setRepeatMode(String rpMode){
-        if(rpMode == "NO"){
+        if(Objects.equals(rpMode, "NO")){
             mediaPlayer.setLooping(false);
             btn_repeat.setBackgroundResource(R.drawable.ic_repeat_btn);
             repeatMode = rpMode;
         }
-        else if(rpMode == "ONE"){
-            mediaPlayer.setLooping(true);
+        else if(Objects.equals(rpMode, "ALL")){
+            mediaPlayer.setLooping(false);
             btn_repeat.setBackgroundResource(R.drawable.ic_repeat_yellow);
             repeatMode = rpMode;
         }
-        else if(rpMode == "ALL"){
-
+        else if(Objects.equals(rpMode, "ONE")){
+            mediaPlayer.setLooping(true);
+            btn_repeat.setBackgroundResource(R.drawable.ic_repeat_one_yellow);
+            repeatMode = rpMode;
         }
+
     }
 
     // Function format time of song
