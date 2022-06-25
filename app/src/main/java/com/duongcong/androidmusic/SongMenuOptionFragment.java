@@ -86,6 +86,7 @@ public class SongMenuOptionFragment extends Fragment {
         // Hide bottom navigation bar and playing song bar
         ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
         ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
+        ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -110,6 +111,7 @@ public class SongMenuOptionFragment extends Fragment {
         if (hidden) {
             //
             ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.VISIBLE);
             if(((MainActivity)getActivity()).playMusicFragment.mediaPlayer.isPlaying()){
                 ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
             }
@@ -120,6 +122,7 @@ public class SongMenuOptionFragment extends Fragment {
             // Hide bottom navigation bar and playing song bar
             ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
             ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
 
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {

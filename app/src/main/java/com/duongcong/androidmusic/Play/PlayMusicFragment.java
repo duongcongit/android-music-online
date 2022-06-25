@@ -65,6 +65,7 @@ public class PlayMusicFragment extends Fragment {
         // Hide playing song bar
         ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
         //
+        ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
         return rootLayout;
     }
 
@@ -76,24 +77,45 @@ public class PlayMusicFragment extends Fragment {
             // Show bottom navigation bar and playing song bar
             ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
             ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
+            Bundle bundle = this.getArguments();
+            // If in a playlist song, display button play playlist
+            if(!Objects.equals(bundle.getString("isInPlaylist"), "no")){
+                ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.VISIBLE);
+            }
         }
         // If display
         else {
             // Get song data and set player, views, mode,...
             // If just display song is playing and not play mew song, do nothing
-            getSong();
+            playSong();
             // Hide bottom navigation bar and playing song bar
             ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
             ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
         }
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mediaPlayer = ((MainActivity)getActivity()).mediaPlayer;
+
+        // Textview
+        txt_songName        = view.findViewById(R.id.txtView_songName);
+        txt_songArtist      = view.findViewById(R.id.txtView_songArtist);
+        txt_time_current    = (TextView)view.findViewById(R.id.txt_time_current);
+        txt_max_time        = (TextView)view.findViewById(R.id.txt_max_time);
+
+        imgView = (ImageView) view.findViewById(R.id.img_music);
+
+        // Control button
+        btn_play    = (ImageButton) view.findViewById(R.id.btn_play); // Btn play
+        btn_pause   = (ImageButton) view.findViewById(R.id.btn_pause); // Btn pause
+        btn_repeat  = (ImageButton) view.findViewById(R.id.btn_repeat); // Btn repeat
+
         // Get song data and set player, views, mode,...
-        getSong();
+        playSong();
         // setViewSongDetail(view);
 
         // Control button
@@ -105,6 +127,11 @@ public class PlayMusicFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).hidePlayMusicFragment();
+                Bundle bundle = getArguments();
+                // If in a playlist song, display button play playlist
+                if(!Objects.equals(bundle.getString("isInPlaylist"), "no")){
+                    ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.VISIBLE);
+                }
 
             }
         });
@@ -163,19 +190,27 @@ public class PlayMusicFragment extends Fragment {
 
     }
 
-    // Function format time of song
-    public String time_format(long minute, long second){
-        String min = String.format("%d", minute);
-        String sec = String.format("%d", second);
 
-        if(second < 10){
-            sec = String.format("0%d", second);
+    // Get song data from bundle
+    public void getSong(){
+        Bundle bundle = this.getArguments();
+        if(bundle != null) {
+            // If is play new song, get new data
+            if (Objects.equals(bundle.getString("playType"), "new play")) {
+                songId          = bundle.getString("songID");
+                songName        = bundle.getString("songName");
+                songPath        = bundle.getString("songPath");
+                songAlbum       = bundle.getString("songAlbum");
+                songArtist      = bundle.getString("songArtist");
+                songCategory    = bundle.getString("songCategory");
+                songDuration    = bundle.getString("songDuration");
+                songType        = bundle.getString("songType");
+            }
         }
-        return min + ":" +sec;
     }
 
     // Set path and other detail of song to prepare play
-    public void getSong(){
+    public void playSong(){
         // Receive song info
         Bundle bundle = this.getArguments();
         if(bundle != null){
@@ -185,23 +220,13 @@ public class PlayMusicFragment extends Fragment {
                 if(mediaPlayer.isPlaying()){
                     mediaPlayer.reset();
                 }
-                songId          = bundle.getString("songID");
-                songName        = bundle.getString("songName");
-                songPath        = bundle.getString("songPath");
-                songAlbum       = bundle.getString("songAlbum");
-                songArtist      = bundle.getString("songArtist");
-                songCategory    = bundle.getString("songCategory");
-                songDuration    = bundle.getString("songDuration");
-                songType        = bundle.getString("songType");
-
+                // Get song data
+                getSong();
                 // Set path of song
                 String PATH_TO_FILE = songPath;
-
-                // Create media player
-                mediaPlayer = new MediaPlayer();
-
                 // Get song from path and play
                 try {
+                    mediaPlayer.reset();
                     mediaPlayer.setDataSource(PATH_TO_FILE);
                     mediaPlayer.prepare();
                     mediaPlayer.start();
@@ -211,8 +236,10 @@ public class PlayMusicFragment extends Fragment {
                     e.printStackTrace();
                 }
 
-                //
+                // Set view
                 setViewSongDetail(getView());
+                // Set start play state for view
+                setStartPlayState();
 
             }
 
@@ -224,32 +251,16 @@ public class PlayMusicFragment extends Fragment {
     // Set detail view song and reset view to start state
     public void setViewSongDetail(View view){
 
-        // Textview
-        txt_songName = view.findViewById(R.id.txtView_songName);
-        txt_songArtist = view.findViewById(R.id.txtView_songArtist);
-        txt_time_current = (TextView)view.findViewById(R.id.txt_time_current);
-        txt_max_time = (TextView)view.findViewById(R.id.txt_max_time);
-
-        imgView = (ImageView) view.findViewById(R.id.img_music);
-
-        // Control button
-        btn_play = (ImageButton) view.findViewById(R.id.btn_play); // Btn play
-        btn_pause = (ImageButton) view.findViewById(R.id.btn_pause); // Btn pause
-        btn_repeat = (ImageButton) view.findViewById(R.id.btn_repeat); // Btn repeat
-
-        // Animation auto scroll song name
-        txt_songName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-        txt_songName.setSelected(false);
-        txt_songName.setSingleLine(true);
+        // =================== Play music screen ====================
+        // Set name and artist
+        txt_songName.setText(songName);
+        txt_songArtist.setText(songArtist);
 
         // Animation rotate image while playing
         anim = ObjectAnimator.ofFloat(imgView, "rotation", 0, 360);
         anim.setDuration(20000);
         anim.setRepeatCount(Animation.INFINITE);
         anim.setRepeatMode(ObjectAnimator.RESTART);
-
-        txt_songName.setText(songName); // Set textview name
-        txt_songArtist.setText(songArtist); // Set textview artist
 
         // Display final time of music
         finalTime = mediaPlayer.getDuration();
@@ -261,74 +272,95 @@ public class PlayMusicFragment extends Fragment {
         seekbar.setMax((int) TimeUnit.MILLISECONDS.toSeconds((long) finalTime));
         oneTimeOnly = 1;
 
-        // Set start play state for view
-        setStartPlayState();
         // Set repeat mode
         setRepeatMode(repeatMode);
+
+        // =================== PLAYING BAR ===================
+        // Set song name and artist
+        TextView txtSongPlayingName, txtSongPlayingArtist;
+        txtSongPlayingName      = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_name);
+        txtSongPlayingArtist    = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_artist);
+        txtSongPlayingName.setText(songName);
+        txtSongPlayingArtist.setText(songArtist);
+
     }
 
     // Set start play state for view when start play
     public void setStartPlayState(){
-        // When start a new play
+        // ========== Play music screen ===========
         btn_play.setVisibility(View.INVISIBLE); // Hide btn play
-        btn_pause.setVisibility(View.VISIBLE); // Display btn pause
-        anim.start(); // Start animation rotate img
+        btn_pause.setVisibility(View.VISIBLE);  // Display btn pause
+        anim.start();                           // Start animation rotate img
         // Enable animation textview song name
         txt_songName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         txt_songName.setSelected(true);
         txt_songName.setSingleLine(true);
 
-        // Enable animation textview song name on bar
+        // =========== PLAYING BAR ==============
+        ((MainActivity)getActivity()).btnPlayBar.setVisibility(View.INVISIBLE); // Hide btn play on bar
+        ((MainActivity)getActivity()).btnPauseBar.setVisibility(View.VISIBLE); // Display btn pause on bar
+        // Start animation rotate img on bar
+        ((MainActivity)getActivity()).animImgSongPlaying.start();
+        // Enable animation textview song name
         TextView txtSongPlayingName;
         txtSongPlayingName = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_name);
         txtSongPlayingName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         txtSongPlayingName.setSelected(true);
         txtSongPlayingName.setSingleLine(true);
-        ((MainActivity)getActivity()).animImgSongPlaying.start(); // Start animation rotate img on bar
-        ((MainActivity)getActivity()).btnPlayBar.setVisibility(View.INVISIBLE); // Hide btn play on bar
-        ((MainActivity)getActivity()).btnPauseBar.setVisibility(View.VISIBLE); // Display btn pause on bar
+
+
     }
 
     // Set start play state for view when pause
     public void setPausePlayState(){
-        btn_play.setVisibility(View.VISIBLE); // Display btn play
-        btn_pause.setVisibility(View.INVISIBLE); // Hide btn pause
-        anim.pause(); // Start animation rotate img
+        // ========== Play music screen ===========
+        btn_play.setVisibility(View.VISIBLE);       // Display btn play
+        btn_pause.setVisibility(View.INVISIBLE);    // Hide btn pause
+        anim.pause();                               // Start animation rotate img
         // Disable animation textview song name
         txt_songName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         txt_songName.setSelected(false);
         txt_songName.setSingleLine(true);
 
+        // =========== PLAYING BAR ==============
+        ((MainActivity)getActivity()).btnPlayBar.setVisibility(View.VISIBLE); // Display btn play
+        ((MainActivity)getActivity()).btnPauseBar.setVisibility(View.INVISIBLE); // Hide btn pause
+        // Pause animation rotate img on bar
+        ((MainActivity)getActivity()).animImgSongPlaying.pause();
         // Disable animation textview song name on bar
         TextView txtSongPlayingName;
         txtSongPlayingName = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_name);
         txtSongPlayingName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         txtSongPlayingName.setSelected(false);
         txtSongPlayingName.setSingleLine(true);
-        ((MainActivity)getActivity()).animImgSongPlaying.pause(); // Pause animation rotate img on bar
-        ((MainActivity)getActivity()).btnPlayBar.setVisibility(View.VISIBLE); // Display btn play
-        ((MainActivity)getActivity()).btnPauseBar.setVisibility(View.INVISIBLE); // Hide btn pause
+
+
     }
 
     // Set start play state for view when resume play
     public void setResumePlayState(){
+        // ========== Play music screen ===========
         btn_play.setVisibility(View.INVISIBLE); // Hide btn play
-        btn_pause.setVisibility(View.VISIBLE); // Display btn pause
-        anim.resume(); // Resume animation rotate img
+        btn_pause.setVisibility(View.VISIBLE);  // Display btn pause
+        anim.resume();                          // Resume animation rotate img
         // Enable animation textview song name
         txt_songName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         txt_songName.setSelected(true);
         txt_songName.setSingleLine(true);
 
+        // =========== PLAYING BAR ==============
+        ((MainActivity)getActivity()).btnPlayBar.setVisibility(View.INVISIBLE); // Hide btn play on bar
+        ((MainActivity)getActivity()).btnPauseBar.setVisibility(View.VISIBLE); // Display btn pause on bar
+        // Resume animation rotate img on bar
+        ((MainActivity)getActivity()).animImgSongPlaying.resume();
         // Enable animation textview song name on bar
         TextView txtSongPlayingName;
         txtSongPlayingName = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_name);
         txtSongPlayingName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         txtSongPlayingName.setSelected(true);
         txtSongPlayingName.setSingleLine(true);
-        ((MainActivity)getActivity()).animImgSongPlaying.resume(); // Resume animation rotate img on bar
-        ((MainActivity)getActivity()).btnPlayBar.setVisibility(View.INVISIBLE); // Hide btn play on bar
-        ((MainActivity)getActivity()).btnPauseBar.setVisibility(View.VISIBLE); // Display btn pause on bar
+
+
     }
 
     // Set repeat mode
@@ -346,6 +378,17 @@ public class PlayMusicFragment extends Fragment {
         else if(rpMode == "ALL"){
 
         }
+    }
+
+    // Function format time of song
+    public String time_format(long minute, long second){
+        String min = String.format("%d", minute);
+        String sec = String.format("%d", second);
+
+        if(second < 10){
+            sec = String.format("0%d", second);
+        }
+        return min + ":" +sec;
     }
 
     // Update when playing

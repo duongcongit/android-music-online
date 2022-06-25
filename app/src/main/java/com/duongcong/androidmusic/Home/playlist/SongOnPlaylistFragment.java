@@ -2,7 +2,6 @@ package com.duongcong.androidmusic.Home.playlist;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +58,7 @@ public class SongOnPlaylistFragment extends Fragment {
         super.onHiddenChanged(hidden);
         if (hidden) {
             //
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
         } else {
             // Get playlist info
             Bundle bundle = this.getArguments();
@@ -87,6 +87,7 @@ public class SongOnPlaylistFragment extends Fragment {
             thisPlaylistType = bundle.getString("type");
         }
 
+
         // Set textview playlist name
         txtViewPlaylistName = view.findViewById(R.id.playlistName_fragment);
         txtViewPlaylistName.setText(thisPlaylistName);
@@ -99,39 +100,11 @@ public class SongOnPlaylistFragment extends Fragment {
         lvSong.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get song info
-                SongModel song = (SongModel) songOnPlaylistAdapter.getItem(position);
-                // Set artist if it is <unknown>
-                String songArtist = song.getArtist();
-                if(songArtist == null || songArtist.equals("<unknown>")){
-                    songArtist = "Unknown artist";
-                }
-                String songName = song.getName();
-                // Set bundle to send song info to play
-                Bundle bundle = new Bundle();
-                bundle.putString("playType", "new play");
-                bundle.putString("songPath", song.getPath());
-                bundle.putString("songName",songName);
-                bundle.putString("songArtist",songArtist);
-                bundle.putString("songAlbum",song.getAlbum());
-                ((MainActivity)getActivity()).playMusicFragment.setArguments(bundle);
-                // Display play music fragment
-                ((MainActivity)getActivity()).displayPlayMusicFragment();
-
-                // Set view and animation for playing bar
-                ((MainActivity)getActivity()).animImgSongPlaying.start();
-                TextView txtSongPlayingName, txtSongPlayingArtist;
-                txtSongPlayingName = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_name);
-                txtSongPlayingArtist = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_artist);
-                txtSongPlayingName.setText(songName);
-                txtSongPlayingArtist.setText(songArtist);
-                // Text animation while playing
-                txtSongPlayingName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-                txtSongPlayingName.setSelected(true);
-                txtSongPlayingName.setSingleLine(true);
-
+                ((MainActivity)getActivity()).playNewPlaylist(arrSong, 0);
             }
         });
+
+
     }
 
     private void getListSong(View view){
@@ -202,6 +175,7 @@ public class SongOnPlaylistFragment extends Fragment {
     // Show list song
     private void showListSong(View view, List<SongModel> audioList){
         arrSong = new ArrayList<>();
+
         // Add List SongModel to Arraylist
         arrSong.addAll(audioList);
 
@@ -211,6 +185,23 @@ public class SongOnPlaylistFragment extends Fragment {
         lvSong.setAdapter(songOnPlaylistAdapter);
 
         // songOnPlaylistAdapter.notifyDataSetChanged();
+
+        // If list song is not empty, show button play playlist
+        if(arrSong.size() > 0){
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.VISIBLE);
+            ((MainActivity)getActivity()).btnPlayPlaylist.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((MainActivity)getActivity()).playNewPlaylist(arrSong, 0);
+                }
+            });
+            System.out.println("Có");
+        }
+        else {
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
+            System.out.println("Trống");
+        }
+
     }
 
 }

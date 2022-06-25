@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +42,7 @@ public class SongOnDeviceFragment extends Fragment {
         super.onHiddenChanged(hidden);
         if (hidden) {
             //
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
         } else {
             audioList = getAllSongFromDevice(getActivity().getApplicationContext());
             showList();
@@ -57,48 +57,15 @@ public class SongOnDeviceFragment extends Fragment {
         lvSong = view.findViewById(R.id.listViewSongOnDevice);
 
         showList();
+
         // Event on click to a song in list
         lvSong.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get song data
-                SongModel song = (SongModel) songListViewAdapter.getItem(position);
-                String songArtist = song.getArtist();
-                // Set artist if artist is <unknown>
-                if(songArtist == null || songArtist.equals("<unknown>")){
-                    songArtist = "Unknown artist";
-                }
-                String songName = song.getName();
-                // Set bundle to send song data to play music fragment
-                Bundle bundle = new Bundle();
-                bundle.putString("playType", "new play");
-                bundle.putString("songId", song.getId());
-                bundle.putString("songName",songName);
-                bundle.putString("songPath", song.getPath());
-                bundle.putString("songArtist",songArtist);
-                bundle.putString("songAlbum",song.getAlbum());
-                bundle.putString("songCategory",song.getCategory());
-                bundle.putString("songDuration",song.getDuration());
-                bundle.putString("songType", song.getType());
-                ((MainActivity)getActivity()).playMusicFragment.setArguments(bundle);
-
-                // Display play music fragment
-                ((MainActivity)getActivity()).displayPlayMusicFragment();
-
-                // Set view and animation for playing bar
-                ((MainActivity)getActivity()).animImgSongPlaying.start();
-                TextView txtSongPlayingName, txtSongPlayingArtist;
-                txtSongPlayingName = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_name);
-                txtSongPlayingArtist = ((MainActivity)getActivity()).findViewById(R.id.txt_song_playing_artist);
-                txtSongPlayingName.setText(songName);
-                txtSongPlayingArtist.setText(songArtist);
-                // Text animation while playing
-                txtSongPlayingName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-                txtSongPlayingName.setSelected(true);
-                txtSongPlayingName.setSingleLine(true);
-
+                ((MainActivity)getActivity()).playNewPlaylist(arrSong, position);
             }
         });
+
 
     }
 
@@ -112,6 +79,20 @@ public class SongOnDeviceFragment extends Fragment {
         songListViewAdapter = new SongAdapter(arrSong, (MainActivity)getContext());
         // Set adapter for listivew
         lvSong.setAdapter(songListViewAdapter);
+
+        // If list song is not empty, show button play playlist
+        if(arrSong.size() > 0){
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.VISIBLE);
+            ((MainActivity)getActivity()).btnPlayPlaylist.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((MainActivity)getActivity()).playNewPlaylist(arrSong, 0);
+                }
+            });
+        }
+        else {
+            ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
+        }
     }
 
     // Function get all audio file on device

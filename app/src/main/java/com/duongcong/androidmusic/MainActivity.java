@@ -32,12 +32,12 @@ import com.duongcong.androidmusic.Home.songondevice.SongOnDeviceFragment;
 import com.duongcong.androidmusic.Model.SongModel;
 import com.duongcong.androidmusic.Play.PlayMusicFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,89 +84,70 @@ public class MainActivity extends AppCompatActivity {
     public ImageButton btnPlayBar, btnPauseBar;
 
 
-    protected List<SongInPlayList> playlist;
-    protected SongInPlayList songPlaying;
 
-    // Test
-    public void plays(){
-        // Song 1
-        String songName     = "CUT K391 Alan Walker  Ahrix  End of Time Lyrics";
-        int indexPl         = 1;
-        String artist       = "A1";
-        String album        = "A1";
-        String songPath     = "/storage/emulated/0/Music/CUT K391 Alan Walker  Ahrix  End of Time Lyrics.mp3";
+    //
+    public FloatingActionButton btnPlayPlaylist;
+    //
+    public MediaPlayer mediaPlayer;
+    ArrayList<SongModel> currentPlaylist;
+    public SongModel songPlaying;
+    public int songPlayingIndexInCurrentPlaylist;
 
-        // Song 2
-        String songName2     = "CUT Faded异域 Jacla remix  Naxsy Douyin Version";
-        int indexPl2         = 2;
-        String artist2       = "A2";
-        String album2        = "A2";
-        String songPath2     = "/storage/emulated/0/Music/CUT Faded异域 Jacla remix  Naxsy Douyin Version.mp3";
 
-        // Song 2
-        String songName3     = "CUT Move up remix hay nhất";
-        int indexPl3         = 3;
-        String artist3       = "A3";
-        String album3        = "A3";
-        String songPath3     = "/storage/emulated/0/Music/CUT Move up remix hay nhất.mp3";
+    //
+    public void playNewPlaylist(ArrayList<SongModel> playlist, int position){
 
-        SongModel song1 = new SongModel();
-        song1.setName(songName);
-        song1.setPath(songPath);
+        currentPlaylist = playlist;
+        setSong(playlist, position);
+        songPlayingIndexInCurrentPlaylist = position;
 
-        SongModel song2 = new SongModel();
-        song2.setName(songName2);
-        song2.setPath(songPath2);
+        displayPlayMusicFragment();
 
-        SongModel song3 = new SongModel();
-        song3.setName(songName3);
-        song3.setPath(songPath3);
-
-        SongInPlayList s1 = new SongInPlayList(1, song1);
-        SongInPlayList s2 = new SongInPlayList(2, song2);
-        SongInPlayList s3 = new SongInPlayList(3, song3);
-
-        playlist = new ArrayList<>();
-        playlist.add(s1);
-        playlist.add(s2);
-        playlist.add(s3);
-
-        MediaPlayer mediaPlayer = new MediaPlayer();
-
-        songPlaying = new SongInPlayList(1, song1);
-        // Get song from path and play
-        try {
-            mediaPlayer.setDataSource(songPlaying.song.getPath());
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        }
-
+        // Event when finish play a song
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                mediaPlayer.reset();
-                int idxPlaying = songPlaying.index;
-                if(idxPlaying == playlist.size()){
-
-                }
-                if(idxPlaying < playlist.size()){
-                    try {
-                        mediaPlayer.setDataSource(playlist.get(idxPlaying).song.getPath());
-                        mediaPlayer.prepare();
-                        mediaPlayer.start();
-                        songPlaying = playlist.get(idxPlaying);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-
-                    }
-                }
+                setSong(playlist, songPlayingIndexInCurrentPlaylist + 1);
+                playMusicFragment.playSong();
+                songPlayingIndexInCurrentPlaylist++;
             }
+
         });
 
     }
+
+    // Set song data for send to play music fragment to play
+    public void setSong(ArrayList<SongModel> playlist, int position){
+        // Get song
+        songPlaying = playlist.get(position);
+        // Reset
+        if(mediaPlayer.isPlaying()){
+            mediaPlayer.reset();
+        }
+
+        // Set artist if artist is <unknown>
+        String songName = songPlaying.getName();
+        String songArtist = songPlaying.getArtist();
+        if(songArtist == null || songArtist.equals("<unknown>")){
+            songArtist = "Unknown artist";
+        }
+
+        // Set bundle to send song data to play music fragment
+        Bundle bundle = new Bundle();
+        bundle.putString("playType", "new play");
+        bundle.putString("songId", songPlaying.getId());
+        bundle.putString("songName",songPlaying.getName());
+        bundle.putString("songPath", songPlaying.getPath());
+        bundle.putString("songArtist",songArtist);
+        bundle.putString("songAlbum",songPlaying.getAlbum());
+        bundle.putString("songCategory",songPlaying.getCategory());
+        bundle.putString("songDuration",songPlaying.getDuration());
+        bundle.putString("songType", songPlaying.getType());
+        playMusicFragment.setArguments(bundle);
+
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,6 +167,11 @@ public class MainActivity extends AppCompatActivity {
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+
+        //
+        btnPlayPlaylist = findViewById(R.id.floating_btn_play_playlist);
+        btnPlayPlaylist.setVisibility(View.INVISIBLE);
+
 
         // Navigation bar
         navigation = findViewById(R.id.navigation);
@@ -212,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
         requestPermission();
 
         // Create media player
-        playMusicFragment.mediaPlayer = new MediaPlayer();
+        mediaPlayer = new MediaPlayer();
 
         // SONG PLAYING BAR
         songPlayingBar.setVisibility(View.GONE);
@@ -228,6 +214,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putString("playType", "resume play");
+                if(songOnDeviceFragment.isVisible() || songOnPlaylistFragment.isVisible()){
+                    bundle.putString("isInPlaylist", "yes");
+                }
+                else {
+                    bundle.putString("isInPlaylist", "no");
+                }
+
                 playMusicFragment.setArguments(bundle);
                 displayPlayMusicFragment();
             }
