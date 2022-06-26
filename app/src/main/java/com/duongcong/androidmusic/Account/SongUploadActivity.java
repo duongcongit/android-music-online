@@ -105,6 +105,8 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
         categories.add("Nhạc Rock");
         categories.add("Nhạc Dance");
         categories.add("Nhạc Remix");
+        categories.add("Thể loại khác");
+
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
