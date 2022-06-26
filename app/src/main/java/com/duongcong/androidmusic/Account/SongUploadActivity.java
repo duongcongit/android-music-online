@@ -299,7 +299,8 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
                     storageReference2.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            SongModel onlineSongModel = new SongModel(uploadId,titleInfo,uri.toString(),albumInfo,artistInfo,"online",string_duration,song_categories,urlUploadImg.toString());
+                            long currentTime = System.currentTimeMillis();
+                            SongModel onlineSongModel = new SongModel(uploadId,titleInfo,uri.toString(),albumInfo,artistInfo,"online",string_duration,song_categories,urlUploadImg.toString(),currentTime+"");
                             databaseReference.child(firebaseUser.getUid()).child("songs").child(uploadId).setValue(onlineSongModel);
                         }
                     });

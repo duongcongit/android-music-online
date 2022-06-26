@@ -11,9 +11,10 @@ public class SongModel {
     String category;
     String duration;
     String type;
+    String timeUpload;
 
     //Constructor
-    public SongModel(String id, String name, String path, String album, String artist, String type,String duration,String category,String image) {
+    public SongModel(String id, String name, String path, String album, String artist, String type,String duration,String category,String image,String timeUpload) {
         if(name.trim().equals("")){
             name = "Bài hát không tên";
         }else{
@@ -28,6 +29,7 @@ public class SongModel {
         this.duration = duration;
         this.category = category;
         this.image = image;
+        this.timeUpload = timeUpload;
     }
 
     public SongModel() {
@@ -52,6 +54,10 @@ public class SongModel {
 
     public void setType(String type) {this.type = type; }
 
+    public void setTimeUpload(String timeUpload) {
+        this.timeUpload = timeUpload;
+    }
+
 
     // Get data
     public String getId() {return id; }
@@ -71,6 +77,10 @@ public class SongModel {
     public String getDuration()  {return duration;}
 
     public String getType()  {return type;}
+
+    public String getTimeUpload() {
+        return timeUpload;
+    }
 
 }
 
