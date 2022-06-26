@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.duongcong.androidmusic.MainActivity;
 import com.duongcong.androidmusic.Model.SongModel;
 import com.duongcong.androidmusic.R;
@@ -37,7 +38,7 @@ public class PlayMusicFragment extends Fragment {
     private TextView txt_songName, txt_songArtist;
 
     // Song detail
-    private String songId, songName, songPath, songAlbum, songArtist, songCategory, songDuration, songType ;
+    private String songId, songName, songPath, songImg, songAlbum, songArtist, songCategory, songDuration, songType ;
     private double startTime = 0;
     private double finalTime = 0;
 
@@ -303,6 +304,7 @@ public class PlayMusicFragment extends Fragment {
                 songId          = bundle.getString("songID");
                 songName        = bundle.getString("songName");
                 songPath        = bundle.getString("songPath");
+                songImg         = bundle.getString("songImg");
                 songAlbum       = bundle.getString("songAlbum");
                 songArtist      = bundle.getString("songArtist");
                 songCategory    = bundle.getString("songCategory");
@@ -372,6 +374,12 @@ public class PlayMusicFragment extends Fragment {
         // Set name and artist
         txt_songName.setText(songName);
         txt_songArtist.setText(songArtist);
+
+
+        // Set image
+        if(Objects.equals(songType, "online") || !Objects.equals(songImg, "null")){
+            Glide.with(getContext()).load(songImg).placeholder(R.drawable.blue_pink_music_circle).circleCrop().into(imgView);
+        }
 
         // Animation rotate image while playing
         anim = ObjectAnimator.ofFloat(imgView, "rotation", 0, 360);

@@ -171,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
         bundle.putString("songId", songPlaying.getId());
         bundle.putString("songName",songPlaying.getName());
         bundle.putString("songPath", songPlaying.getPath());
+        bundle.putString("songImg", songPlaying.getImage());
         bundle.putString("songArtist",songArtist);
         bundle.putString("songAlbum",songPlaying.getAlbum());
         bundle.putString("songCategory",songPlaying.getCategory());
