@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.duongcong.androidmusic.Model.SongModel;
 import com.duongcong.androidmusic.R;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
