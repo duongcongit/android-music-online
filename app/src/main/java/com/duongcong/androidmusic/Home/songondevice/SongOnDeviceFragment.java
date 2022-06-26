@@ -27,10 +27,12 @@ import java.util.List;
 public class SongOnDeviceFragment extends Fragment {
 
     ArrayList<SongModel> arrSong;
-    SongAdapter songListViewAdapter;
+    SongOnDeviceAdapter songListViewAdapter;
     ListView lvSong;
 
     List<SongModel> audioList;
+
+    ImageButton btnBack;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,6 +54,14 @@ public class SongOnDeviceFragment extends Fragment {
     //
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        // Button back
+        btnBack = view.findViewById(R.id.btn_song_on_device_back);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).homeFragment);
+            }
+        });
         // Get all audio file from local device
         audioList = getAllSongFromDevice(getActivity().getApplicationContext());
         lvSong = view.findViewById(R.id.listViewSongOnDevice);
@@ -76,13 +86,15 @@ public class SongOnDeviceFragment extends Fragment {
         arrSong.addAll(audioList);
 
         // Create adapter
-        songListViewAdapter = new SongAdapter(arrSong, (MainActivity)getContext());
-        // Set adapter for listivew
+        songListViewAdapter = new SongOnDeviceAdapter(arrSong, (MainActivity)getContext());
+        // Set adapter for listview
         lvSong.setAdapter(songListViewAdapter);
 
+        TextView txtViewEmpty = getView().findViewById(R.id.txtViewSongOnDeviceEmpty);
         // If list song is not empty, show button play playlist
         if(arrSong.size() > 0){
             ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.VISIBLE);
+            txtViewEmpty.setVisibility(View.INVISIBLE);
             ((MainActivity)getActivity()).btnPlayPlaylist.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -92,6 +104,7 @@ public class SongOnDeviceFragment extends Fragment {
         }
         else {
             ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.INVISIBLE);
+            txtViewEmpty.setVisibility(View.VISIBLE);
         }
     }
 
@@ -106,23 +119,24 @@ public class SongOnDeviceFragment extends Fragment {
             while (c.moveToNext()) {
                 String path = c.getString(0);
                 if(path.endsWith(".mp3")){
-                    SongModel audioModel = new SongModel();
+                    SongModel songModel = new SongModel();
                     String album = c.getString(1);
                     String artist = c.getString(2);
 
                     // Get file name from path
                     String name = path.substring(path.lastIndexOf("/") + 1, path.length() - 4);
 
-                    audioModel.setId("null");
-                    audioModel.setName(name);
-                    audioModel.setAlbum(album);
-                    audioModel.setArtist(artist);
-                    audioModel.setPath(path);
-                    audioModel.setCategory("null");
-                    audioModel.setDuration("null");
-                    audioModel.setType("local");
+                    songModel.setId("null");
+                    songModel.setName(name);
+                    songModel.setAlbum(album);
+                    songModel.setArtist(artist);
+                    songModel.setPath(path);
+                    songModel.setImage("null");
+                    songModel.setCategory("null");
+                    songModel.setDuration("null");
+                    songModel.setType("local");
 
-                    tempAudioList.add(audioModel);
+                    tempAudioList.add(songModel);
                 }
 
 
@@ -137,13 +151,13 @@ public class SongOnDeviceFragment extends Fragment {
 
 
 // Listview adapter
-class SongAdapter extends BaseAdapter {
+class SongOnDeviceAdapter extends BaseAdapter {
 
     final ArrayList<SongModel> arrSong;
     private Context mContext;
 
 
-    SongAdapter (ArrayList<SongModel> arrSong, Context context) {
+    SongOnDeviceAdapter (ArrayList<SongModel> arrSong, Context context) {
         this.arrSong = arrSong;
         this.mContext = context;
     }
@@ -185,8 +199,8 @@ class SongAdapter extends BaseAdapter {
             songArtist = "Unknown artist";
         }
         // Set song name if is too long
-        if(songName.length() > 40){
-            songName = songName.substring(0, 35) + "...";
+        if(songName.length() > 33){
+            songName = songName.substring(0, 33) + "...";
         }
 
         // Set view for listview item
@@ -205,6 +219,7 @@ class SongAdapter extends BaseAdapter {
                     songHashMap.put("songId", song.getId());
                     songHashMap.put("songName", song.getName());
                     songHashMap.put("songPath", song.getPath());
+                    songHashMap.put("songImg", song.getImage());
                     songHashMap.put("songAlbum", song.getAlbum());
                     songHashMap.put("songArtist", song.getArtist());
                     songHashMap.put("songCategory", song.getCategory());

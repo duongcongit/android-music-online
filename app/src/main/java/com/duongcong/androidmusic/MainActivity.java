@@ -20,13 +20,19 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.duongcong.androidmusic.Account.AccountFragment;
 import com.duongcong.androidmusic.Account.LoginActivity;
 import com.duongcong.androidmusic.Browse.BrowseFragment;
+import com.duongcong.androidmusic.DBHelper.RecentLocalDBHelper;
 import com.duongcong.androidmusic.Discovery.DiscoveryFragment;
+import com.duongcong.androidmusic.Home.Album.AlbumFragment;
+import com.duongcong.androidmusic.Home.Download.DownloadFragment;
 import com.duongcong.androidmusic.Home.HomeFragment;
+import com.duongcong.androidmusic.Home.Songs.SongsFragment;
+import com.duongcong.androidmusic.Home.Upload.UploadFragment;
 import com.duongcong.androidmusic.Home.playlist.SongOnPlaylistFragment;
 import com.duongcong.androidmusic.Home.songondevice.SongOnDeviceFragment;
 import com.duongcong.androidmusic.Model.SongModel;
@@ -41,7 +47,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,14 +73,19 @@ public class MainActivity extends AppCompatActivity {
     // Fragment
     List<Fragment> fragmentList = new ArrayList<>();
 
-    protected HomeFragment homeFragment                     = new HomeFragment();
+    public HomeFragment homeFragment                     = new HomeFragment();
     protected DiscoveryFragment discoveryFragment           = new DiscoveryFragment();
     protected BrowseFragment browseFragment                 = new BrowseFragment();
-    protected AccountFragment accountFragment               = new AccountFragment();
+    public AccountFragment accountFragment               = new AccountFragment();
 
     public PlayMusicFragment playMusicFragment              = new PlayMusicFragment();
     public SongMenuOptionFragment songMenuOptionFragment    = new SongMenuOptionFragment();
 
+    // Home page
+    public SongsFragment songsFragment                      = new SongsFragment();
+    public UploadFragment uploadFragment                    = new UploadFragment();
+    public DownloadFragment downloadFragment                = new DownloadFragment();
+    public AlbumFragment albumFragment                      = new AlbumFragment();
     public SongOnDeviceFragment songOnDeviceFragment        = new SongOnDeviceFragment();
     public SongOnPlaylistFragment songOnPlaylistFragment    = new SongOnPlaylistFragment();
 
@@ -89,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     public FloatingActionButton btnPlayPlaylist;
     //
     public MediaPlayer mediaPlayer;
-    ArrayList<SongModel> currentPlaylist;
+    public ArrayList<SongModel> currentPlaylist;
     public SongModel songPlaying;
     public int songPlayingIndexInCurrentPlaylist;
 
@@ -107,9 +120,29 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                setSong(playlist, songPlayingIndexInCurrentPlaylist + 1);
-                playMusicFragment.playSong();
-                songPlayingIndexInCurrentPlaylist++;
+                // If shuffle mode is on
+                if(Objects.equals(playMusicFragment.shuffleMode, "YES")){
+                    // Set new index of song is random number from 0 to size of playlist - 1
+                    songPlayingIndexInCurrentPlaylist = ThreadLocalRandom.current().nextInt(0,playlist.size()-1);
+                    setSong(playlist, songPlayingIndexInCurrentPlaylist);
+                    playMusicFragment.playSong();
+
+                }
+                // Else if song is last in list
+                else if(songPlayingIndexInCurrentPlaylist == playlist.size()-1){
+                    // If repeat all
+                    if(Objects.equals(playMusicFragment.repeatMode, "ALL")){
+                        songPlayingIndexInCurrentPlaylist = 0;
+                        setSong(playlist, songPlayingIndexInCurrentPlaylist);
+                        playMusicFragment.playSong();
+                    }
+                    //
+                }
+                else {
+                    songPlayingIndexInCurrentPlaylist++;
+                    setSong(playlist, songPlayingIndexInCurrentPlaylist);
+                    playMusicFragment.playSong();
+                }
             }
 
         });
@@ -138,12 +171,16 @@ public class MainActivity extends AppCompatActivity {
         bundle.putString("songId", songPlaying.getId());
         bundle.putString("songName",songPlaying.getName());
         bundle.putString("songPath", songPlaying.getPath());
+        bundle.putString("songImg", songPlaying.getImage());
         bundle.putString("songArtist",songArtist);
         bundle.putString("songAlbum",songPlaying.getAlbum());
         bundle.putString("songCategory",songPlaying.getCategory());
         bundle.putString("songDuration",songPlaying.getDuration());
         bundle.putString("songType", songPlaying.getType());
         playMusicFragment.setArguments(bundle);
+        // Add song to recent list
+        RecentLocalDBHelper recentDB = new RecentLocalDBHelper(this);
+        recentDB.addOrUpdateSongInRecent(songPlaying);
 
     }
 
@@ -189,6 +226,11 @@ public class MainActivity extends AppCompatActivity {
         fragmentList.add(browseFragment);
         fragmentList.add(accountFragment);
 
+        // Home page
+        fragmentList.add(songsFragment);
+        fragmentList.add(uploadFragment);
+        fragmentList.add(downloadFragment);
+        fragmentList.add(albumFragment);
         fragmentList.add(songOnDeviceFragment);
         fragmentList.add(songOnPlaylistFragment);
 
@@ -214,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putString("playType", "resume play");
-                if(songOnDeviceFragment.isVisible() || songOnPlaylistFragment.isVisible()){
+                if(songOnDeviceFragment.isVisible() || songOnPlaylistFragment.isVisible() || songsFragment.isVisible()){
                     bundle.putString("isInPlaylist", "yes");
                 }
                 else {
@@ -262,8 +304,12 @@ public class MainActivity extends AppCompatActivity {
     public void displayFragment(Fragment fragment) {
         int index = getFragmentIndex(fragment);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        FragmentManager fragmentManager;
         if (fragment.isAdded()) {
             transaction.show(fragment);
+            if(!homeFragment.isVisible() && !discoveryFragment.isVisible() && !browseFragment.isVisible() && !accountFragment.isVisible()){
+                transaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out);
+            }
         } else {
             transaction.add(R.id.fragment_container, fragment);
         }
@@ -272,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
                 transaction.hide(fragmentList.get(i));
             }
         }
-        transaction.commit();
+        transaction.addToBackStack(null).commit();
     }
 
     // Display play music fragment
@@ -290,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (playMusicFragment.isResumed()) {
             transaction.setCustomAnimations(R.anim.slide_up, R.anim.slide_down).hide(playMusicFragment);
-            // transaction.remove(playMusicFragment);
+            transaction.remove(playMusicFragment);
             transaction.commit();
 
             final Handler handler = new Handler();
@@ -339,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     navigation.setVisibility(View.VISIBLE);
-                    if(playMusicFragment.mediaPlayer.isPlaying()){
+                    if(mediaPlayer.isPlaying()){
                         songPlayingBar.setVisibility(View.VISIBLE);
                     }
                 }
@@ -427,16 +473,5 @@ public class MainActivity extends AppCompatActivity {
         // END_INCLUDE(onRequestPermissionsResult)
     } */
 
-
-}
-
-class SongInPlayList {
-    int index;
-    SongModel song;
-
-    public SongInPlayList(int index, SongModel song){
-        this.index = index;
-        this.song = song;
-    }
 
 }

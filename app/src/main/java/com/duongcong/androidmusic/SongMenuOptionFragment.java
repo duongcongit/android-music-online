@@ -76,7 +76,7 @@ public class SongMenuOptionFragment extends Fragment {
     Button btnConfirmCreatePlaylist, btnCancelCreatePlaylist;
 
     String isInPlaylist, playlistName, playlistType; // Get data if song in playlist
-    String songId, songName, songPath, songAlbum, songArtist, songCategory, songDuration, songType;
+    String songId, songName, songPath, songImg, songAlbum, songArtist, songCategory, songDuration, songType;
 
     @Nullable
     @Override
@@ -112,7 +112,7 @@ public class SongMenuOptionFragment extends Fragment {
             //
             ((MainActivity)getActivity()).navigation.setVisibility(View.VISIBLE);
             ((MainActivity)getActivity()).btnPlayPlaylist.setVisibility(View.VISIBLE);
-            if(((MainActivity)getActivity()).playMusicFragment.mediaPlayer.isPlaying()){
+            if(((MainActivity)getActivity()).mediaPlayer.isPlaying()){
                 ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.VISIBLE);
             }
         } else {
@@ -142,6 +142,7 @@ public class SongMenuOptionFragment extends Fragment {
             songId          = bundle.getString("songId");
             songName        = bundle.getString("songName");
             songPath        = bundle.getString("songPath");
+            songImg         = bundle.getString("songImg");
             songAlbum       = bundle.getString("songAlbum");
             songArtist      = bundle.getString("songArtist");
             songCategory    = bundle.getString("songCategory");
@@ -286,7 +287,7 @@ public class SongMenuOptionFragment extends Fragment {
                             // If add to local playlist
                             if(Objects.equals(playlistSelectedType, "local")){
                                 PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
-                                mydb.addSongToPlaylist(playlistNameSelected, songId, songName, songArtist, songAlbum, songPath, songCategory, songDuration, songType);
+                                mydb.addSongToPlaylist(playlistNameSelected, songId, songName, songArtist, songAlbum, songPath, songImg, songCategory, songDuration, songType);
 
                                 Toast.makeText( getContext(),"Đã thêm thành công!", Toast.LENGTH_SHORT).show();
                                 // Hide menu option

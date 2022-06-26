@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.duongcong.androidmusic.DBHelper.PlaylistLocalDBHelper;
 import com.duongcong.androidmusic.MainActivity;
@@ -86,6 +87,16 @@ public class HomePlaylistFragment extends Fragment {
 
         // Register context menu for listview playlist
         registerForContextMenu(lvPlaylist);
+
+        // Refresh list when show tab
+        ((MainActivity)getActivity()).homeFragment.mViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                // System.out.println(position);
+                getPlaylist();
+            }
+        });
 
     }
 
@@ -207,7 +218,7 @@ public class HomePlaylistFragment extends Fragment {
         });
     }
 
-    // Get playlists
+    // Get and show playlists
     private void getPlaylist(){
         //
         arrPlaylist = new ArrayList<>();

@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purple_200"
+    android:background="#242633"
     tools:context=".Home.songondevice.SongOnDeviceFragment">
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/btn_song_on_playlist_back"
         android:layout_width="37dp"
         android:layout_height="33dp"
         android:layout_marginStart="16dp"
@@ -28,19 +28,37 @@
         android:text="Playlist"
         android:textColor="@color/white"
         android:textSize="17sp"
-        app:layout_constraintStart_toEndOf="@+id/imageButton"
+        app:layout_constraintStart_toEndOf="@id/btn_song_on_playlist_back"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TextContrastCheck" />
 
-    <ListView
-        android:id="@+id/listViewSongOnPlaylist"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="18dp"
         android:background="@drawable/playlist_rounded"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playlistName_fragment" />
+        app:layout_constraintTop_toBottomOf="@+id/playlistName_fragment">
+
+        <ListView
+            android:id="@+id/listViewSongOnPlaylist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txtViewPlaylistEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="                          Playlist trống.\n Tìm bài hát để thêm vào playlist của bạn"
+            android:textColor="@color/white"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,15 +5,15 @@ public class SongModel {
     String id;
     String name;
     String path;
+    String image;
     String album;
     String artist;
     String category;
     String duration;
     String type;
-    String imgPath;
 
     //Constructor
-    public SongModel(String id, String name, String path, String album, String artist, String type,String duration,String category,String imgPath) {
+    public SongModel(String id, String name, String path, String album, String artist, String type,String duration,String category,String image) {
         if(name.trim().equals("")){
             name = "Bài hát không tên";
         }else{
@@ -27,7 +27,7 @@ public class SongModel {
         this.type = type;
         this.duration = duration;
         this.category = category;
-        this.imgPath = imgPath;
+        this.image = image;
     }
 
     public SongModel() {
@@ -40,6 +40,8 @@ public class SongModel {
 
     public void setPath(String path) {this.path = path;}
 
+    public void setImage(String image) {this.image = image;}
+
     public void setAlbum(String album) { this.album = album; }
 
     public void setArtist(String artist) {this.artist = artist;}
@@ -50,17 +52,15 @@ public class SongModel {
 
     public void setType(String type) {this.type = type; }
 
-    public void setImgPath(String imgPath) {
-        this.imgPath = imgPath;
-    }
-
 
     // Get data
     public String getId() {return id; }
 
+    public String getName() {return name;}
+
     public String getPath() {return path;}
 
-    public String getName() {return name;}
+    public String getImage() {return image;}
 
     public String getAlbum() {return album;}
 
@@ -71,11 +71,6 @@ public class SongModel {
     public String getDuration()  {return duration;}
 
     public String getType()  {return type;}
-
-    public String getImgPath() {
-        return imgPath;
-    }
-
 
 }
 

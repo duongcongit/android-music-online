@@ -13,34 +13,40 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.duongcong.androidmusic.MainActivity;
+import com.duongcong.androidmusic.Model.SongModel;
 import com.duongcong.androidmusic.R;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class PlayMusicFragment extends Fragment {
 
     // View
     ImageView imgView;
-    private ImageButton btn_forward,btn_pause,btn_play,btn_repeat;
+    private ImageButton btn_forward, btn_next,btn_pause,btn_play,btn_repeat, btn_shuffle;
     private TextView txt_songName, txt_songArtist;
 
     // Song detail
-    private String songId, songName, songPath, songAlbum, songArtist, songCategory, songDuration, songType ;
+    private String songId, songName, songPath, songImg, songAlbum, songArtist, songCategory, songDuration, songType ;
     private double startTime = 0;
     private double finalTime = 0;
 
     // Media player
     public MediaPlayer mediaPlayer;
 
-    protected String repeatMode = "NO";
+    public String repeatMode    = "NO";
+    public String shuffleMode   = "NO";
 
     //
     private Handler myHandler = new Handler();;
@@ -87,7 +93,22 @@ public class PlayMusicFragment extends Fragment {
         else {
             // Get song data and set player, views, mode,...
             // If just display song is playing and not play mew song, do nothing
-            playSong();
+            // Receive song info
+            Bundle bundle = this.getArguments();
+            if(bundle != null){
+                // If is play new song, reset player and views
+                if(Objects.equals(bundle.getString("playType"), "new play")){
+                    playSong();
+                }
+                else {
+                    // If just show song is playing, not reset
+                    // Set view
+                    setViewSongDetail(getView());
+                    // Set start play state for view
+                    setResumePlayState();
+                }
+            }
+
             // Hide bottom navigation bar and playing song bar
             ((MainActivity)getActivity()).navigation.setVisibility(View.GONE);
             ((MainActivity)getActivity()).songPlayingBar.setVisibility(View.GONE);
@@ -113,13 +134,14 @@ public class PlayMusicFragment extends Fragment {
         btn_play    = (ImageButton) view.findViewById(R.id.btn_play); // Btn play
         btn_pause   = (ImageButton) view.findViewById(R.id.btn_pause); // Btn pause
         btn_repeat  = (ImageButton) view.findViewById(R.id.btn_repeat); // Btn repeat
+        btn_shuffle = (ImageButton) view.findViewById(R.id.btn_shuffle); // Btn shuffle
+        btn_forward = (ImageButton) view.findViewById(R.id.btn_forward); // Btn forward
+        btn_next    = (ImageButton) view.findViewById(R.id.btn_next);   // Btn next
 
         // Get song data and set player, views, mode,...
         playSong();
         // setViewSongDetail(view);
 
-        // Control button
-        btn_forward = (ImageButton) view.findViewById(R.id.btn_forward);
 
         // Button back/hide fragment
         ImageButton btn_back = (ImageButton)view.findViewById(R.id.btn_back);
@@ -157,15 +179,97 @@ public class PlayMusicFragment extends Fragment {
             }
         });
 
+        // When click button forward
+        btn_forward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = ((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist;
+                ArrayList<SongModel> currentPlaylist = ((MainActivity) requireActivity()).currentPlaylist;
+
+                if(Objects.equals(shuffleMode, "YES")){
+                    // Set new index of song is random number from 0 to size of playlist - 1
+                    position = ThreadLocalRandom.current().nextInt(0,currentPlaylist.size()-1);
+                    ((MainActivity) requireActivity()).setSong(currentPlaylist, position);
+                    playSong();
+
+                }
+                else if(position == 0){
+                    Toast.makeText(getActivity().getApplicationContext(), "Đã về đầu danh sách!", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    position--;
+                    ((MainActivity) requireActivity()).setSong(currentPlaylist, position);
+                    playSong();
+                }
+                //
+                ((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist = position;
+                // System.out.println(((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist);
+            }
+        });
+
+        // When click button next
+        btn_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = ((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist;
+                ArrayList<SongModel> currentPlaylist = ((MainActivity) requireActivity()).currentPlaylist;
+
+                if(Objects.equals(shuffleMode, "YES")){
+                    // Set new index of song is random number from 0 to size of playlist - 1
+                    position = ThreadLocalRandom.current().nextInt(0,currentPlaylist.size()-1);
+                    ((MainActivity) requireActivity()).setSong(currentPlaylist, position);
+                    playSong();
+
+                }
+                else if(position == currentPlaylist.size()-1){
+                    if(Objects.equals(repeatMode, "ALL")){
+                        position = 0;
+                        ((MainActivity) requireActivity()).setSong(currentPlaylist, position);
+                        playSong();
+                    }
+                    else {
+                        Toast.makeText(getActivity().getApplicationContext(), "Đã tới cuối danh sách!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    position++;
+                    ((MainActivity) requireActivity()).setSong(currentPlaylist, position);
+                    playSong();
+                }
+                //
+                ((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist = position;
+                // System.out.println(((MainActivity) requireActivity()).songPlayingIndexInCurrentPlaylist);
+            }
+        });
+
+        // When click button shuffle
+        btn_shuffle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Objects.equals(shuffleMode, "NO")){
+                    btn_shuffle.setBackgroundResource(R.drawable.ic_shuffle_yellow);
+                    shuffleMode = "YES";
+                }
+                else if (Objects.equals(shuffleMode, "YES")){
+                    btn_shuffle.setBackgroundResource(R.drawable.ic_shuffle_btn);
+                    shuffleMode = "NO";
+                }
+
+            }
+        });
+
         // When click button set repeat
         btn_repeat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer.isLooping()){
-                    setRepeatMode("NO");
+                if(Objects.equals(repeatMode, "NO")){
+                    setRepeatMode("ALL");
                 }
-                else {
+                else if(Objects.equals(repeatMode, "ALL")){
                     setRepeatMode("ONE");
+                }
+                else if(mediaPlayer.isLooping() || Objects.equals(repeatMode, "ONE")){
+                    setRepeatMode("NO");
                 }
             }
         });
@@ -200,6 +304,7 @@ public class PlayMusicFragment extends Fragment {
                 songId          = bundle.getString("songID");
                 songName        = bundle.getString("songName");
                 songPath        = bundle.getString("songPath");
+                songImg         = bundle.getString("songImg");
                 songAlbum       = bundle.getString("songAlbum");
                 songArtist      = bundle.getString("songArtist");
                 songCategory    = bundle.getString("songCategory");
@@ -228,8 +333,22 @@ public class PlayMusicFragment extends Fragment {
                 try {
                     mediaPlayer.reset();
                     mediaPlayer.setDataSource(PATH_TO_FILE);
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
+                    if(Objects.equals(songType, "local")){
+                        mediaPlayer.prepare();
+                    }
+                    else {
+                        mediaPlayer.prepareAsync();
+                    }
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mediaPlayer.start();
+                            // Set start play state for view
+                            setStartPlayState();
+
+                        }
+                    });
+
                     // Update when song is playing
                     myHandler.postDelayed(UpdateSongTime,100);
                 } catch (IOException e) {
@@ -238,8 +357,8 @@ public class PlayMusicFragment extends Fragment {
 
                 // Set view
                 setViewSongDetail(getView());
-                // Set start play state for view
-                setStartPlayState();
+
+
 
             }
 
@@ -256,6 +375,12 @@ public class PlayMusicFragment extends Fragment {
         txt_songName.setText(songName);
         txt_songArtist.setText(songArtist);
 
+
+        // Set image
+        if(Objects.equals(songType, "online") || !Objects.equals(songImg, "null")){
+            Glide.with(getContext()).load(songImg).placeholder(R.drawable.blue_pink_music_circle).circleCrop().into(imgView);
+        }
+
         // Animation rotate image while playing
         anim = ObjectAnimator.ofFloat(imgView, "rotation", 0, 360);
         anim.setDuration(20000);
@@ -263,8 +388,14 @@ public class PlayMusicFragment extends Fragment {
         anim.setRepeatMode(ObjectAnimator.RESTART);
 
         // Display final time of music
-        finalTime = mediaPlayer.getDuration();
-        txt_max_time.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) finalTime), TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
+        if(Objects.equals(songDuration, "null")){
+            finalTime = mediaPlayer.getDuration();
+            txt_max_time.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) finalTime), TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
+        }
+        else {
+            txt_max_time.setText(songDuration);
+        }
+
 
         // Set parameter for seekbar
         seekbar = (SeekBar)view.findViewById(R.id.seekBar);
@@ -342,7 +473,14 @@ public class PlayMusicFragment extends Fragment {
         // ========== Play music screen ===========
         btn_play.setVisibility(View.INVISIBLE); // Hide btn play
         btn_pause.setVisibility(View.VISIBLE);  // Display btn pause
-        anim.resume();                          // Resume animation rotate img
+        // Resume animation rotate img
+        if(anim.isPaused()){
+            anim.resume();
+        }
+        else { // If anim had been reset by hidePlayMusicFragment(), start over
+            anim.start();
+        }
+
         // Enable animation textview song name
         txt_songName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
         txt_songName.setSelected(true);
@@ -365,19 +503,22 @@ public class PlayMusicFragment extends Fragment {
 
     // Set repeat mode
     public void setRepeatMode(String rpMode){
-        if(rpMode == "NO"){
+        if(Objects.equals(rpMode, "NO")){
             mediaPlayer.setLooping(false);
             btn_repeat.setBackgroundResource(R.drawable.ic_repeat_btn);
             repeatMode = rpMode;
         }
-        else if(rpMode == "ONE"){
-            mediaPlayer.setLooping(true);
+        else if(Objects.equals(rpMode, "ALL")){
+            mediaPlayer.setLooping(false);
             btn_repeat.setBackgroundResource(R.drawable.ic_repeat_yellow);
             repeatMode = rpMode;
         }
-        else if(rpMode == "ALL"){
-
+        else if(Objects.equals(rpMode, "ONE")){
+            mediaPlayer.setLooping(true);
+            btn_repeat.setBackgroundResource(R.drawable.ic_repeat_one_yellow);
+            repeatMode = rpMode;
         }
+
     }
 
     // Function format time of song

@@ -1,10 +1,10 @@
 package com.duongcong.androidmusic.Home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,16 +12,22 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.duongcong.androidmusic.Account.LoginActivity;
 import com.duongcong.androidmusic.MainActivity;
 import com.duongcong.androidmusic.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class HomeFragment extends Fragment {
 
     private TabLayout mTabLayout;
-    private ViewPager2 mViewPager2;
+    public ViewPager2 mViewPager2;
+
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
 
 
     @Nullable
@@ -45,6 +51,8 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
 
         mTabLayout = view.findViewById(R.id.tab_layout);
         mViewPager2 = view.findViewById(R.id.view_pager2);
@@ -52,7 +60,6 @@ public class HomeFragment extends Fragment {
         ViewPagerAdapterHome viewPagerAdapterHome = new ViewPagerAdapterHome(getActivity().getSupportFragmentManager(), getLifecycle());
 
         mViewPager2.setAdapter(viewPagerAdapterHome);
-
 
         new TabLayoutMediator(mTabLayout, mViewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
@@ -73,8 +80,16 @@ public class HomeFragment extends Fragment {
         cardView_song.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "song", Toast.LENGTH_SHORT).show();
-
+                // Check user firebase
+                firebaseAuth = FirebaseAuth.getInstance();
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                if(firebaseUser!=null){
+                    ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).songsFragment);
+                }
+                else{
+                    Intent intent = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -94,7 +109,7 @@ public class HomeFragment extends Fragment {
         cardView_upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "upload", Toast.LENGTH_SHORT).show();
+                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).uploadFragment);
 
 
             }
@@ -105,7 +120,7 @@ public class HomeFragment extends Fragment {
         cardView_download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "download", Toast.LENGTH_SHORT).show();
+                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).downloadFragment);
 
 
             }
@@ -116,7 +131,7 @@ public class HomeFragment extends Fragment {
         cardView_album.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "album", Toast.LENGTH_SHORT).show();
+                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).albumFragment);
 
 
             }
