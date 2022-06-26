@@ -12,6 +12,27 @@ public class SongModel {
     String duration;
     String type;
 
+    //Constructor
+    public SongModel(String id, String name, String path, String album, String artist, String type,String duration,String category,String image) {
+        if(name.trim().equals("")){
+            name = "Bài hát không tên";
+        }else{
+            this.name = name;
+        }
+
+        this.id = id;
+        this.path = path;
+        this.album = album;
+        this.artist = artist;
+        this.type = type;
+        this.duration = duration;
+        this.category = category;
+        this.image = image;
+    }
+
+    public SongModel() {
+    }
+
     // Set data
     public void setId(String id) {this.id = id; }
 

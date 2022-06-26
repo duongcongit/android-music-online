@@ -19,6 +19,9 @@
         android:theme="@style/Theme.AndroidMusic"
         tools:targetApi="31">
         <activity
+            android:name=".Account.SongUploadActivity"
+            android:exported="false" />
+        <activity
             android:name=".Account.LoginActivity"
             android:exported="false" />
         <activity

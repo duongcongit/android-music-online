@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class AccountFragment extends Fragment {
-    private Button btnPopup,btnLogin;
+    private Button btnPopup;
     private TextView username,userName,userRegisDate;
     private String user_email,user_password,user_displayName;
     private FirebaseAuth firebaseAuth;
@@ -35,7 +35,6 @@ public class AccountFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_account,container,false);
 
-        btnLogin =(Button) root.findViewById(R.id.btn_login_test);
         btnPopup =(Button) root.findViewById(R.id.ButtonPopupMenu);
         username = (TextView) root.findViewById(R.id.user_name);
         userName = (TextView) root.findViewById(R.id.user_Name);
@@ -81,7 +80,8 @@ public class AccountFragment extends Fragment {
                                 startActivity(intent);
                                 return true;
                             case R.id.menu_upload:
-                                Toast.makeText(getActivity().getApplicationContext(), "upload", Toast.LENGTH_SHORT).show();
+                                Intent intent1 = new Intent(getActivity().getApplicationContext(), SongUploadActivity.class);
+                                startActivity(intent1);
                                 return true;
                             default:
                                 return false;
@@ -89,15 +89,6 @@ public class AccountFragment extends Fragment {
                     }
                 });
                 popupMenu.show();
-            }
-        });
-
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity().getApplicationContext(),LoginActivity.class);
-                startActivity(intent);
-
             }
         });
 
