@@ -19,6 +19,7 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -60,6 +61,7 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
     private TextView textViewSong,title,artist,album,data_song,duration;
     private ImageView imageView;
     private String string_title,string_artist,song_categories,string_duration,string_albumArt="";
+    private String titleInfo,albumInfo,artistInfo;
     private Spinner spinner;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -79,10 +81,10 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
 
         textViewSong = (TextView) findViewById(R.id.textViewSongSelected);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        title = (TextView) findViewById(R.id.textViewSongTitleInfo);
-        artist = (TextView) findViewById(R.id.textViewSongArtistInfo);
-        album = (TextView) findViewById(R.id.textViewSongAlbumInfo);
-        duration = (TextView) findViewById(R.id.textViewSongDurationInfo);
+        title = (EditText) findViewById(R.id.textViewSongTitleInfo);
+        artist = (EditText) findViewById(R.id.textViewSongArtistInfo);
+        album = (EditText) findViewById(R.id.textViewSongAlbumInfo);
+        duration = (EditText) findViewById(R.id.textViewSongDurationInfo);
         imageView = (ImageView) findViewById(R.id.imgView_image);
         spinner = (Spinner) findViewById(R.id.spinner);
 
@@ -223,7 +225,23 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
     }
 
     public void uploadFileToFireBase(View v){
-        if(textViewSong.equals("Chưa có file nào được chọn")){
+        titleInfo = title.getText().toString();
+        albumInfo = album.getText().toString();
+        artistInfo = artist.getText().toString();
+
+        if(titleInfo.equals("")){
+            title.setError("Vui lòng điền thông tin");
+            title.requestFocus();
+        }
+        else if (albumInfo.equals("")){
+            album.setError("Vui lòng điền thông tin");
+            album.requestFocus();
+        }
+        else if (artistInfo.equals("")){
+            artist.setError("Vui lòng điền thông tin");
+            artist.requestFocus();
+        }
+        else if(textViewSong.equals("Chưa có file nào được chọn")){
             Toast.makeText(this, "Xin vui lòng chọn files", Toast.LENGTH_SHORT).show();
         }
         else if(bitmapImage== null){
@@ -278,7 +296,7 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
                         @Override
                         public void onSuccess(Uri uri) {
                             String uploadId = databaseReference.push().getKey();
-                            SongModel onlineSongModel = new SongModel(uploadId,string_title,uri.toString(),string_albumArt,string_artist,"online",string_duration,song_categories,urlUploadImg.toString());
+                            SongModel onlineSongModel = new SongModel(uploadId,titleInfo,uri.toString(),albumInfo,artistInfo,"online",string_duration,song_categories,urlUploadImg.toString());
                             databaseReference.child(firebaseUser.getUid()).child("songs").child(uploadId).setValue(onlineSongModel);
                         }
                     });

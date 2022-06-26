@@ -2,6 +2,7 @@ package com.duongcong.androidmusic.Account;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +35,23 @@ public class AccountFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_account,container,false);
+
+
+        //Ngăn người dùng bấm nút back bị trở lại form đăng nhập sau khi đã đăng nhập
+        root.setFocusableInTouchMode(true);
+        root.requestFocus();
+        root.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         btnPopup =(Button) root.findViewById(R.id.ButtonPopupMenu);
         username = (TextView) root.findViewById(R.id.user_name);
