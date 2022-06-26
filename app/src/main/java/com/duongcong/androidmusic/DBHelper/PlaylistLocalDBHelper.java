@@ -29,6 +29,7 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
             "songArtist  text," +
             "songAlbum text," +
             "songPath text NOT NULL," +
+            "songImg text," +
             "songCategory text," +
             "songDuration text," +
             "songType text NOT NULL," +
@@ -79,7 +80,7 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
     }
 
     // Insert a song into database
-    public boolean addSongToPlaylist (String playlistName, String songId , String songName, String artist, String album, String songPath, String songCategory, String songDuration, String songType) {
+    public boolean addSongToPlaylist (String playlistName, String songId , String songName, String artist, String album, String songPath, String songImg, String songCategory, String songDuration, String songType) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("playlistName", playlistName);
@@ -88,6 +89,7 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
         contentValues.put("songArtist", artist);
         contentValues.put("songAlbum", album);
         contentValues.put("songPath", songPath);
+        contentValues.put("songImg", songImg);
         contentValues.put("songCategory", songCategory);
         contentValues.put("songDuration", songDuration);
         contentValues.put("songType", songType);
@@ -164,6 +166,7 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
             String artist       = res.getString(res.getColumnIndexOrThrow("songArtist"));
             String album        = res.getString(res.getColumnIndexOrThrow("songAlbum"));
             String songPath     = res.getString(res.getColumnIndexOrThrow("songPath"));
+            String songImg      = res.getString(res.getColumnIndexOrThrow("songImg"));
             String songCategory = res.getString(res.getColumnIndexOrThrow("songCategory"));
             String songDuration = res.getString(res.getColumnIndexOrThrow("songDuration"));
             String songType     = res.getString(res.getColumnIndexOrThrow("songType"));
@@ -174,6 +177,7 @@ public class PlaylistLocalDBHelper extends SQLiteOpenHelper {
             audioModel.setArtist(artist);
             audioModel.setAlbum(album);
             audioModel.setPath(songPath);
+            audioModel.setImage(songImg);
             audioModel.setCategory(songCategory);
             audioModel.setDuration(songDuration);
             audioModel.setType(songType);

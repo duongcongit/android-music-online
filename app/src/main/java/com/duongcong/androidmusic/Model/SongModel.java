@@ -5,6 +5,7 @@ public class SongModel {
     String id;
     String name;
     String path;
+    String image;
     String album;
     String artist;
     String category;
@@ -17,6 +18,8 @@ public class SongModel {
     public void setName(String name) { this.name = name;}
 
     public void setPath(String path) {this.path = path;}
+
+    public void setImage(String image) {this.image = image;}
 
     public void setAlbum(String album) { this.album = album; }
 
@@ -32,9 +35,11 @@ public class SongModel {
     // Get data
     public String getId() {return id; }
 
+    public String getName() {return name;}
+
     public String getPath() {return path;}
 
-    public String getName() {return name;}
+    public String getImage() {return image;}
 
     public String getAlbum() {return album;}
 

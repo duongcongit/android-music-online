@@ -26,6 +26,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.duongcong.androidmusic.Account.AccountFragment;
 import com.duongcong.androidmusic.Account.LoginActivity;
 import com.duongcong.androidmusic.Browse.BrowseFragment;
+import com.duongcong.androidmusic.DBHelper.RecentLocalDBHelper;
 import com.duongcong.androidmusic.Discovery.DiscoveryFragment;
 import com.duongcong.androidmusic.Home.Album.AlbumFragment;
 import com.duongcong.androidmusic.Home.Download.DownloadFragment;
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     public HomeFragment homeFragment                     = new HomeFragment();
     protected DiscoveryFragment discoveryFragment           = new DiscoveryFragment();
     protected BrowseFragment browseFragment                 = new BrowseFragment();
-    protected AccountFragment accountFragment               = new AccountFragment();
+    public AccountFragment accountFragment               = new AccountFragment();
 
     public PlayMusicFragment playMusicFragment              = new PlayMusicFragment();
     public SongMenuOptionFragment songMenuOptionFragment    = new SongMenuOptionFragment();
@@ -176,6 +177,9 @@ public class MainActivity extends AppCompatActivity {
         bundle.putString("songDuration",songPlaying.getDuration());
         bundle.putString("songType", songPlaying.getType());
         playMusicFragment.setArguments(bundle);
+        // Add song to recent list
+        RecentLocalDBHelper recentDB = new RecentLocalDBHelper(this);
+        recentDB.addOrUpdateSongInRecent(songPlaying);
 
     }
 
@@ -380,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     navigation.setVisibility(View.VISIBLE);
-                    if(playMusicFragment.mediaPlayer.isPlaying()){
+                    if(mediaPlayer.isPlaying()){
                         songPlayingBar.setVisibility(View.VISIBLE);
                     }
                 }

@@ -30,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class SongsFragment extends Fragment {
 
@@ -105,6 +106,7 @@ public class SongsFragment extends Fragment {
                         String songId       = (String) ds.child("id").getValue();
                         String songName     = (String) ds.child("name").getValue();
                         String songPath     = (String) ds.child("path").getValue();
+                        String songImg      = (String) ds.child("imgPath").getValue();
                         String songAlbum    = (String) ds.child("album").getValue();
                         String songArtist   = (String) ds.child("artist").getValue();
                         String songCategory = (String) ds.child("category").getValue();
@@ -117,6 +119,7 @@ public class SongsFragment extends Fragment {
                         song.setId(songId);
                         song.setName(songName);
                         song.setPath(songPath);
+                        song.setImage(songImg);
                         song.setAlbum(songAlbum);
                         song.setArtist(songArtist);
                         song.setCategory(songCategory);
@@ -219,6 +222,7 @@ class MySongsAdapter extends BaseAdapter {
         SongModel song = (SongModel) getItem(position);
         String songName     = song.getName();
         String songArtist   = song.getArtist();
+        String songImg      = song.getImage();
 
         // Set artist if artist is <unknown>
         if(songArtist == null || songArtist.equals("<unknown>")){
@@ -230,11 +234,15 @@ class MySongsAdapter extends BaseAdapter {
         }
 
         // Set view for listview item
+        // Set avatar
         ImageView songAvatar = (ImageView) viewSong.findViewById(R.id.imageView_ic_song_avatar);
-        String url = "https://firebasestorage.googleapis.com/v0/b/androidmusic-3d470.appspot.com/o/images%2F1656180919139.jpg?alt=media&token=ef06db58-de11-43e4-b1ba-091f5f530c34";
-        // Picasso.get().load(url).into(songAvatar);
+        String imgUrl = songImg;
+        if(Objects.equals(song.getType(), "online")){
+            // Picasso.get().load(imgUrl).placeholder(R.drawable.ic_music).into(songAvatar);
+            Glide.with(mContext).load(imgUrl).placeholder(R.drawable.ic_music).centerCrop().into(songAvatar);
+        }
 
-        Glide.with(mContext).load(R.raw.ic_audio_wave_unscreen).into(songAvatar);
+        // Glide.with(mContext).load(R.raw.ic_audio_wave_unscreen).into(songAvatar);
 
         ((TextView) viewSong.findViewById(R.id.textView_songName)).setText(songName);
         ((TextView) viewSong.findViewById(R.id.textView_songArtist)).setText(songArtist);
@@ -251,6 +259,7 @@ class MySongsAdapter extends BaseAdapter {
                     songHashMap.put("songId", song.getId());
                     songHashMap.put("songName", song.getName());
                     songHashMap.put("songPath", song.getPath());
+                    songHashMap.put("songImg", song.getImage());
                     songHashMap.put("songAlbum", song.getAlbum());
                     songHashMap.put("songArtist", song.getArtist());
                     songHashMap.put("songCategory", song.getCategory());

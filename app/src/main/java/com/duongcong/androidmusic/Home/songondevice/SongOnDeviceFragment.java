@@ -87,7 +87,7 @@ public class SongOnDeviceFragment extends Fragment {
 
         // Create adapter
         songListViewAdapter = new SongOnDeviceAdapter(arrSong, (MainActivity)getContext());
-        // Set adapter for listivew
+        // Set adapter for listview
         lvSong.setAdapter(songListViewAdapter);
 
         TextView txtViewEmpty = getView().findViewById(R.id.txtViewSongOnDeviceEmpty);
@@ -119,23 +119,24 @@ public class SongOnDeviceFragment extends Fragment {
             while (c.moveToNext()) {
                 String path = c.getString(0);
                 if(path.endsWith(".mp3")){
-                    SongModel audioModel = new SongModel();
+                    SongModel songModel = new SongModel();
                     String album = c.getString(1);
                     String artist = c.getString(2);
 
                     // Get file name from path
                     String name = path.substring(path.lastIndexOf("/") + 1, path.length() - 4);
 
-                    audioModel.setId("null");
-                    audioModel.setName(name);
-                    audioModel.setAlbum(album);
-                    audioModel.setArtist(artist);
-                    audioModel.setPath(path);
-                    audioModel.setCategory("null");
-                    audioModel.setDuration("null");
-                    audioModel.setType("local");
+                    songModel.setId("null");
+                    songModel.setName(name);
+                    songModel.setAlbum(album);
+                    songModel.setArtist(artist);
+                    songModel.setPath(path);
+                    songModel.setImage("null");
+                    songModel.setCategory("null");
+                    songModel.setDuration("null");
+                    songModel.setType("local");
 
-                    tempAudioList.add(audioModel);
+                    tempAudioList.add(songModel);
                 }
 
 
@@ -218,6 +219,7 @@ class SongOnDeviceAdapter extends BaseAdapter {
                     songHashMap.put("songId", song.getId());
                     songHashMap.put("songName", song.getName());
                     songHashMap.put("songPath", song.getPath());
+                    songHashMap.put("songImg", song.getImage());
                     songHashMap.put("songAlbum", song.getAlbum());
                     songHashMap.put("songArtist", song.getArtist());
                     songHashMap.put("songCategory", song.getCategory());

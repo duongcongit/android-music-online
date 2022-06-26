@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.duongcong.androidmusic.DBHelper.PlaylistLocalDBHelper;
 import com.duongcong.androidmusic.MainActivity;
 import com.duongcong.androidmusic.Model.SongModel;
@@ -142,6 +144,7 @@ public class SongOnPlaylistFragment extends Fragment {
                                 String songId       = (String) ds.child("id").getValue();
                                 String songName     = (String) ds.child("name").getValue();
                                 String songPath     = (String) ds.child("path").getValue();
+                                String songImg      = (String) ds.child("imgPath").getValue();
                                 String songAlbum    = (String) ds.child("album").getValue();
                                 String songArtist   = (String) ds.child("artist").getValue();
                                 String songCategory = (String) ds.child("category").getValue();
@@ -154,6 +157,7 @@ public class SongOnPlaylistFragment extends Fragment {
                                 song.setId(songId);
                                 song.setName(songName);
                                 song.setPath(songPath);
+                                song.setImage(songImg);
                                 song.setAlbum(songAlbum);
                                 song.setArtist(songArtist);
                                 song.setCategory(songCategory);
@@ -261,8 +265,9 @@ class SongOnPlaylistAdapter extends BaseAdapter {
         // Get a song as Model
         SongModel song = (SongModel) getItem(position);
 
-        String songName = song.getName();
+        String songName   = song.getName();
         String songArtist = song.getArtist();
+        String songImg    = song.getImage();
         // Set artist if it is <unknown>
         if(songArtist == null || songArtist.equals("<unknown>")){
             songArtist = "Unknown artist";
@@ -272,6 +277,15 @@ class SongOnPlaylistAdapter extends BaseAdapter {
             songName = songName.substring(0, 33) + "...";
         }
         // Set view for each item in list view
+        // Set view for listview item
+        // Set avatar
+        ImageView songAvatar = (ImageView) viewSong.findViewById(R.id.imageView_ic_song_avatar);
+        String imgUrl = songImg;
+        if(Objects.equals(song.getType(), "online")){
+            // Picasso.get().load(imgUrl).placeholder(R.drawable.ic_music).into(songAvatar);
+            Glide.with(mContext).load(imgUrl).placeholder(R.drawable.ic_music).centerCrop().into(songAvatar);
+        }
+
         ((TextView) viewSong.findViewById(R.id.textView_songName)).setText(songName);
         ((TextView) viewSong.findViewById(R.id.textView_songArtist)).setText(songArtist);
 
@@ -287,6 +301,7 @@ class SongOnPlaylistAdapter extends BaseAdapter {
                     songHashMap.put("songId", song.getId());
                     songHashMap.put("songName", song.getName());
                     songHashMap.put("songPath", song.getPath());
+                    songHashMap.put("songImg", song.getImage());
                     songHashMap.put("songAlbum", song.getAlbum());
                     songHashMap.put("songArtist", song.getArtist());
                     songHashMap.put("songCategory", song.getCategory());
