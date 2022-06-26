@@ -47,6 +47,7 @@
         <entry key="app/src/main/res/drawable/menu_option_hide_area_background.xml" value="0.243" />
         <entry key="app/src/main/res/drawable/menu_option_hide_area_background_hide.xml" value="0.243" />
         <entry key="app/src/main/res/drawable/playlist_rounded.xml" value="0.262" />
+        <entry key="app/src/main/res/drawable/seekbar_time_bg.xml" value="0.2525" />
         <entry key="app/src/main/res/drawable/shapebgsearch.xml" value="0.2605" />
         <entry key="app/src/main/res/drawable/song_avatar_rounded.xml" value="0.247" />
         <entry key="app/src/main/res/drawable/song_menu_option_rounded.xml" value="0.262" />
@@ -63,7 +64,7 @@
         <entry key="app/src/main/res/layout/delete_playlist_dialog_cofirm.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/layout/fragment_account.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_album.xml" value="0.35625" />
-        <entry key="app/src/main/res/layout/fragment_browse.xml" value="0.17325227963525835" />
+        <entry key="app/src/main/res/layout/fragment_browse.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_discovery.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_download.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.33" />

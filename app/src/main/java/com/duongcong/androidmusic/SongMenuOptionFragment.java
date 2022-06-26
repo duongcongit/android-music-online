@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import com.duongcong.androidmusic.DBHelper.PlaylistLocalDBHelper;
 import com.duongcong.androidmusic.Model.PlaylistModel;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -162,6 +163,13 @@ public class SongMenuOptionFragment extends Fragment {
 
     // Display or hide menu items by song
     private void setMenuItemView(){
+        songMenuOptionRemoveFromUpload.setVisibility(View.VISIBLE);
+        songMenuOptionUpload.setVisibility(View.GONE);
+        songMenuOptionAddToPlaylist.setVisibility(View.VISIBLE);
+        songMenuOptionRemoveFromPlaylist.setVisibility(View.VISIBLE);
+        songMenuOptionDownload.setVisibility(View.VISIBLE);
+        songMenuOptionUpload.setVisibility(View.VISIBLE);
+
         // If is local/offline song, hide option remove from upload and option download
         if(Objects.equals(songType, "local")){
             songMenuOptionRemoveFromUpload.setVisibility(View.GONE);
@@ -185,7 +193,7 @@ public class SongMenuOptionFragment extends Fragment {
 
         // Check if this song is own, show option remove from cloud
         if(firebaseUser!=null){
-            System.out.println("Đã đăng nhập");
+            // System.out.println("Đã đăng nhập");
             FirebaseDatabase database = FirebaseDatabase.getInstance();;
             DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("songs");
             myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -288,13 +296,40 @@ public class SongMenuOptionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 songMenuOptionRemoveFromUpload.startAnimation(item_click);
+                FirebaseDatabase database = FirebaseDatabase.getInstance();;
+                DatabaseReference songDataDelRef = database.getReference().child("users").child(firebaseUser.getUid()).child("songs").child(songId);
+
                 String songFileName = URLUtil.guessFileName(songPath, null, null);
                 String songImgName  = URLUtil.guessFileName(songImg, null, null);
-                // System.out.println(songp.substring(85, 102));
-                System.out.println(songFileName);
-                System.out.println(songImgName);
-                // StorageReference delImgRef  = storageRef.child("images/" + songImg);
-                // StorageReference delSongRef = storageRef.child("songs/" + song)
+                // System.out.println(songFileName);
+                // System.out.println(songImgName);
+                StorageReference delSongRef = storageRef.child("songs/" + songFileName);
+                StorageReference delImgRef  = storageRef.child("images/" + songImgName);
+
+                delSongRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        delImgRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                songDataDelRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Toast.makeText(getContext(), "Đã xóa khỏi upload!", Toast.LENGTH_SHORT).show();
+                                        // Reload list song
+                                        ((MainActivity)getActivity()).songsFragment.onHiddenChanged(false);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+
+                // Hide option menu
+                ((MainActivity)getActivity()).hideSongMenuOptionFragment();
+                songMenuOption.setBackgroundResource(R.drawable.menu_option_hide_area_background_hide);
+
+
             }
         });
 

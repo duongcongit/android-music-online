@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.duongcong.androidmusic.DBHelper.PlaylistLocalDBHelper;
 import com.duongcong.androidmusic.DBHelper.RecentLocalDBHelper;
+import com.duongcong.androidmusic.Discovery.my_interface.DiscoveryItemClickListener;
+import com.duongcong.androidmusic.MainActivity;
 import com.duongcong.androidmusic.Model.SongModel;
 import com.duongcong.androidmusic.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,17 +36,31 @@ import java.util.Objects;
 
 public class DiscoveryFragment extends Fragment {
 
-    private ArrayList<SongModel> arrSong;
-    private RecyclerView mRecyclerSong;
     private SongDiscoveryAdapter songDiscoveryAdapter ;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_discovery, container, false);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if(hidden){
+            // System.out.println("hidden");
+        }
+        else {
+            getListSong(getView(), "Nhạc Remix");
+            getListSong(getView(), "Nhạc Trẻ");
+            getListSong(getView(), "Pop Ballad");
+            getListSong(getView(), "Nhạc Rock");
+            getListSong(getView(), "Thể loại khác");
+        }
     }
 
     @Override
@@ -53,81 +70,74 @@ public class DiscoveryFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-
-        // mRecyclerSong = view.findViewById(R.id.recycleView_discovery_remix);
-        // arrSong = new ArrayList<>();
-
-        RecentLocalDBHelper mydb = new RecentLocalDBHelper(getContext());
-        // arrSong = mydb.getRecentList();
-
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-
-        songDiscoveryAdapter = new SongDiscoveryAdapter(getContext(), arrSong);
-
-        //Test
-
-        // remix
-
-        getListSong(view, "EDM Remix");
-        getListSong(view, "Nhac tre");
-        getListSong(view, "Nhạc chill");
-        getListSong(view, "Rock");
+        // Get and show songs by category
+        getListSong(view, "Nhạc Remix");
+        getListSong(view, "Nhạc Trẻ");
+        getListSong(view, "Pop Ballad");
+        getListSong(view, "Nhạc Rock");
+        getListSong(view, "Thể loại khác");
 
 
     }
 
 
-
-
-    /// Get list song===========================
-    private void getListSong(View view, String playlistName){
+    /// Get list song from cloud by category and show
+    private void getListSong(View view, String category){
         ArrayList<SongModel> audioList = new ArrayList<>();
         // Get songs from cloud
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("playlists").child(playlistName).child("songs");
+        DatabaseReference myFirebaseRef = database.getReference().child("users");
         myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    // Get song info
-                    for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                        String songId       = (String) ds.child("id").getValue();
-                        String songName     = (String) ds.child("name").getValue();
-                        String songPath     = (String) ds.child("path").getValue();
-                        String songImg      = (String) ds.child("image").getValue();
-                        String songAlbum    = (String) ds.child("album").getValue();
-                        String songArtist   = (String) ds.child("artist").getValue();
-                        String songCategory = (String) ds.child("category").getValue();
-                        String songDuration = (String) ds.child("duration").getValue();
-                        String songType     = (String) ds.child("type").getValue();
-                        // System.out.println(songId);
+                    for(DataSnapshot dsUsers : dataSnapshot.getChildren()) {
+                        for (DataSnapshot dsUserChildItems : dsUsers.getChildren()){
+                            if(Objects.equals(dsUserChildItems.getKey(), "songs")){ // If meet item named song
+                                for (DataSnapshot dsListSong : dsUserChildItems.getChildren()){ // Browse each song in item
+                                    String thisSongCategory = (String) dsListSong.child("category").getValue();
+                                    if(Objects.equals(thisSongCategory, category)){
+                                        // System.out.println(dsListSong.child("name").getValue());
+                                        String songId       = (String) dsListSong.child("id").getValue();
+                                        String songName     = (String) dsListSong.child("name").getValue();
+                                        String songPath     = (String) dsListSong.child("path").getValue();
+                                        String songImg      = (String) dsListSong.child("image").getValue();
+                                        String songAlbum    = (String) dsListSong.child("album").getValue();
+                                        String songArtist   = (String) dsListSong.child("artist").getValue();
+                                        String songCategory = (String) dsListSong.child("category").getValue();
+                                        String songDuration = (String) dsListSong.child("duration").getValue();
+                                        String songType     = (String) dsListSong.child("type").getValue();
+                                        String timeUpload   = (String) dsListSong.child("timeUpload").getValue();
 
-                        // Create a model
-                        SongModel song = new SongModel();
-                        song.setId(songId);
-                        song.setName(songName);
-                        song.setPath(songPath);
-                        song.setImage(songImg);
-                        song.setAlbum(songAlbum);
-                        song.setArtist(songArtist);
-                        song.setCategory(songCategory);
-                        song.setDuration(songDuration);
-                        song.setType(songType);
+                                        // Create a model
+                                        SongModel song = new SongModel();
+                                        song.setId(songId);
+                                        song.setName(songName);
+                                        song.setPath(songPath);
+                                        song.setImage(songImg);
+                                        song.setAlbum(songAlbum);
+                                        song.setArtist(songArtist);
+                                        song.setCategory(songCategory);
+                                        song.setDuration(songDuration);
+                                        song.setType(songType);
+                                        song.setTimeUpload(timeUpload);
 
-                        // Add to list
-                        audioList.add(song);
-                        // arrSong.add(song);
+                                        // Add to list
+                                        audioList.add(song);
 
-                        System.out.println(songName);
+                                        // System.out.println(songName);
+                                        // System.out.println(timeUpload);
+                                    }
+                                }
+                            }
+                        }
+
+
                     }
 
-                    showListSong(view, playlistName, audioList);
-
-                    // arrSong = audioList;
+                    // Show list song
+                    showListSong(view, category, audioList);
                 }
-                // Show list song
-
-
             }
             //
             @Override
@@ -136,49 +146,47 @@ public class DiscoveryFragment extends Fragment {
             }
         });
 
+
     }
 
+    // Func
+    private void showListSong(View view, String category, ArrayList<SongModel> listSong){
 
-    private void showListSong(View view, String playlistName, ArrayList<SongModel> listSong){
+        songDiscoveryAdapter = new SongDiscoveryAdapter(getContext(), listSong, new DiscoveryItemClickListener() {
+            @Override
+            public void onClickItemListener(ArrayList<SongModel> arrSong, int position) {
+                ((MainActivity) requireActivity()).playNewPlaylist(arrSong, position);
+            }
+        });
+        //
+        RecyclerView recyclerSong = view.findViewById(R.id.recycleView_discovery_remix);
 
-
-        if(playlistName.equals("EDM Remix")){
-            System.out.println("Nhac ======= REMIX");
-            // remix
-            songDiscoveryAdapter = new SongDiscoveryAdapter(getContext(), listSong);
-            mRecyclerSong = view.findViewById(R.id.recycleView_discovery_remix);
-            mRecyclerSong.setAdapter(songDiscoveryAdapter);
-            mRecyclerSong.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        if(category.equals("Nhạc Remix") || category.equals("Nhạc Dance")){
+            // EDM remix
+            recyclerSong = view.findViewById(R.id.recycleView_discovery_remix);
         }
-        else if (playlistName.equals("Nhac tre")){
-            System.out.println("Nhac ======= Tre");
-
-            // Trẻ
-            songDiscoveryAdapter = new SongDiscoveryAdapter(getContext(), listSong);
-            RecyclerView a = view.findViewById(R.id.recycleView_discovery_song);
-            a.setAdapter(songDiscoveryAdapter);
-            a.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-
-        }
-        else if (playlistName.equals("Nhạc chill")){
-            System.out.println("Nhac ======= Chill");
-            // Chill
-            songDiscoveryAdapter = new SongDiscoveryAdapter(getContext(), listSong);
-            RecyclerView b = view.findViewById(R.id.recycleView_discovery_pop_ballad);
-            b.setAdapter(songDiscoveryAdapter);
-            b.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        else if (category.equals("Nhạc Trẻ")){
+            // Nhạc trẻ
+            recyclerSong = view.findViewById(R.id.recycleView_discovery_song);
 
         }
-        else if (playlistName.equals("Rock")){
-            System.out.println("Nhac ======= ROCK");
-            // Rock
-            songDiscoveryAdapter = new SongDiscoveryAdapter(getContext(), listSong);
-            RecyclerView c = view.findViewById(R.id.recycleView_discovery_rock);
-            c.setAdapter(songDiscoveryAdapter);
-            c.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        else if (category.equals("Pop Ballad")){
+            recyclerSong = view.findViewById(R.id.recycleView_discovery_pop_ballad);
 
         }
+        else if (category.equals("Nhạc Rock")){
+            recyclerSong = view.findViewById(R.id.recycleView_discovery_rock);
 
+        }
+        else if (category.equals("Thể loại khác")){
+            recyclerSong= view.findViewById(R.id.recycleView_discovery_rock);
+        }
+
+        //
+        recyclerSong.setAdapter(songDiscoveryAdapter);
+        recyclerSong.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        // On item click
 
     }
 
@@ -186,24 +194,18 @@ public class DiscoveryFragment extends Fragment {
 
 }
 
-
-
-
-
-
-
-
-
-
 // Adapter class
 class SongDiscoveryAdapter extends RecyclerView.Adapter<SongDiscoveryAdapter.ViewHolder> {
 
     private Context mContext;
     private ArrayList<SongModel> arrSong;
 
-    public SongDiscoveryAdapter(Context mContext, ArrayList<SongModel> arrSong) {
+    private DiscoveryItemClickListener discoveryItemClickListener;
+
+    public SongDiscoveryAdapter(Context mContext, ArrayList<SongModel> arrSong, DiscoveryItemClickListener listener) {
         this.mContext = mContext;
         this.arrSong = arrSong;
+        this.discoveryItemClickListener = listener;
     }
 
     @NonNull
@@ -220,16 +222,28 @@ class SongDiscoveryAdapter extends RecyclerView.Adapter<SongDiscoveryAdapter.Vie
         SongModel song = arrSong.get(position);
         Glide.with(mContext).load(song.getImage()).placeholder(R.drawable.ic_music).centerCrop().into(holder.imgSong);
         holder.txtSongName.setText(song.getName());
+
+        int songPos = position;
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                discoveryItemClickListener.onClickItemListener(arrSong, songPos);
+            }
+        });
     }
+
 
     @Override
     public int getItemCount() {
         return arrSong.size();
     }
 
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView imgSong;
         private TextView txtSongName;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

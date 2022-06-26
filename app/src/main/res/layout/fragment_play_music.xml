@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/grey_blue_gradient_linear">
+    android:background="@drawable/background_play_music">
 
 
     <TextView
@@ -36,31 +36,39 @@
         app:layout_constraintTop_toBottomOf="@+id/txtView_songName"
         tools:ignore="TextContrastCheck" />
 
-    <TextView
-        android:id="@+id/txt_time_current"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/viewTimeProcessPlaying"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/start_time"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.079"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/img_music"
-        tools:ignore="TextContrastCheck" />
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="-20dp"
+        android:background="@drawable/seekbar_time_bg"
+        android:backgroundTint="#4E2929"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar"
+        app:layout_constraintStart_toStartOf="parent">
 
-    <TextView
-        android:id="@+id/txt_max_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/final_time"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.941"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/img_music"
-        tools:ignore="TextContrastCheck" />
+        <TextView
+            android:id="@+id/txt_max_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="/ 0:00"
+            android:textColor="@color/white"
+            app:layout_constraintStart_toEndOf="@+id/txt_time_current"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="TextContrastCheck" />
+
+        <TextView
+            android:id="@+id/txt_time_current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0:00 "
+            android:textColor="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="TextContrastCheck" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
         android:id="@+id/img_music"
@@ -172,8 +180,12 @@
     <SeekBar
         android:id="@+id/seekBar"
         style="@style/Widget.AppCompat.SeekBar"
-        android:layout_width="350dp"
+        android:layout_width="0dp"
         android:layout_height="39dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:progressTint="#4E2929"
+        android:thumbTint="@android:color/transparent"
         app:layout_constraintBottom_toTopOf="@+id/btn_play"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"

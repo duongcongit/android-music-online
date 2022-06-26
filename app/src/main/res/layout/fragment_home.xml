@@ -166,59 +166,16 @@
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/upload_card"
+                        android:id="@+id/download_card"
                         android:layout_width="146dp"
                         android:layout_height="78dp"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="12dp"
                         android:layout_marginTop="4dp"
                         android:background="@color/black"
                         app:cardBackgroundColor="#3F4359"
                         app:cardCornerRadius="10dp"
                         app:layout_constraintStart_toEndOf="@+id/song_card"
                         app:layout_constraintTop_toTopOf="parent">
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent">
-
-                            <TextView
-                                android:id="@+id/txt_home_upload"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="4dp"
-                                android:text="Upload"
-                                android:textColor="@color/white"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/img_home_upload" />
-
-                            <ImageView
-                                android:id="@+id/img_home_upload"
-                                android:layout_width="46dp"
-                                android:layout_height="45dp"
-                                android:layout_marginStart="4dp"
-                                android:layout_marginTop="4dp"
-                                android:background="#00551C1C"
-                                android:contentDescription="TODO"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:srcCompat="@drawable/ic_sound_cloud"
-                                tools:ignore="ImageContrastCheck" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/download_card"
-                        android:layout_width="146dp"
-                        android:layout_height="78dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="12dp"
-                        android:background="@color/black"
-                        app:cardBackgroundColor="#3F4359"
-                        app:cardCornerRadius="10dp"
-                        app:layout_constraintStart_toEndOf="@+id/on_device_card"
-                        app:layout_constraintTop_toBottomOf="@+id/upload_card">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="wrap_content"
@@ -255,12 +212,12 @@
                         android:id="@+id/album_card"
                         android:layout_width="146dp"
                         android:layout_height="78dp"
-                        android:layout_marginStart="24dp"
+                        android:layout_marginStart="12dp"
                         android:layout_marginTop="4dp"
                         android:background="@color/black"
                         app:cardBackgroundColor="#3F4359"
                         app:cardCornerRadius="10dp"
-                        app:layout_constraintStart_toEndOf="@+id/upload_card"
+                        app:layout_constraintStart_toEndOf="@+id/download_card"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <androidx.constraintlayout.widget.ConstraintLayout

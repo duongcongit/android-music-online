@@ -42,7 +42,7 @@ import java.util.Objects;
 
 public class HomePlaylistFragment extends Fragment {
 
-    ArrayList<PlaylistModel> arrPlaylist;
+    // ArrayList<PlaylistModel> arrPlaylist;
     PlaylistAdapter playlistListViewAdapter;
     ListView lvPlaylist;
 
@@ -190,8 +190,8 @@ public class HomePlaylistFragment extends Fragment {
     }
 
     // Show playlists
-    public void showPlaylist(){
-        playlistListViewAdapter = new PlaylistAdapter(arrPlaylist);
+    public void showPlaylist(ArrayList<PlaylistModel> listPlaylist){
+        playlistListViewAdapter = new PlaylistAdapter(listPlaylist);
 
         lvPlaylist.setAdapter(playlistListViewAdapter);
 
@@ -221,7 +221,7 @@ public class HomePlaylistFragment extends Fragment {
     // Get and show playlists
     private void getPlaylist(){
         //
-        arrPlaylist = new ArrayList<>();
+        ArrayList<PlaylistModel> arrPlaylist = new ArrayList<>();
 
         // Get playlist from local
         PlaylistLocalDBHelper mydb = new PlaylistLocalDBHelper(getActivity().getApplicationContext());
@@ -245,7 +245,7 @@ public class HomePlaylistFragment extends Fragment {
 
                     arrPlaylist.add(playlistModel);
                 }
-                showPlaylist();
+                showPlaylist(arrPlaylist);
             }
             //
             @Override
@@ -255,8 +255,8 @@ public class HomePlaylistFragment extends Fragment {
 
         });
         }
-        else {
-            showPlaylist();
+        else if(firebaseUser == null) {
+            showPlaylist(arrPlaylist);
         }
 
 

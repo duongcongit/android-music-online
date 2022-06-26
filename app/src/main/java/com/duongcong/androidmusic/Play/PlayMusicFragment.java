@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -129,6 +130,9 @@ public class PlayMusicFragment extends Fragment {
         txt_max_time        = (TextView)view.findViewById(R.id.txt_max_time);
 
         imgView = (ImageView) view.findViewById(R.id.img_music);
+
+        // Seekbar
+        seekbar = (SeekBar)view.findViewById(R.id.seekBar);
 
         // Control button
         btn_play    = (ImageButton) view.findViewById(R.id.btn_play); // Btn play
@@ -277,13 +281,20 @@ public class PlayMusicFragment extends Fragment {
         // When change value of seekbar
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progressChangedValue = 0;
-
+            @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressChangedValue = progress;
+                int val = (progress * (seekBar.getWidth() - 2 * seekBar.getThumbOffset())) / seekBar.getMax();
+
+                ConstraintLayout viewTimeProcess = view.findViewById(R.id.viewTimeProcessPlaying);
+
+                viewTimeProcess.setX(seekBar.getX() + val + seekBar.getThumbOffset() / 2 - 50);
             }
+            @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 //
             }
+            @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mediaPlayer.seekTo(progressChangedValue*1000);
                 startTime = mediaPlayer.getCurrentPosition();
@@ -390,18 +401,27 @@ public class PlayMusicFragment extends Fragment {
         // Display final time of music
         if(Objects.equals(songDuration, "null")){
             finalTime = mediaPlayer.getDuration();
-            txt_max_time.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) finalTime), TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
+            txt_max_time.setText("/" + time_format(TimeUnit.MILLISECONDS.toMinutes((long) finalTime), TimeUnit.MILLISECONDS.toSeconds((long) finalTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) finalTime))));
         }
         else {
-            txt_max_time.setText(songDuration);
+            txt_max_time.setText("/"+ songDuration);
         }
 
 
         // Set parameter for seekbar
-        seekbar = (SeekBar)view.findViewById(R.id.seekBar);
         seekbar.setClickable(true);
-        seekbar.setMax((int) TimeUnit.MILLISECONDS.toSeconds((long) finalTime));
         oneTimeOnly = 1;
+
+        if(Objects.equals(songType, "online") || !Objects.equals(songDuration, "null")){
+            String[] parts = songDuration.split(":");
+            int duration = (Integer.parseInt(parts[0]) * 60) + Integer.parseInt(parts[1]);
+            seekbar.setMax(duration);
+        }
+        else {
+            seekbar.setMax((int) TimeUnit.MILLISECONDS.toSeconds((long) finalTime));
+        }
+
+
 
         // Set repeat mode
         setRepeatMode(repeatMode);
@@ -536,13 +556,16 @@ public class PlayMusicFragment extends Fragment {
     private final Runnable UpdateSongTime = new Runnable() {
         public void run() {
             startTime = mediaPlayer.getCurrentPosition();
-            txt_time_current.setText(time_format(TimeUnit.MILLISECONDS.toMinutes((long) startTime), TimeUnit.MILLISECONDS.toSeconds((long) startTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) startTime))));
+            long minute = TimeUnit.MILLISECONDS.toMinutes((long) startTime);
+            long seconds = TimeUnit.MILLISECONDS.toSeconds((long) startTime);
+            txt_time_current.setText(time_format(minute, seconds - TimeUnit.MINUTES.toSeconds(minute)));
             seekbar.setProgress((int) TimeUnit.MILLISECONDS.toSeconds((long) startTime));
             myHandler.postDelayed(this, 100);
 
             if(!mediaPlayer.isPlaying()){
                 setPausePlayState();
             }
+
         }
     };
 

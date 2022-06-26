@@ -104,16 +104,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        //
-        cardView_upload = view.findViewById(R.id.upload_card);
-        cardView_upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainActivity)getActivity()).displayFragment(((MainActivity)getActivity()).uploadFragment);
-
-
-            }
-        });
 
         //
         cardView_download = view.findViewById(R.id.download_card);
