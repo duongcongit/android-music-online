@@ -11,18 +11,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupMenu;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+
+
+import com.duongcong.androidmusic.Model.SongModel;
 import com.duongcong.androidmusic.R;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class AccountFragment extends Fragment {
+    private RecyclerView recyclerView;
     private Button btnPopup;
     private TextView username,userName,userRegisDate;
     private String user_email,user_password,user_displayName;
@@ -120,4 +129,5 @@ public class AccountFragment extends Fragment {
         inflater.inflate(R.menu.menu,menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
+
 }

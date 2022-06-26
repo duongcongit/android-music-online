@@ -61,7 +61,7 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
     private TextView textViewSong,title,artist,album,data_song,duration;
     private ImageView imageView;
     private String string_title,string_artist,song_categories,string_duration,string_albumArt="";
-    private String titleInfo,albumInfo,artistInfo;
+    private String titleInfo,albumInfo,artistInfo,uploadId;
     private Spinner spinner;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -105,6 +105,8 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
         categories.add("Nhạc Rock");
         categories.add("Nhạc Dance");
         categories.add("Nhạc Remix");
+        categories.add("Thể loại khác");
+
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -258,11 +260,15 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
             Toast.makeText(this, "Xin vui lòng đợi", Toast.LENGTH_SHORT).show();
             progressBar.setVisibility(View.VISIBLE);
 
+            uploadId = databaseReference.push().getKey();
+
+
             final StorageReference storageReference1 = storageReferenceImages.child(
-                    +System.currentTimeMillis()+"."+getFileExtension(uriImages));
+                    uploadId+"."+getFileExtension(uriImages));
 
             //gs://androidmusic-3d470.appshot.com/...
-            final StorageReference storageReference2 = storageReference.child(System.currentTimeMillis()+"."+getFileExtension(uri));
+            final StorageReference storageReference2 = storageReference.child(uploadId+"."+getFileExtension(uri));
+
 
 
             //Put song Image
@@ -295,8 +301,8 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
                     storageReference2.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            String uploadId = databaseReference.push().getKey();
-                            SongModel onlineSongModel = new SongModel(uploadId,titleInfo,uri.toString(),albumInfo,artistInfo,"online",string_duration,song_categories,urlUploadImg.toString(), "");
+                            long currentTime = System.currentTimeMillis();
+                            SongModel onlineSongModel = new SongModel(uploadId,titleInfo,uri.toString(),albumInfo,artistInfo,"online",string_duration,song_categories,urlUploadImg.toString(),currentTime+"");
                             databaseReference.child(firebaseUser.getUid()).child("songs").child(uploadId).setValue(onlineSongModel);
                         }
                     });
@@ -311,6 +317,8 @@ public class SongUploadActivity extends AppCompatActivity implements AdapterView
                     }
                 }
             });
+
+
 
 
 
