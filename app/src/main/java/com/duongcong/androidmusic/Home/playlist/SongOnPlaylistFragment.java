@@ -144,7 +144,7 @@ public class SongOnPlaylistFragment extends Fragment {
                                 String songId       = (String) ds.child("id").getValue();
                                 String songName     = (String) ds.child("name").getValue();
                                 String songPath     = (String) ds.child("path").getValue();
-                                String songImg      = (String) ds.child("imgPath").getValue();
+                                String songImg      = (String) ds.child("image").getValue();
                                 String songAlbum    = (String) ds.child("album").getValue();
                                 String songArtist   = (String) ds.child("artist").getValue();
                                 String songCategory = (String) ds.child("category").getValue();

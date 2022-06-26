@@ -80,6 +80,7 @@
         <entry key="app/src/main/res/layout/sign_up_tab_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/song_menu_option_view.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/layout/song_view.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/song_view_discovery.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.18177083333333333" />
         <entry key="app/src/main/res/menu/bottom_navigation.xml" value="0.35625" />
         <entry key="app/src/main/res/menu/context_menu_playlist.xml" value="0.35625" />

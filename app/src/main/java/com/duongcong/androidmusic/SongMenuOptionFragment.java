@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.URLUtil;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -37,6 +38,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,6 +50,8 @@ public class SongMenuOptionFragment extends Fragment {
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
+
+    private StorageReference storageRef;
 
     protected ConstraintLayout songMenuOptionHideArea;
 
@@ -157,6 +162,7 @@ public class SongMenuOptionFragment extends Fragment {
 
     // Display or hide menu items by song
     private void setMenuItemView(){
+        // If is local/offline song, hide option remove from upload and option download
         if(Objects.equals(songType, "local")){
             songMenuOptionRemoveFromUpload.setVisibility(View.GONE);
             songMenuOptionDownload.setVisibility(View.GONE);
@@ -167,16 +173,47 @@ public class SongMenuOptionFragment extends Fragment {
         if(Objects.equals(songType, "online") && file.exists()){
             songMenuOptionDownload.setVisibility(View.GONE);
         }
-        //
+        // otherwise in a playlist, hide option remove from playlist
         if(Objects.equals(isInPlaylist, "no")){
             songMenuOptionRemoveFromPlaylist.setVisibility(View.GONE);
         }
-        //
+        // If it is cloud song
         if(Objects.equals(songType, "online")){
             songMenuOptionUpload.setVisibility(View.GONE);
             songMenuOptionDeleteFile.setVisibility(View.GONE);
         }
-        //
+
+        // Check if this song is own, show option remove from cloud
+        if(firebaseUser!=null){
+            System.out.println("Đã đăng nhập");
+            FirebaseDatabase database = FirebaseDatabase.getInstance();;
+            DatabaseReference myFirebaseRef = database.getReference().child("users").child(firebaseUser.getUid()).child("songs");
+            myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    boolean isMySong = false;
+                    for(DataSnapshot ds : snapshot.getChildren()) { // Browse each song
+                        String songIdCloud = (String) ds.child("id").getValue();
+                        if(songIdCloud.equals(songId)){
+                            songMenuOptionRemoveFromUpload.setVisibility(View.VISIBLE);
+                            break;
+                        }
+                        else {
+                            songMenuOptionRemoveFromUpload.setVisibility(View.GONE);
+                        }
+                    }
+                }
+                //
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    //
+                }
+
+            });
+        }
+        else {
+            songMenuOptionRemoveFromUpload.setVisibility(View.GONE);
+        }
 
     }
 
@@ -187,6 +224,8 @@ public class SongMenuOptionFragment extends Fragment {
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+
+        storageRef = FirebaseStorage.getInstance().getReference();
 
         // Parent fragment
         songMenuOption    = view.findViewById(R.id.song_menu_option);
@@ -249,6 +288,13 @@ public class SongMenuOptionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 songMenuOptionRemoveFromUpload.startAnimation(item_click);
+                String songFileName = URLUtil.guessFileName(songPath, null, null);
+                String songImgName  = URLUtil.guessFileName(songImg, null, null);
+                // System.out.println(songp.substring(85, 102));
+                System.out.println(songFileName);
+                System.out.println(songImgName);
+                // StorageReference delImgRef  = storageRef.child("images/" + songImg);
+                // StorageReference delSongRef = storageRef.child("songs/" + song)
             }
         });
 
@@ -297,7 +343,7 @@ public class SongMenuOptionFragment extends Fragment {
                             }
                             // If add to online playlist
                             else if(Objects.equals(playlistSelectedType, "online")){
-                                String tmpId = songType;
+                                String tmpId = songId;
                                 // Generate random song id if song type is local (id is null)
                                 if(Objects.equals(songType, "local")){
                                     tmpId = "local" + UUID.randomUUID().toString().replaceAll("-", "");
@@ -310,6 +356,7 @@ public class SongMenuOptionFragment extends Fragment {
                                 myFirebaseRef.child("id").setValue(tmpId);
                                 myFirebaseRef.child("name").setValue(songName);
                                 myFirebaseRef.child("path").setValue(songPath);
+                                myFirebaseRef.child("image").setValue(songImg);
                                 myFirebaseRef.child("album").setValue(songAlbum);
                                 myFirebaseRef.child("artist").setValue(songArtist);
                                 myFirebaseRef.child("category").setValue(songCategory);

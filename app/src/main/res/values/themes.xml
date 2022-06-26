@@ -18,4 +18,8 @@
         <item name="cornerSize">20%</item>
     </style>
 
+    <style name="rounded_corner_small">
+        <item name="cornerSize">5%</item>
+    </style>
+
 </resources>
