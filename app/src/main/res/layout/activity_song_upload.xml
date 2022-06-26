@@ -7,217 +7,234 @@
     android:padding="15dp"
     tools:context=".Account.SongUploadActivity">
 
-    <TextView
-        android:id="@+id/textViewShow"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Chia sẻ bài hát"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="5dp"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/app_name"
+        android:fillViewport="true"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.02">
+        app:layout_constraintTop_toTopOf="parent">
 
-    </TextView>
-
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinner"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewShow"
-        app:layout_constraintVertical_bias="0">
-
-    </Spinner>
-
-    <LinearLayout
-        android:id="@+id/linear1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spinner"
-        app:layout_constraintVertical_bias="0">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnOpenAudioFiles"
-            android:onClick="openAudioFiles"
-            android:text="Chọn bài hát">
-        </Button>
-
-        <TextView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:gravity="center"
-            android:id="@+id/textViewSongSelected"
-            android:text="Chưa có file nào được chọn">
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textViewShow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chia sẻ bài hát"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.02">
 
-        </TextView>
-    </LinearLayout>
-    
-    <ProgressBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
-        android:layout_marginTop="10dp"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linear1"
-        app:layout_constraintVertical_bias="0">
-    </ProgressBar>
+            </TextView>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnUploadSong"
-        android:text="Đăng bài hát"
-        android:layout_marginTop="10dp"
-        android:onClick="uploadFileToFireBase"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnOpenImgFiles"
-        app:layout_constraintVertical_bias="0">
-    </Button>
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinner"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textViewShow"
+                app:layout_constraintVertical_bias="0">
 
+            </Spinner>
 
-    <LinearLayout
-        android:id="@+id/linear2"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progressBar"
-        app:layout_constraintVertical_bias="0">
+            <LinearLayout
+                android:id="@+id/linear1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/spinner"
+                app:layout_constraintVertical_bias="0">
 
-        <TextView
-            android:id="@+id/textViewSongTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:text="Tên bài hát: "
-            android:textSize="16sp">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btnOpenAudioFiles"
+                    android:onClick="openAudioFiles"
+                    android:text="Chọn bài hát">
+                </Button>
 
-        </TextView>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:gravity="center"
+                    android:id="@+id/textViewSongSelected"
+                    android:text="Chưa có file nào được chọn">
 
-        <EditText
-            android:id="@+id/textViewSongTitleInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:text=""
-            android:textSize="16sp">
+                </TextView>
+            </LinearLayout>
 
-        </EditText>
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:layout_marginTop="10dp"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/linear1"
+                app:layout_constraintVertical_bias="0">
+            </ProgressBar>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textViewSongAlbum"
-            android:textSize="16sp"
-            android:layout_marginBottom="5dp"
-            android:text="Album:">
-
-        </TextView>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textViewSongAlbumInfo"
-            android:textSize="16sp"
-            android:layout_marginBottom="5dp"
-            android:text="">
-
-        </EditText>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textViewSongArtist"
-            android:layout_marginBottom="5dp"
-            android:textSize="16sp"
-            android:text="Nghệ sĩ:">
-
-        </TextView>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textViewSongArtistInfo"
-            android:layout_marginBottom="5dp"
-            android:textSize="16sp"
-            android:text="">
-
-        </EditText>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnUploadSong"
+                android:text="Đăng bài hát"
+                android:layout_marginTop="10dp"
+                android:onClick="uploadFileToFireBase"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btnOpenImgFiles"
+                app:layout_constraintVertical_bias="0">
+            </Button>
 
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textViewSongDuration"
-            android:layout_marginBottom="5dp"
-            android:textSize="16sp"
-            android:text="Thời gian:">
+            <LinearLayout
+                android:id="@+id/linear2"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/progressBar"
+                app:layout_constraintVertical_bias="0">
 
-        </TextView>
+                <TextView
+                    android:id="@+id/textViewSongTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="Tên bài hát: "
+                    android:textSize="16sp">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textViewSongDurationInfo"
-            android:layout_marginBottom="5dp"
-            android:textSize="16sp"
-            android:text="">
+                </TextView>
 
-        </EditText>
+                <EditText
+                    android:id="@+id/textViewSongTitleInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text=""
+                    android:textSize="16sp">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textViewSongImage"
-            android:layout_marginBottom="5dp"
-            android:textSize="16sp"
-            android:text="Hình ảnh: ">
+                </EditText>
 
-        </TextView>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textViewSongAlbum"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Album:">
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-            android:id="@+id/imgView_image">
-        </ImageView>
-    </LinearLayout>
+                </TextView>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnOpenImgFiles"
-        android:layout_marginTop="10dp"
-        android:text="Chọn hình ảnh"
-        android:onClick="openImageFiles"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linear2"
-        app:layout_constraintVertical_bias="0">
-    </Button>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textViewSongAlbumInfo"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="5dp"
+                    android:text="">
+
+                </EditText>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textViewSongArtist"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="16sp"
+                    android:text="Nghệ sĩ:">
+
+                </TextView>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textViewSongArtistInfo"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="16sp"
+                    android:text="">
+
+                </EditText>
 
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textViewSongDuration"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="16sp"
+                    android:text="Thời gian:">
+
+                </TextView>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textViewSongDurationInfo"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="16sp"
+                    android:text="">
+
+                </EditText>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textViewSongImage"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="16sp"
+                    android:text="Hình ảnh: ">
+
+                </TextView>
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:id="@+id/imgView_image">
+                </ImageView>
+            </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnOpenImgFiles"
+                android:layout_marginTop="10dp"
+                android:text="Chọn hình ảnh"
+                android:onClick="openImageFiles"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/linear2"
+                app:layout_constraintVertical_bias="0">
+            </Button>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
