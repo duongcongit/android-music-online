@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../../../layout/custom_preview.xml" value="0.1239488731920619" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/drawable/shapebgsearch.xml" value="0.1475" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/activity_favourite_list.xml" value="0.22" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/activity_favourtie_list.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/activity_login.xml" value="0.1921875" />
@@ -12,7 +13,7 @@
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/activity_song_upload.xml" value="0.18" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/create_playlist_dialog.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/delete_playlist_dialog_cofirm.xml" value="0.1921875" />
-        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_account.xml" value="0.1921875" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_account.xml" value="0.22" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_browse.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_discovery.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/fragment_home.xml" value="0.1921875" />
@@ -29,7 +30,9 @@
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/song_item.xml" value="0.46125" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/song_menu_option_view.xml" value="0.5" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/layout/song_view.xml" value="0.1921875" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/menu/context_menu_playlist.xml" value="0.1921875" />
         <entry key="..\:/fm1/android-music-online-main/app/src/main/res/menu/menu.xml" value="0.1921875" />
+        <entry key="..\:/fm1/android-music-online-main/app/src/main/res/menu/search_menu.xml" value="0.22" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2625" />
         <entry key="app/src/main/res/drawable/button_bg.xml" value="0.239" />
         <entry key="app/src/main/res/drawable/ic_baseline_account_circle_24.xml" value="0.1" />
